@@ -219,9 +219,9 @@ void CIntroState::RenderIntro(void)
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-	glTexCoord2f(1.0f, 1.0f); glVertex2f(800.0f, 0.0f);
-	glTexCoord2f(1.0f, 0.0f); glVertex2f(800.0f, 600.0f);
-	glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 600.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(960.0f, 0.0f);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(960.0f, 672.0f);
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 672.0f);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);

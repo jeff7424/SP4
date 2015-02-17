@@ -13,6 +13,7 @@ extern "C" {
 #include "Camera.h"
 #include "Mouse.h"
 #include <string>
+#include "Button.h"
 
 class CMenuState : public CGameState
 {
@@ -43,10 +44,8 @@ protected:
 
 private:
 
-	Vector3 startButtonPos;
-	Vector3 startButtonSize;
-	Vector3 exitButtonPos;
-	Vector3 exitButtonSize;
+	Button *StartButton;
+	Button *ExitButton;
 
 	bool myKeys[255];
 	TextureImage menu[1];
@@ -60,13 +59,10 @@ private:
 	bool LoadTGA(TextureImage *texture, char *filename);			// Loads A TGA File Into Memory
 	static CMenuState theMenuState;
 
-	//GLvoid *font_style;
 	void *font_style;
 	//  Draws a string at the specified coordinates.
 	void printw(float x, float y, float z, char* format, ...);
 
-	void RenderStartButton();
-	void RenderExitButton();
 	void RenderMenu(void);
 	int LuaInit();
 };

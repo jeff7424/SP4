@@ -670,12 +670,14 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 
 	case GLUT_LEFT_BUTTON:
 		if (state == 0)
+		{
 			mouseInfo.mLButtonUp = false;
+			mclicklevel1();
+		}
 		else
 			mouseInfo.mLButtonUp = true;
 		mouseInfo.lastX = x;
 		mouseInfo.lastY = y;
-		//mclicklevel1();
 		break;
 
 	case GLUT_RIGHT_BUTTON:
@@ -897,7 +899,6 @@ void CPlayState::mclicklevel1()
 				tower->type = static_cast<Tower::TOWER_TYPE>(selection);
 				tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
 					towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
-				//tower->SetAtt(tower->type);
 				if (player->GetGold() >= tower->GetCost())
 				{
 					tower->SetActive(true);

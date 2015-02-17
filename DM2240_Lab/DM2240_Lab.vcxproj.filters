@@ -34,6 +34,9 @@
     <Filter Include="Map">
       <UniqueIdentifier>{d8c481d9-9332-455f-b97e-a23fd0c46f5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{89a4c066-26f6-4243-9654-b9968a60d35a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -92,6 +95,15 @@
     </ClCompile>
     <ClCompile Include="Powerup.cpp">
       <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModeState.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSelectState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +172,15 @@
     </ClInclude>
     <ClInclude Include="Powerup.h">
       <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModeState.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSelectState.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
