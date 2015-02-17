@@ -99,11 +99,11 @@
     <ClCompile Include="GameModeState.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
-    <ClCompile Include="LevelSelectState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSelectState.cpp">
+      <Filter>GameState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

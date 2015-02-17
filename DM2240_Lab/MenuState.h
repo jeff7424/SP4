@@ -67,5 +67,8 @@ private:
 	void printw(float x, float y, float z, char* format, ...);
 
 	void RenderMenu(void);
+
+	void CursorOnButton(int x, int y);
+
 	int LuaInit();
 };

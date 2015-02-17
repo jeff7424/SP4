@@ -25,7 +25,7 @@ public:
 	Vector3 GetPosition();
 	Vector3 GetSize();
 
-	void SetIsHover(const int x, const int y);
+	void SetIsHover(int x, int y);
 	void SetIsClick(bool isClick);
 
 	bool GetIsClick();

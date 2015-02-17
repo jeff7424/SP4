@@ -101,6 +101,8 @@ void CMenuState::HandleEvents(CGameStateManager* theGSM)
 
 void CMenuState::Update(CGameStateManager* theGSM)
 {
+	CursorOnButton(mouseInfo.lastX, mouseInfo.lastY);
+
 	if (myKeys['1'] == true)
 		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 
@@ -133,6 +135,7 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 
 	// swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 void CMenuState::printw(float x, float y, float z, char* format, ...)
@@ -286,15 +289,13 @@ void CMenuState::KeyboardUp(unsigned char key, int x, int y){
 
 void CMenuState::MouseMove(int x, int y)
 {
-	StartButton->SetIsHover(x, y);
-	SettingsButton->SetIsHover(x, y);
-	InstructionsButton->SetIsHover(x, y);
-	CreditsButton->SetIsHover(x, y);
-	ExitButton->SetIsHover(x, y);
+	mouseInfo.lastX = x;
+	mouseInfo.lastY = y;
 }
 
 void CMenuState::MouseClick(int button, int state, int x, int y)
 {
+
 	switch (button) {
 
 	case GLUT_LEFT_BUTTON:
@@ -352,6 +353,15 @@ void CMenuState::RenderMenu(void)
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
+}
+
+void CMenuState::CursorOnButton(int x, int y)
+{
+	StartButton->SetIsHover(x, y);
+	SettingsButton->SetIsHover(x, y);
+	InstructionsButton->SetIsHover(x, y);
+	CreditsButton->SetIsHover(x, y);
+	ExitButton->SetIsHover(x, y);
 }
 
 int CMenuState::LuaInit()

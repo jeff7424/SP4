@@ -6,6 +6,7 @@ using namespace std;
 #include "GameModeState.h"
 #include "PlayState.h"
 #include "menustate.h"
+#include "LevelSelectState.h"
 
 CGameModeState CGameModeState::modeState;
 
@@ -104,6 +105,7 @@ void CGameModeState::Draw(CGameStateManager* theGSM)
 
 	// swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 void CGameModeState::printw(float x, float y, float z, char* format, ...)
@@ -281,8 +283,7 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 			}
 			else if (SkirmishButton->GetIsHover())
 			{
-				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-				exit(0);
+				CGameStateManager::getInstance()->ChangeState(CLevelSelectState::Instance());
 			}
 			else if (BackButton->GetIsHover())
 			{

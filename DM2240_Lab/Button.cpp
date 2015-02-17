@@ -53,10 +53,10 @@ Vector3 Button::GetSize()
 	return Size;
 }
 
-void Button::SetIsHover(const int x, const int y)
+void Button::SetIsHover(int x, int y)
 {
 	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&
-		y >(Position.y - (Size.y)) && y < (Position.y + (Size.y)))
+		y > (Position.y - (Size.y)) && y < (Position.y + (Size.y)))
 	{
 		isHover = true;
 	}
@@ -179,20 +179,20 @@ bool Button::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA Fil
 
 void Button::Render()
 {
+	std::cout << GetIsHover() << std::endl;
 	glPushMatrix();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (!isHover)
+	if (GetIsHover() == true) {
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0);
-	else if (isHover)
-		glColor4f(0.8f, 0.8f, 0.8f, 1.0);
-
+	}
+	if (GetIsHover() == false) {
+		glColor4f(0.7f, 0.7f, 0.7f, 1.0);
+	}
+		
 	glEnable(GL_TEXTURE_2D);
 
-	if (!isHover)
-		glBindTexture(GL_TEXTURE_2D, Image.texID);
-	else if (isHover)
-		glBindTexture(GL_TEXTURE_2D, Image_Hover.texID);
+	glBindTexture(GL_TEXTURE_2D, Image.texID);
 
 	glTranslatef(Position.x, Position.y, Position.z);
 	glScalef(Size.x, Size.y, Size.z);

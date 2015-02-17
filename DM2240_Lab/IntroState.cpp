@@ -63,6 +63,7 @@ void CIntroState::Update(CGameStateManager* theGSM)
 	int time = GetTickCount();
 	float deltaTime = (time - lastTime) / 1000.f;
 	Timer -= deltaTime;
+
 	for (int i = 0; i < 255; i++)
 	{
 		if (myKeys[i] == true)
@@ -99,6 +100,7 @@ void CIntroState::Draw(CGameStateManager* theGSM)
 
 	// swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 bool CIntroState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
