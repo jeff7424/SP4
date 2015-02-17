@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Camera" Collapsed="true">
+    <Position X="15.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQLAAAAACAIBAMgQCAAAAAAQCAAIgAAgADBAAAAAAI=</HashCode>
+      <FileName>Camera.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CFrustum" Collapsed="true">
+    <Position X="17" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAACIARQSgACABAIAgAAAASAABAJAQMAAgBAgBE=</HashCode>
+      <FileName>Frustum.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Matrix4x4" Collapsed="true">
+    <Position X="17" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAQAAAAAAAIAACABAAAAAwAAAAAgAABAAAg=</HashCode>
+      <FileName>SceneGraph\Matrix4x4.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myApplication" Collapsed="true">
+    <Position X="18.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAQihUFAgGBsAAIAFAMEgkAAAAAEAA/DADECCQHAAAA=</HashCode>
+      <FileName>myapplication.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CProjectile" Collapsed="true">
+    <Position X="15.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAAAAAACACAAAAAAAAAEACACAgAAQACAAAAAAAA=</HashCode>
+      <FileName>Projectile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vector3D" Collapsed="true">
+    <Position X="15.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAEAAAAAAADAUAEAAAAgAAAAAAAAAAAABgAQAAAAA=</HashCode>
+      <FileName>vector3D.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CModel" Collapsed="true">
+    <Position X="18.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAgAAAACAIIgAACEIAIUACAAAAAABAIAgEAAEAAgA=</HashCode>
+      <FileName>SceneGraph\Model.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CNode">
+    <Position X="9" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>SceneGraph\Node.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSceneNode">
+    <Position X="7.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAiAgBAACAAAEgoEYAAAAAIAEAAAAQAAAgiAAAGAAAA=</HashCode>
+      <FileName>SceneGraph\SceneNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTransform">
+    <Position X="10.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAggABABEABAAABIIAEAAiAAAAgAAEAA=</HashCode>
+      <FileName>SceneGraph\Transform.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="__unnamed_struct_0008_1" Collapsed="true">
+    <Position X="18.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAwAAAAAAAAAAAAAAAABABAAAAAAA=</HashCode>
+      <FileName>myapplication.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="__unnamed_struct_0008_2" Collapsed="true">
+    <Position X="17" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAgAAAAAAAAIAAAAAAAAAAAIAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>myapplication.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="TextureImage" Collapsed="true">
+    <Position X="18.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>myapplication.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="theMouseInfo" Collapsed="true">
+    <Position X="17" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>myapplication.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

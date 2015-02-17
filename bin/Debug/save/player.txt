@@ -1,0 +1,7 @@
+life, 3
+gold, 500
+time, 0
+progress, 1
+enemyleft, 0
+armageddon, 0
+lasercannon, 0
