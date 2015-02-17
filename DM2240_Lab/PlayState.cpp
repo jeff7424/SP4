@@ -609,15 +609,15 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 void CPlayState::MouseMove(int x, int y) {
 	int tile_topleft_x = (int)floor((float)(mapOffset_x + pos_x) / TILE_SIZE);
 	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
-	mouseInfo.lastX = x;
-	mouseInfo.lastY = y;
-	int X = (int)((float)mouseInfo.lastX / WX * 10);
-	int Y = (int)((float)mouseInfo.lastY / WY * 7);
+	//mouseInfo.lastX = x;
+	//mouseInfo.lastY = y;
+	int X = (int)((float)x / WX * 10);
+	int Y = (int)((float)y / WY * 7);
 	/*int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);*/
-	mouseInfo.mLButtonUp = !!state;
+	//mouseInfo.mLButtonUp = !!state;
 
-	moverlevel1();
+	moverlevel1(x, y);
 
 	if (!pause)
 	{
@@ -672,7 +672,7 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 		if (state == 0)
 		{
 			mouseInfo.mLButtonUp = false;
-			mclicklevel1();
+			mclicklevel1(x, y);
 		}
 		else
 			mouseInfo.mLButtonUp = true;
@@ -820,31 +820,31 @@ void CPlayState::RenderTileMap(void) {
 	glPopMatrix();
 }
 
-void CPlayState::moverlevel1()
+void CPlayState::moverlevel1(int x, int y)
 {
 	int a = 0; // row
 	for (float i = 0.0f; i < 0.708335f; i += 0.141667f)
 	{
 		for (float u = 0.0f; u < 0.9f; u += 0.1f)
 		{
-			if ((mouseInfo.lastX > WX * (0.09875f + u)) && (mouseInfo.lastX < WX * (0.1975f + u)) &&
-				(mouseInfo.lastY > WY * (0.12666f + i)) && (mouseInfo.lastY < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 1))
+			if ((x > WX * (0.09875f + u)) && (x < WX * (0.1975f + u)) &&
+				(y > WY * (0.12666f + i)) && (y < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 1))
 			{
 				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 2;
 			}
-			if (((mouseInfo.lastX < WX * (0.09875f + u)) || (mouseInfo.lastX > WX * (0.1975f + u)) ||
-				(mouseInfo.lastY < WY * (0.12666f + i)) || (mouseInfo.lastY > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 2)
+			if (((x < WX * (0.09875f + u)) || (x > WX * (0.1975f + u)) ||
+				(y < WY * (0.12666f + i)) || (y > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 2)
 			{
 				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 1;
 			}
 
-			if ((mouseInfo.lastX > WX * (0.09875f + u)) && (mouseInfo.lastX < WX * (0.1975f + u)) &&
-				(mouseInfo.lastY > WY * (0.12666f + i)) && (mouseInfo.lastY < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 4))
+			if ((x > WX * (0.09875f + u)) && (x < WX * (0.1975f + u)) &&
+				(y > WY * (0.12666f + i)) && (y < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 4))
 			{
 				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 3;
 			}
-			if (((mouseInfo.lastX < WX * (0.09875f + u)) || (mouseInfo.lastX > WX * (0.1975f + u)) ||
-				(mouseInfo.lastY < WY * (0.12666f + i)) || (mouseInfo.lastY > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 3)
+			if (((x < WX * (0.09875f + u)) || (x > WX * (0.1975f + u)) ||
+				(y < WY * (0.12666f + i)) || (y > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 3)
 			{
 				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 4;
 			}
@@ -853,37 +853,37 @@ void CPlayState::moverlevel1()
 	}
 }
 
-void CPlayState::mclicklevel1()
+void CPlayState::mclicklevel1(int x, int y)
 {
-	int x = (int)((float)mouseInfo.lastX / WX * 10);
-	int y = (int)((float)mouseInfo.lastY / WY * 7);
+	int X = (int)((float)x / WX * 10);
+	int Y = (int)((float)y / WY * 7);
 
-	if (x == 3 && y == 0)
+	if (X == 3 && Y == 0)
 	{
 		selection = 1;
 	}
 
-	if (x == 4 && y == 0)
+	if (X == 4 && Y == 0)
 	{
 		selection = 2;
 	}
 
-	if (x == 5 && y == 0)
+	if (X == 5 && Y == 0)
 	{
 		selection = 3;
 	}
 
-	if (x == 6 && y == 0)
+	if (X == 6 && Y == 0)
 	{
 		selection = 4;
 	}
 
-	if (x == 8 && y == 0)
+	if (X == 8 && Y == 0)
 	{
 		powerMap = true;
 		powerLane = false;
 	}
-	if (x == 9 && y == 0)
+	if (X == 9 && Y == 0)
 	{
 		powerLane = true;
 		powerMap = false;
@@ -892,7 +892,7 @@ void CPlayState::mclicklevel1()
 	Tower *tower = NULL;
 	if (pause == false)
 	{
-		if (theMap->theScreenMap[y][x] == 2) // tile not occupied
+		if (theMap->theScreenMap[Y][X] == 2) // tile not occupied
 		{
 			if (tower = FetchTower())
 			{
@@ -903,9 +903,9 @@ void CPlayState::mclicklevel1()
 				{
 					tower->SetActive(true);
 					tower->SetLevel(1);
-					tower->SetPos(Vector3((float)((x + 0.5f) * TILE_SIZE), (float)((y + 0.5f) * TILE_SIZE), 0));
+					tower->SetPos(Vector3((float)((X + 0.5f) * TILE_SIZE), (float)((Y + 0.5f) * TILE_SIZE), 0));
 					player->SetGold(player->GetGold() - tower->GetCost());
-					theMap->theScreenMap[y][x] = 3;
+					theMap->theScreenMap[Y][X] = 3;
 				}
 				else
 				{
@@ -913,11 +913,11 @@ void CPlayState::mclicklevel1()
 				}
 			}
 		}
-		else if (theMap->theScreenMap[y][x] == 3) // tile occupied
+		else if (theMap->theScreenMap[Y][X] == 3) // tile occupied
 		{
 			for (unsigned int i = 0; i < towerList.size(); ++i)
 			{
-				if (towerList[i]->GetActive() && towerList[i]->GetPos().x == (x + 0.5f) * TILE_SIZE && towerList[i]->GetPos().y == (y + 0.5f) * TILE_SIZE)
+				if (towerList[i]->GetActive() && towerList[i]->GetPos().x == (X + 0.5f) * TILE_SIZE && towerList[i]->GetPos().y == (Y + 0.5f) * TILE_SIZE)
 				{
 					if (player->GetGold() >= towerList[i]->GetCost() + 25 && towerList[i]->GetLevel() < 3)
 					{

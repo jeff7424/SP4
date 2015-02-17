@@ -152,8 +152,8 @@ private:
 	TextureImage PowerBoom[2];
 
 	void RenderTileMap();
-	void moverlevel1();
-	void mclicklevel1();
+	void moverlevel1(int x, int y);
+	void mclicklevel1(int x, int y);
 	bool LoadTGA(TextureImage *texture, char *filename);
 	//void gamewin();
 	//void gamelose();
