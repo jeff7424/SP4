@@ -5,5 +5,6 @@ typedef struct {
 	bool mLButtonUp;
 	bool mRButtonUp;
 	bool middleButtonUp;
-	int  lastX, lastY;
+	int lastX;
+	int lastY;
 } theMouseInfo;

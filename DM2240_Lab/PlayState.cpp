@@ -21,8 +21,8 @@ void CPlayState::Init(void)
 	state = 0;
 	pos_x = 0;
 	pos_y = 0;
-	WX = 0;
-	WY = 0;
+	WX = w;
+	WY = h;
 	mapOffset_x = 0;
 	mapOffset_y = 0;
 	tileOffset_x = 0;
@@ -70,6 +70,8 @@ void CPlayState::Init(void)
 		myKeys[i] = false;
 	}
 	Math::InitRNG();
+	mouseInfo.lastX = 0;
+	mouseInfo.lastY = 0;
 
 	Cam = new Camera(Camera::LAND_CAM);
 	Cam->SetPosition(0.0, 2.0, -5.0);
@@ -609,8 +611,9 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 void CPlayState::MouseMove(int x, int y) {
 	int tile_topleft_x = (int)floor((float)(mapOffset_x + pos_x) / TILE_SIZE);
 	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
-	//mouseInfo.lastX = x;
-	//mouseInfo.lastY = y;
+	mouseInfo.lastX = x;
+	mouseInfo.lastY = y;
+	std::cout << x << " " << y << std::endl;
 	int X = (int)((float)x / WX * 10);
 	int Y = (int)((float)y / WY * 7);
 	/*int w = glutGet(GLUT_WINDOW_WIDTH);

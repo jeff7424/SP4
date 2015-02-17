@@ -38,6 +38,32 @@ void CMenuState::Cleanup()
 		delete theCam;
 		theCam = NULL;
 	}
+	if (StartButton != NULL)
+	{
+		delete StartButton;
+		StartButton = NULL;
+	}
+	if (SettingsButton != NULL)
+	{
+		delete SettingsButton;
+		SettingsButton = NULL;
+	}
+	if (InstructionsButton != NULL)
+	{
+		delete InstructionsButton;
+		InstructionsButton = NULL;
+	}
+	if (CreditsButton != NULL)
+	{
+		delete CreditsButton;
+		CreditsButton = NULL;
+	}
+	if (ExitButton != NULL)
+	{
+		delete ExitButton;
+		ExitButton = NULL;
+	}
+	
 }
 
 void CMenuState::Pause()
@@ -96,6 +122,9 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 
 	RenderMenu();
 	StartButton->Render();
+	SettingsButton->Render();
+	InstructionsButton->Render();
+	CreditsButton->Render();
 	ExitButton->Render();
 
 	theCam->SetHUD(false);
@@ -258,6 +287,9 @@ void CMenuState::KeyboardUp(unsigned char key, int x, int y){
 void CMenuState::MouseMove(int x, int y)
 {
 	StartButton->SetIsHover(x, y);
+	SettingsButton->SetIsHover(x, y);
+	InstructionsButton->SetIsHover(x, y);
+	CreditsButton->SetIsHover(x, y);
 	ExitButton->SetIsHover(x, y);
 }
 
@@ -277,6 +309,18 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			if (StartButton->GetIsHover())
 			{
 				CGameStateManager::getInstance()->ChangeState(CGameModeState::Instance());
+			}
+			else if (SettingsButton->GetIsHover())
+			{
+
+			}
+			else if (InstructionsButton->GetIsHover())
+			{
+
+			}
+			else if (CreditsButton->GetIsHover())
+			{
+
 			}
 			else if (ExitButton->GetIsHover())
 			{
@@ -315,23 +359,38 @@ int CMenuState::LuaInit()
 	cout << "\nMENU INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[11] = {
+	const char *values[26] = {
 		"TEXTURE_MENU",
 		"TEXTURE_START",
+		"TEXTURE_SETTINGS",
+		"TEXTURE_INSTRUCTIONS",
+		"TEXTURE_CREDITS",
 		"TEXTURE_EXIT",
 		"STARTBUTTON_POS_X",
 		"STARTBUTTON_POS_Y",
 		"STARTBUTTON_SIZE_X",
 		"STARTBUTTON_SIZE_Y",
+		"SETTINGSBUTTON_POS_X",
+		"SETTINGSBUTTON_POS_Y",
+		"SETTINGSBUTTON_SIZE_X",
+		"SETTINGSBUTTON_SIZE_Y",
+		"INSTRUCTIONSBUTTON_POS_X",
+		"INSTRUCTIONSBUTTON_POS_Y",
+		"INSTRUCTIONSBUTTON_SIZE_X",
+		"INSTRUCTIONSBUTTON_SIZE_Y",
+		"CREDITSBUTTON_POS_X",
+		"CREDITSBUTTON_POS_Y",
+		"CREDITSBUTTON_SIZE_X",
+		"CREDITSBUTTON_SIZE_Y",
 		"EXITBUTTON_POS_X",
 		"EXITBUTTON_POS_Y",
 		"EXITBUTTON_SIZE_X",
 		"EXITBUTTON_SIZE_Y",
 	};
 
-	int data[8];
+	int data[20];
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		data[i] = 0;
 	}
@@ -342,7 +401,7 @@ int CMenuState::LuaInit()
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 3; k++)
+	for (int k = 0; k < 6; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -357,20 +416,23 @@ int CMenuState::LuaInit()
 		cout << values[k] << ": " << textures[k] << endl;
 	}
 
-	for (int j = 0; j < 8; j++)
+	for (int j = 0; j < 20; j++)
 	{
-		lua_getglobal(L, values[j + 3]);
+		lua_getglobal(L, values[j + 6]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 3] << ": " << data[j] << endl;
+		cout << values[j + 6] << ": " << data[j] << endl;
 	}
 
-	StartButton = new Button(textures[1], textures[2], data[0], data[1], data[2], data[3]);
-	ExitButton = new Button(textures[2], textures[1], data[4], data[5], data[6], data[7]);
+	StartButton = new Button(textures[1], textures[1], data[0], data[1], data[2], data[3]);
+	SettingsButton = new Button(textures[2], textures[2], data[4], data[5], data[6], data[7]);
+	InstructionsButton = new Button(textures[3], textures[3], data[8], data[9], data[10], data[11]);
+	CreditsButton = new Button(textures[4], textures[4], data[12], data[13], data[14], data[15]);
+	ExitButton = new Button(textures[5], textures[5], data[16], data[17], data[18], data[19]);
 
 	return 0;
 }

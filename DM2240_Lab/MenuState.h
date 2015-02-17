@@ -45,13 +45,16 @@ protected:
 private:
 
 	Button *StartButton;
+	Button *SettingsButton;
+	Button *InstructionsButton;
+	Button *CreditsButton;
 	Button *ExitButton;
 
 	bool myKeys[255];
 	TextureImage menu[1];
 	TextureImage button[2];
 
-	char* textures[3];
+	char* textures[6];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
