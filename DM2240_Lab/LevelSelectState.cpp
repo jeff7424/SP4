@@ -54,7 +54,6 @@ void CLevelSelectState::Cleanup()
 		delete BackButton;
 		BackButton = NULL;
 	}
-
 }
 
 void CLevelSelectState::Pause()

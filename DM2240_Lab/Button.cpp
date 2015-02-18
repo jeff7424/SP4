@@ -179,7 +179,6 @@ bool Button::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA Fil
 
 void Button::Render()
 {
-	std::cout << GetIsHover() << std::endl;
 	glPushMatrix();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
