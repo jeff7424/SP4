@@ -319,15 +319,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	Cam->SetHUD(true);
 
 	RenderBackground();
-
 	RenderTileMap();
-
-	tower1();
-	tower2();
-	tower3();
-	tower4();
-	power1();
-	power2();
 
 	// Render towers
 	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
@@ -374,7 +366,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	// Mouse over tower selection for info
 	if (info > 0)
 	{
-		RenderInfo(mouseInfo.lastX, (h - mouseInfo.lastY));
+		RenderInfo(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	// Draw powerup
@@ -391,7 +383,6 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	}
 
 	tEnemyProgress->DrawEnemyCounter(500, 630); // Enemy Progress Bar
-	DrawHeart();
 
 	//// Pause == true render pause menu
 	//if (Menu->GetMpausemenu() == true)
@@ -406,29 +397,12 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	//}
 
 	// Track selection
-	if (Tracklist == true)
-	{
-		track();
-	}
+	//if (Tracklist == true)
+	//{
+	//	track();
+	//}
 
-	// On screen texts
-	glColor3f(1.0f, 1.0f, 1.0f);
-	char temp[512];
-
-	sprintf_s(temp, "Gold: %d", player->GetGold());
-	RenderStringOnScreen(0, 90, temp);
-	/*sprintf_s(temp, "FPS: %.2f", m_fps);
-	RenderStringOnScreen(0, 30, temp);*/
-	sprintf_s(temp, "x %d", player->GetLife());
-	RenderStringOnScreen(50, 60, temp);
-	sprintf_s(temp, "Selection: %d", selection);
-	RenderStringOnScreen(120, 90, temp);
-	sprintf_s(temp, "Enemy left: %d", tEnemyProgress->GetEnemyCounter());
-	RenderStringOnScreen(500, 600, temp);
-	sprintf_s(temp, "x %d", ClearLaneCounter);
-	RenderStringOnScreen(900, 80, temp);
-	sprintf_s(temp, "x %d", ClearMapCounter);
-	RenderStringOnScreen(800, 80, temp);
+	RenderHUD();
 
 	Cam->SetHUD(false);
 
@@ -506,76 +480,13 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		selection = 4;
 		break;
 	case '5':
-		if (ClearMapCounter > 0)
-		{
-			if (Powerup *power = FetchPower())
-			{
-				power->type = Powerup::POWER_CLEAR;
-				// Powerup Check
 
-				power->SetType(power->type);
-
-				for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
-				{
-					Enemy *creep = *it2;
-					if (creep->GetActive())
-					{
-						creep->SetHealth(creep->GetHealth() - power->GetDmg());
-						if (creep->GetHealth() <= 0)
-						{
-							creep->SetActive(false);
-							soundTypes(creep->type, true);
-							tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-							enemycounter--;
-							player->SetGold(player->GetGold() + rand() % 50 + 10);
-						}
-					}
-
-				}
-			}
-			ClearMapCounter--;
-		}
 		break;
 	case '6':
-		if (ClearLaneCounter > 0)
-		{
-			if (Powerup *power = FetchPower())
-			{
-				power->type = Powerup::POWER_LANE;
 
-				power->SetType(power->type);
-
-				for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
-				{
-					Enemy *creep = *it2;
-					if (creep->GetActive())
-					{
-						int y = (float)mouseInfo.lastY / WY * 7;
-
-						if ((creep->GetPos().y * 7 / SCREEN_HEIGHT) - 0.5f == y)
-						{
-							creep->SetHealth(creep->GetHealth() - power->GetDmg());
-							if (creep->GetHealth() <= 0)
-							{
-								creep->SetActive(false);
-								soundTypes(creep->type, true);
-								tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-								enemycounter--;
-								player->SetGold(player->GetGold() + rand() % 50 + 10);
-							}
-						}
-					}
-				}
-			}
-			ClearLaneCounter--;
-		}
 		break;
 	case '7':
-		if (Powerup *power = FetchPower())
-		{
-			power->type = Powerup::POWER_DOWN;
-			power->SetType(power->type);
-		}
+
 		break;
 	case '-':
 	case '_':
@@ -613,7 +524,7 @@ void CPlayState::MouseMove(int x, int y) {
 	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
 	mouseInfo.lastX = x;
 	mouseInfo.lastY = y;
-	std::cout << x << " " << y << std::endl;
+
 	int X = (int)((float)x / WX * 10);
 	int Y = (int)((float)y / WY * 7);
 	/*int w = glutGet(GLUT_WINDOW_WIDTH);
@@ -624,7 +535,7 @@ void CPlayState::MouseMove(int x, int y) {
 
 	if (!pause)
 	{
-		/*if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
+		if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
 		{
 			m_ghost.SetActive(true);
 			m_ghost.type = static_cast<Tower::TOWER_TYPE>(selection);
@@ -639,7 +550,7 @@ void CPlayState::MouseMove(int x, int y) {
 		else
 		{
 			m_ghost.SetActive(false);
-		}*/
+		}
 
 		if (X == 3 && Y == 0)
 		{
@@ -1240,7 +1151,7 @@ Spawn* CPlayState::FetchSpawn()
 
 Powerup* CPlayState::FetchPower()
 {
-	for (std::vector<Powerup *>::iterator it = powerList.begin(); it != powerList.end(); ++it)
+	/*for (std::vector<Powerup *>::iterator it = powerList.begin(); it != powerList.end(); ++it)
 	{
 		Powerup *power = *it;
 		if (!power->GetActive())
@@ -1251,8 +1162,8 @@ Powerup* CPlayState::FetchPower()
 	}
 	Powerup *power = new Powerup(Powerup::POWER_DOWN);
 	power->SetActive(true);
-	powerList.push_back(power);
-	return power;
+	powerList.push_back(power);*/
+	return NULL;
 
 }
 
@@ -1581,9 +1492,9 @@ void CPlayState::Load()
 		getline(inData, type, ',');
 		getline(inData, value, '\n');
 		{
-			if (type == "life")
+			if (type == "health")
 			{
-				player->SetLife(stoi(value));
+				player->SetHealth(stoi(value));
 			}
 			else if (type == "gold")
 			{
@@ -1742,7 +1653,7 @@ void CPlayState::Save()
 	ofstream file("save/player.txt");
 	if (file.is_open())
 	{
-		file << "life, " << player->GetLife() << "\n";
+		file << "health, " << player->GetHealth() << "\n";
 		file << "gold, " << player->GetGold() << "\n";
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
@@ -2363,27 +2274,20 @@ void CPlayState::RenderUpgrade(int x, int y)
 
 void CPlayState::RenderInfo(int x, int y)
 {
-	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0.0, w, 0.0, h);
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPushMatrix();
-	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-	glTranslatef(x, y, 0);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+	glTranslatef((float)x / w * SCREEN_WIDTH, (float)y / h * SCREEN_HEIGHT, 1);
 	glBegin(GL_QUADS);
-	glVertex2f(-10, 20);
-	glVertex2f(-10, -150);
-	glVertex2f(150, -150);
-	glVertex2f(150, 20);
+	glVertex2f(-10, 100);
+	glVertex2f(-10, -20);
+	glVertex2f(150, -20);
+	glVertex2f(150, 100);
 	glEnd();
 	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
 	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -2472,30 +2376,6 @@ void CPlayState::savegame()
 	glMatrixMode(GL_PROJECTION);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-}
-
-void CPlayState::DrawHeart()
-{
-	glEnable(GL_TEXTURE_2D);
-	glPushMatrix();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, Heart[0].texID);
-	glPushMatrix();
-	glTranslatef(0, 30, 0);
-	glScalef(0.4, 0.4, 0.4);
-
-	glBegin(GL_QUADS);
-	int height = 100 * 1.333 / 1.5;
-	glTexCoord2f(0, 0); glVertex2f(10, 10);
-	glTexCoord2f(1, 0); glVertex2f(10, 10 + height);
-	glTexCoord2f(1, 1); glVertex2f(110, 10 + height);
-	glTexCoord2f(0, 1); glVertex2f(110, 10);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_BLEND);
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
 }
 
 void CPlayState::powerTex(bool yay, int boo)
@@ -2591,5 +2471,42 @@ void CPlayState::powerTex(bool yay, int boo)
 		glPopMatrix();
 		yay = false;
 	}
+
+}
+
+void CPlayState::RenderHUD()
+{
+	char temp[512];
+
+	// On screen texts
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	tower1();
+	tower2();
+	tower3();
+	tower4();
+	power1();
+	power2();
+
+	player->RenderHealthBar(75, 10);
+	player->RenderShield(75, 45);
+
+	sprintf_s(temp, "Health: ");
+	RenderStringOnScreen(10, 30, temp);
+	sprintf_s(temp, "Shield: ");
+	RenderStringOnScreen(10, 65, temp);
+
+	sprintf_s(temp, "Gold: %d", player->GetGold());
+	RenderStringOnScreen(10, 90, temp);
+	/*sprintf_s(temp, "FPS: %.2f", m_fps);
+	RenderStringOnScreen(0, 30, temp);*/
+	sprintf_s(temp, "Selection: %d", selection);
+	RenderStringOnScreen(120, 90, temp);
+	sprintf_s(temp, "Enemy left: %d", tEnemyProgress->GetEnemyCounter());
+	RenderStringOnScreen(500, 600, temp);
+	sprintf_s(temp, "x %d", ClearLaneCounter);
+	RenderStringOnScreen(900, 80, temp);
+	sprintf_s(temp, "x %d", ClearMapCounter);
+	RenderStringOnScreen(800, 80, temp);
 
 }

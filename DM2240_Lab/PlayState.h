@@ -135,7 +135,7 @@ private:
 	CEnemyProgress *tEnemyProgress;
 
 	// Texture mapping
-	GLuint texture[24];
+	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
 	TextureImage TileMapTexture[5];
@@ -155,12 +155,8 @@ private:
 	void moverlevel1(int x, int y);
 	void mclicklevel1(int x, int y);
 	bool LoadTGA(TextureImage *texture, char *filename);
-	//void gamewin();
-	//void gamelose();
 	void loadlevel();
-	//void loadshop();
 	void clearmap();
-	//void returntoprevious();
 	void savegame();
 
 	void DrawBullet(Bullet *bullet);
@@ -204,7 +200,8 @@ private:
 	void power2();
 
 	void exitover();
-	void DrawHeart();
 	void powerTex(bool yay, int boo);
 	void soundTypes(int type, bool death);
+
+	void RenderHUD();
 };

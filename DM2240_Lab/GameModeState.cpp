@@ -38,6 +38,21 @@ void CGameModeState::Cleanup()
 		delete theCam;
 		theCam = NULL;
 	}
+	if (CampaignButton != NULL)
+	{
+		delete CampaignButton;
+		CampaignButton = NULL;
+	}
+	if (SkirmishButton != NULL)
+	{
+		delete SkirmishButton;
+		SkirmishButton = NULL;
+	}
+	if (BackButton != NULL)
+	{
+		delete BackButton;
+		BackButton = NULL;
+	}
 }
 
 void CGameModeState::Pause()
