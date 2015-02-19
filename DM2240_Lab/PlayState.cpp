@@ -706,37 +706,36 @@ void CPlayState::RenderTileMap(void) {
 	theMap->RenderScene(mouseInfo.lastX, mouseInfo.lastY);
 }
 
-void CPlayState::moverlevel1(int x, int y)
-{
-	
-}
-
 void CPlayState::mclicklevel1(int x, int y)
 {
 	int X = (float)x / w * theMap->GetXNumOfGrid();
 	int Y = (float)y / h * theMap->GetYNumOfGrid();
 
 	Tower *tower;
-	if (theMap->GetGrid(X, Y)->CursorHit == true && theMap->GetGrid(X, Y)->terrainType != 0)
+	if (theMap->GetGrid(X, Y)->CursorHit == true)
 	{
-		if (!theMap->GetGrid(X, Y)->GetOccupied())
+		// if it is a terrain
+		if (theMap->GetGrid(X, Y)->terrainType != 0)
 		{
-			if (tower = FetchTower())
+			if (!theMap->GetGrid(X, Y)->GetOccupied())
 			{
-				tower->type = static_cast<Tower::TOWER_TYPE>(selection);
-				tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
-					towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
-				if (player->GetGold() >= tower->GetCost())
+				if (tower = FetchTower())
 				{
-					tower->SetActive(true);
-					tower->SetLevel(1);
-					tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
-					theMap->GetGrid(X, Y)->AddObject(tower);
-					player->SetGold(player->GetGold() - tower->GetCost());
-				}
-				else
-				{
-					tower->SetActive(false);
+					tower->type = static_cast<Tower::TOWER_TYPE>(selection);
+					tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
+						towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
+					if (player->GetGold() >= tower->GetCost())
+					{
+						tower->SetActive(true);
+						tower->SetLevel(1);
+						tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
+						theMap->GetGrid(X, Y)->AddObject(tower);
+						player->SetGold(player->GetGold() - tower->GetCost());
+					}
+					else
+					{
+						tower->SetActive(false);
+					}
 				}
 			}
 		}

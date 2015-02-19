@@ -105,6 +105,9 @@
     <ClCompile Include="LevelSelectState.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
