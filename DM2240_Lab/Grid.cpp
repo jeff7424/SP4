@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include "stdio.h"
 #include <GL/glut.h>
+#include <string>
 
 CGrid::CGrid()
 : r(0.0f)
@@ -10,8 +11,9 @@ CGrid::CGrid()
 , index_y(0)
 , xSize(1)
 , ySize(1)
+, terrainType(0)
 , ListOfObjects(NULL)
-, Quality(0)
+, CursorHit(false)
 {
 }
 
@@ -22,25 +24,36 @@ CGrid::~CGrid()
 }
 
 // Initialization
-void CGrid::Init(const int index_x, const int index_y, const int xSize, const int ySize)
+void CGrid::Init(const int index_x, const int index_y, const int xSize, const int ySize, int terrainType)
 {
 	this->index_x = index_x;
 	this->index_y = index_y;
 	this->xSize = xSize;
 	this->ySize = ySize;
+	this->terrainType = terrainType;
 }
 
 // Add a new object to this grid
-void CGrid::AddObject(CObjectModel *theObject)
+void CGrid::AddObject(Tower *tower)
 {
-	ListOfObjects.push_back(theObject);
+	// If grid has no object, then push into it
+	if (ListOfObjects.size() < 1)
+		ListOfObjects.push_back(tower);
 }
 
 void CGrid::RenderScene(void)
 {
+	int id = index_x * 7 + index_y;
+	char tempid[4];
+	itoa(id, tempid, 16);
+	glPushMatrix();
+	glTranslatef((float)index_x * xSize + 20, (float)index_y * ySize + 20, 0);
+	RenderStringOnScreen(index_x, index_y, tempid);
+	glPopMatrix();
+
 	SetColor();
 	glPushMatrix();
-	glTranslatef((float)index_x * xSize, 0, (float)index_y * ySize);
+	glTranslatef((float)index_x * xSize, (float)index_y * ySize, 0);
 	//Draw the grid's surface
 	glPushAttrib(GL_ENABLE_BIT);
 	glEnable(GL_BLEND);
@@ -49,8 +62,8 @@ void CGrid::RenderScene(void)
 	glBegin(GL_QUADS);
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(xSize, 0.0f, 0.0f);
-	glVertex3f(xSize, 0.0f, ySize);
-	glVertex3f(0.0f, 0.0f, ySize);
+	glVertex3f(xSize, ySize, 0.0f);
+	glVertex3f(0.0f, ySize, 0.0f);
 	glEnd();
 	glDisable(GL_BLEND);
 	glPopAttrib();
@@ -63,28 +76,28 @@ void CGrid::RenderScene(void)
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(xSize, 0.0f, 0.0f);
 	glVertex3f(xSize, 0.0f, 0.0f);
-	glVertex3f(xSize, 0.0f, ySize);
-	glVertex3f(xSize, 0.0f, ySize);
-	glVertex3f(0.0f, 0.0f, ySize);
-	glVertex3f(0.0f, 0.0f, ySize);
+	glVertex3f(xSize, ySize, 0.0f);
+	glVertex3f(xSize, ySize, 0.0f);
+	glVertex3f(0.0f, ySize, 0.0f);
+	glVertex3f(0.0f, ySize, 0.0f);
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glEnd();
-	glLineWidth(1);
+	glLineWidth(0.1);
 	glPopAttrib();
 	glPopMatrix();
 }
 
 // Render Objects
-void CGrid::RenderObjects()
-{
-	glPushAttrib(GL_ENABLE_BIT);
-	// Draw the grid and its list of objects
-	for (int i = 0; i < (int)ListOfObjects.size(); i++)
-	{
-		ListOfObjects[i]->Render(Quality);
-	}
-	glPopAttrib();
-}
+//void CGrid::RenderObjects()
+//{
+//	//glPushAttrib(GL_ENABLE_BIT);
+//	//// Draw the grid and its list of objects
+//	//for (int i = 0; i < (int)ListOfObjects.size(); i++)
+//	//{
+//	//	ListOfObjects[i]->Render();
+//	//}
+//	//glPopAttrib();
+//}
 
 // Delete object from this grid
 void CGrid::DeleteObjects(void)
@@ -99,37 +112,110 @@ void CGrid::DeleteObjects(void)
 
 void CGrid::SetColor()
 {
-	if (Quality == 0)
+	/*if (Quality == 0)
 	{
-		this->r = 0.0f;
-		this->g = 1.0f;
-		this->b = 0.0f;
+	this->r = 0.0f;
+	this->g = 1.0f;
+	this->b = 0.0f;
 	}
 	else if (Quality == 1)
 	{
-		this->r = 1.0f;
-		this->g = 1.0f;
-		this->b = 0.0f;
+	this->r = 1.0f;
+	this->g = 1.0f;
+	this->b = 0.0f;
 	}
 	else if (Quality == 2)
 	{
-		this->r = 1.0f;
-		this->g = 0.0f;
-		this->b = 0.0f;
+	this->r = 1.0f;
+	this->g = 0.0f;
+	this->b = 0.0f;
+	}*/
+	/*if (ListOfObjects.size() > 0)
+	{
+	this->r = 1.0f;
+	this->g = 0.0f;
+	this->b = 0.0f;
+	}
+	else
+	{
+	this->r = 0.0f;
+	this->g = 1.0f;
+	this->b = 0.0f;
+	}*/
+	if (!CursorHit)
+	{
+		if (terrainType == 1)
+		{
+			this->r = 0.0f;
+			this->g = 0.5f;
+			this->b = 0.0f;
+		}
+		else if (terrainType == 2)
+		{
+			this->r = 0.0f;
+			this->g = 0.0f;
+			this->b = 0.0f;
+		}
+	}
+	else if (CursorHit)
+	{
+		if (GetOccupied())
+		{
+			this->r = 1.0f;
+			this->g = 0.0f;
+			this->b = 0.0f;
+		}
+		else
+		{
+			this->r = 0.0f;
+			this->g = 1.0f;
+			this->b = 0.0f;
+		}
+	}
+
+}
+
+Vector3 CGrid::GetCenterPoint()
+{
+	return Vector3(index_x * xSize + (xSize / 2), index_y * ySize + (ySize / 2), 0);
+}
+
+Vector3 CGrid::GetTopLeft()
+{
+	return Vector3(index_x * xSize, index_y * ySize, 0);
+}
+
+Vector3 CGrid::GetBottomRight()
+{
+	return Vector3((index_x + 1) * xSize, (index_y + 1) * ySize, 0);
+}
+
+bool CGrid::GetOccupied()
+{
+	if (ListOfObjects.size() > 0)
+		return true;
+}
+
+void CGrid::CursorOnGrid(const int x, const int y)
+{
+	if (x > GetTopLeft().x && x < GetBottomRight().x &&
+		y > GetTopLeft().y && y < GetBottomRight().y)
+	{
+		CursorHit = true;
+	}
+	else
+	{
+		CursorHit = false;
 	}
 }
 
-Vector3D CGrid::GetCenterPoint()
+void CGrid::RenderStringOnScreen(float x, float y, const char* quote)
 {
-	return Vector3D(index_x * xSize + (xSize / 2), 0, index_y * ySize + (ySize / 2));
-}
+	int length = strlen(quote);
+	glRasterPos2f(x, y);
 
-Vector3D CGrid::GetBottomRight()
-{
-	return Vector3D(index_x * xSize, 0, index_y * ySize);
-}
-
-Vector3D CGrid::GetTopLeft()
-{
-	return Vector3D((index_x + 1) * xSize, 0, (index_y + 1) * ySize);
+	for (int i = 0; i < length; i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, quote[i]);
+	}
 }

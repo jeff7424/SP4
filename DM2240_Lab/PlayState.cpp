@@ -91,16 +91,16 @@ void CPlayState::Init(void)
 
 	// Initialization
 	theMap = new CMap();
-	theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	theMap->LoadMap("bin/maps/MapDesign.csv");
+	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
+	theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, 96, 96);
 
 	/*RenderBackground();
 	RenderTileMap();
 	SpawnTowers();
 	SpawnEnemy();*/
 
-	theNumOfTiles_Height = theMap->getNumOfTiles_ScreenHeight();
-	theNumOfTiles_Width = theMap->getNumOfTiles_ScreenWidth();
+	theNumOfTiles_Height = theMap->GetYNumOfGrid();
+	theNumOfTiles_Width = theMap->GetXNumOfGrid();
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/XPDefaultBackground.tga");
@@ -531,11 +531,11 @@ void CPlayState::MouseMove(int x, int y) {
 	int h = glutGet(GLUT_WINDOW_HEIGHT);*/
 	//mouseInfo.mLButtonUp = !!state;
 
-	moverlevel1(x, y);
+	//moverlevel1(x, y);
 
 	if (!pause)
 	{
-		if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
+		/*if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
 		{
 			m_ghost.SetActive(true);
 			m_ghost.type = static_cast<Tower::TOWER_TYPE>(selection);
@@ -551,7 +551,7 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			m_ghost.SetActive(false);
 		}
-
+*/
 		if (X == 3 && Y == 0)
 		{
 			info = 1;
@@ -703,110 +703,23 @@ bool CPlayState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA
 
 void CPlayState::RenderTileMap(void) {
 
-	mapFineOffset_x = mapOffset_x % TILE_SIZE;
-
-	glPushMatrix();
-	for (int i = 0; i < theNumOfTiles_Height; i++)
-	{
-		for (int k = 0; k < theNumOfTiles_Width + 1; k++)
-		{
-			// If we have reached the right side of the Map, then do not display the extra column of tiles.
-			if ((tileOffset_x + k) >= theMap->getNumOfTiles_MapWidth())
-				break;
-			glPushMatrix();
-			glTranslatef((GLfloat)(k * TILE_SIZE - mapFineOffset_x), (GLfloat)(i * TILE_SIZE), 0.0f);
-			glEnable(GL_TEXTURE_2D);
-			glEnable(GL_BLEND);
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glBindTexture(GL_TEXTURE_2D, TileMapTexture[theMap->theScreenMap[i][tileOffset_x + k]].texID);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0, 1); glVertex2f(0, 0);
-			glTexCoord2f(0, 0); glVertex2f(0, TILE_SIZE);
-			glTexCoord2f(1, 0); glVertex2f(TILE_SIZE, TILE_SIZE);
-			glTexCoord2f(1, 1); glVertex2f(TILE_SIZE, 0);
-			glEnd();
-			glDisable(GL_BLEND);
-			glDisable(GL_TEXTURE_2D);
-			glPopMatrix();
-		}
-	}
-	glPopMatrix();
+	theMap->RenderScene(mouseInfo.lastX, mouseInfo.lastY);
 }
 
 void CPlayState::moverlevel1(int x, int y)
 {
-	int a = 0; // row
-	for (float i = 0.0f; i < 0.708335f; i += 0.141667f)
-	{
-		for (float u = 0.0f; u < 0.9f; u += 0.1f)
-		{
-			if ((x > WX * (0.09875f + u)) && (x < WX * (0.1975f + u)) &&
-				(y > WY * (0.12666f + i)) && (y < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 1))
-			{
-				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 2;
-			}
-			if (((x < WX * (0.09875f + u)) || (x > WX * (0.1975f + u)) ||
-				(y < WY * (0.12666f + i)) || (y > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 2)
-			{
-				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 1;
-			}
-
-			if ((x > WX * (0.09875f + u)) && (x < WX * (0.1975f + u)) &&
-				(y > WY * (0.12666f + i)) && (y < WY * (0.2683333f + i)) && (theMap->theScreenMap[1 + a][1 + (u * 10)] == 4))
-			{
-				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 3;
-			}
-			if (((x < WX * (0.09875f + u)) || (x > WX * (0.1975f + u)) ||
-				(y < WY * (0.12666f + i)) || (y > WY * (0.2683333f + i))) && theMap->theScreenMap[1 + a][1 + (u * 10)] == 3)
-			{
-				theMap->theScreenMap[(unsigned int)(1 + a)][(unsigned int)(1 + (u * 10))] = 4;
-			}
-		}
-		a++;
-	}
+	
 }
 
 void CPlayState::mclicklevel1(int x, int y)
 {
-	int X = (int)((float)x / WX * 10);
-	int Y = (int)((float)y / WY * 7);
+	int X = (float)x / w * theMap->GetXNumOfGrid();
+	int Y = (float)y / h * theMap->GetYNumOfGrid();
 
-	if (X == 3 && Y == 0)
+	Tower *tower;
+	if (theMap->GetGrid(X, Y)->CursorHit == true && theMap->GetGrid(X, Y)->terrainType != 0)
 	{
-		selection = 1;
-	}
-
-	if (X == 4 && Y == 0)
-	{
-		selection = 2;
-	}
-
-	if (X == 5 && Y == 0)
-	{
-		selection = 3;
-	}
-
-	if (X == 6 && Y == 0)
-	{
-		selection = 4;
-	}
-
-	if (X == 8 && Y == 0)
-	{
-		powerMap = true;
-		powerLane = false;
-	}
-	if (X == 9 && Y == 0)
-	{
-		powerLane = true;
-		powerMap = false;
-	}
-
-	Tower *tower = NULL;
-	if (pause == false)
-	{
-		if (theMap->theScreenMap[Y][X] == 2) // tile not occupied
+		if (!theMap->GetGrid(X, Y)->GetOccupied())
 		{
 			if (tower = FetchTower())
 			{
@@ -817,27 +730,13 @@ void CPlayState::mclicklevel1(int x, int y)
 				{
 					tower->SetActive(true);
 					tower->SetLevel(1);
-					tower->SetPos(Vector3((float)((X + 0.5f) * TILE_SIZE), (float)((Y + 0.5f) * TILE_SIZE), 0));
+					tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
+					theMap->GetGrid(X, Y)->AddObject(tower);
 					player->SetGold(player->GetGold() - tower->GetCost());
-					theMap->theScreenMap[Y][X] = 3;
 				}
 				else
 				{
 					tower->SetActive(false);
-				}
-			}
-		}
-		else if (theMap->theScreenMap[Y][X] == 3) // tile occupied
-		{
-			for (unsigned int i = 0; i < towerList.size(); ++i)
-			{
-				if (towerList[i]->GetActive() && towerList[i]->GetPos().x == (X + 0.5f) * TILE_SIZE && towerList[i]->GetPos().y == (Y + 0.5f) * TILE_SIZE)
-				{
-					if (player->GetGold() >= towerList[i]->GetCost() + 25 && towerList[i]->GetLevel() < 3)
-					{
-						towerList[i]->Upgrade();
-						player->SetGold(player->GetGold() - towerList[i]->GetCost());
-					}
 				}
 			}
 		}
@@ -1073,7 +972,7 @@ void CPlayState::Update(float dt)
 								se->setSoundVolume(0.25);
 								int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
 								int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-								theMap->theScreenMap[y][x] = 1;
+								theMap->GetGrid(x, y)->DeleteObjects();
 								tower->SetActive(false);
 								creep->SetFire(false);
 							}
@@ -1562,7 +1461,7 @@ void CPlayState::Load()
 				towerList.push_back(tower);
 				int x = (int)((tower->GetPos().x * 10 / WX) - 0.5f);
 				int y = (int)((tower->GetPos().y * 7 / WY) - 0.5f);
-				theMap->theScreenMap[y][x] = 3;
+				theMap->GetGrid(x, y)->AddObject(tower);
 
 			}
 			else if (type == "enemy")
@@ -1904,7 +1803,7 @@ void CPlayState::soundTypes(int type, bool death)
 
 void CPlayState::loadlevel()
 {
-	if (progress == 1)
+	/*if (progress == 1)
 	{
 		theMap->LoadMap("bin/maps/MapDesign.csv");
 	}
@@ -1932,7 +1831,7 @@ void CPlayState::loadlevel()
 	else if (progress == 6)
 	{
 		theMap->LoadMap("bin/maps/MapDesign6.csv");
-	}
+	}*/
 }
 
 void CPlayState::clearmap()

@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
-#include "ObjectModel.h"
+#include "Vector3.h"
+#include "TowerAtt.h"
+#include "TextureImage.h"
 
 using namespace std;
 
@@ -18,24 +20,29 @@ public:
 	// The size of the grid in x and y axis
 	int xSize;
 	int ySize;
-	int Quality;
+	int terrainType;
+	bool CursorHit;
 	// List of objects in this grid
-	vector<CObjectModel*> ListOfObjects;
+	vector<Tower*> ListOfObjects;
 
+	TextureImage texture;
 	// Init
-	void Init(const int index_x, const int index_y, const int xSize, const int ySize);
+	void Init(const int index_x, const int index_y, const int xSize, const int ySize, int terrainType);
 	// Add a new object to this grid
-	void AddObject(CObjectModel *theObject);
+	void AddObject(Tower *tower);
 	// Render Scene
 	void RenderScene(void);
 	// Render Objects
-	void RenderObjects();
+	// void RenderObjects();
 	// Delete object from this grid
 	void DeleteObjects(void);
 	// Set color for the grid
 	void SetColor();
-	Vector3D GetCenterPoint();
-	Vector3D GetTopLeft();
-	Vector3D GetBottomRight();
+	Vector3 GetCenterPoint();
+	Vector3 GetTopLeft();
+	Vector3 GetBottomRight();
+	bool GetOccupied();
+	void CursorOnGrid(const int x, const int y);
+	void RenderStringOnScreen(float x, float y, const char* quote);
 };
 

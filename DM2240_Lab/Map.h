@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-using namespace std;
+#include "Grid.h"
 
 class CMap
 {
@@ -12,27 +12,30 @@ public:
 	CMap(void);
 	~CMap(void);
 
-	void Init( int theScreen_Height, int theScreen_Width, 
-		       const int theMap_Height, const int theMap_Width, 
-		       const int theTileSize);
-	bool LoadMap(const string mapName);
-	int getNumOfTiles_ScreenHeight(void);	// Get the number of tiles for height of the screen
-	int getNumOfTiles_ScreenWidth(void);	// Get the number of tiles for width of the screen
-	int getNumOfTiles_MapHeight(void);		// Get the number of tiles for height of the map
-	int getNumOfTiles_MapWidth(void);		// Get the number of tiles for width of the map
+	bool LoadFile(const string filename, const int xPos, const int yPos, const int xSize, const int ySize);
+	bool LoadMap(const string mapName, const int xPos, const int yPos, const int xSize, const int ySize);
 
-	vector<vector<int> > theScreenMap;
+	int Terrains[70];
 
-private:
-	int theScreen_Height;
-	int theScreen_Width;
-	int theMap_Height;
-	int theMap_Width;
-	int theNumOfTiles_ScreenHeight;
-	int theNumOfTiles_ScreenWidth;
-	int theNumOfTiles_MapHeight;
-	int theNumOfTiles_MapWidth;
-	int theTileSize;
-
-	bool LoadFile(const string mapName);
+	CGrid *theGrid;
+	float xPos;
+	float yPos;
+	int xSize;
+	int ySize;
+	int xNumOfGrid;
+	int yNumOfGrid;
+	void Init(const int xPos, const int yPos, const int xSize, const int ySize, const int xNumOfGrid, const int yNumOfGrid, int terrainType);
+	CGrid *GetGrid(const int xIndex, const int yIndex);
+	//void RenderScene(Vector3 theCameraPosition, const int nearRadius, const int farRadius);
+	void RenderScene(const int x, const int y);
+	// Add a new object model
+	//void AddObject(CObjectModel *theObjectModel);
+	//// Calculate the squared distance from camera to a grid's centerpoint
+	//float CalculateDistanceSquare(Vector3 *theCameraPosition, const int xIndex, const int yIndex);
+	//Vector3 CalculateDir(Vector3 *theCameraPosition, const int xIndex, const int yIndex);
+	//bool CheckIfInGrid(Vector3 temp, const int xIndex, const int yIndex, int rad);
+	//bool CheckGridCorners(Vector3 temp, const int xIndex, const int yIndex, int rad);
+	int GetXNumOfGrid();
+	int GetYNumOfGrid();
 };
+
