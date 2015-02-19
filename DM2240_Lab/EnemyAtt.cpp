@@ -4,6 +4,7 @@
 Enemy::Enemy(ENEMY_TYPE type)
 : type(type)
 , buff(0)
+, speed(0)
 {
 
 }

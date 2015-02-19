@@ -83,7 +83,6 @@ bool CMap::LoadFile(const string mapName, const int xPos, const int yPos, const 
 				//}
 				theLineCounter++;
 			}
-			//theColumnCounter = 0;
 		}
 	}
 
@@ -103,9 +102,7 @@ bool CMap::LoadFile(const string mapName, const int xPos, const int yPos, const 
 		{
 			theGrid[i * yNumOfGrid + j].Init(i, j, xSize, ySize, Terrains[TerrainTypeCounter]);
 			TerrainTypeCounter++;
-			//std::cout << TerrainTypeCounter << " ";
 		}
-		//std::cout << std::endl;
 	}
 
 	return true;

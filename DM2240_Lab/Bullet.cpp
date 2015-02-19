@@ -4,6 +4,7 @@ Bullet::Bullet(BULLET_TYPE type)
 : type(type)
 , health(1)
 , radius(Vector3(50,5,0))
+, damage(0)
 {
 
 }
