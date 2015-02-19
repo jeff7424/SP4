@@ -111,15 +111,15 @@ void CPlayState::Init(void)
 	LoadTGA(&TileMapTexture[4], "bin/textures/t1.tga");
 
 	LoadTGA(&Music[0], "bin/menu/Ingamemenu/set/tracklist.tga");
-	LoadTGA(&TowerTexture[0], "bin/textures/normaltower.tga");
+	LoadTGA(&TowerTexture[0], "bin/tower/Heavy.tga");
 	LoadTGA(&TowerTexture[1], "bin/textures/cannontower.tga");
-	LoadTGA(&TowerTexture[2], "bin/textures/slowtower.tga");
-	LoadTGA(&TowerTexture[3], "bin/textures/lightningtower.tga");
+	LoadTGA(&TowerTexture[2], "bin/tower/Soldier.tga");
+	LoadTGA(&TowerTexture[3], "bin/tower/Heavy.tga");
 
-	LoadTGA(&Icon[0], "bin/tower/tower1.tga");
+	LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[1], "bin/tower/tower2.tga");
-	LoadTGA(&Icon[2], "bin/tower/tower4.tga");
-	LoadTGA(&Icon[3], "bin/tower/tower3.tga");
+	LoadTGA(&Icon[2], "bin/tower/Heavy.tga");
+	LoadTGA(&Icon[3], "bin/tower/Soldier.tga");
 
 	LoadTGA(&Quit[0], "bin/exit/Savegame.TGA");
 	LoadTGA(&Quit[1], "bin/exit/Savegameyes.TGA");
