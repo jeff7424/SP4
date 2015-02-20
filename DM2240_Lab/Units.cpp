@@ -10,23 +10,23 @@ Units::Units()
 , firerate(0)
 , fireCounter(0)
 {
-	for (int i = 0; i < MAX_PARTICLE; i++)
-	{
-		float x = (((float)rand() / RAND_MAX) - 0.5f) / 30;
-		float y = ((float)rand() / RAND_MAX) / 20;
-		float z = ((float)rand() / RAND_MAX) / 3;
-		ps[i].vel = Vector3(x, y, z); // Direction
-		x = (((float)rand() / RAND_MAX) - 0.5f) / 15;
-		y = (((float)rand() / RAND_MAX) - 0.5f) / 30;
-		z = (((float)rand() / RAND_MAX) - 0.5f) / 15;
-		ps[i].pos = Vector3(x, y, z); // Position
-		x = ((float)rand() / RAND_MAX);
-		y = ((float)rand() / RAND_MAX);
-		z = ((float)rand() / RAND_MAX);
-		float a = ((float)rand() / RAND_MAX);
-		ps[i].r = x; ps[i].g = y; ps[i].b = z; //Color
-		ps[i].life = a;
-	}
+	//for (int i = 0; i < MAX_PARTICLE; i++)
+	//{
+	//	float x = (((float)rand() / RAND_MAX) - 0.5f) / 30;
+	//	float y = ((float)rand() / RAND_MAX) / 20;
+	//	float z = ((float)rand() / RAND_MAX) / 3;
+	//	ps[i].vel = Vector3(x, y, z); // Direction
+	//	x = (((float)rand() / RAND_MAX) - 0.5f) / 15;
+	//	y = (((float)rand() / RAND_MAX) - 0.5f) / 30;
+	//	z = (((float)rand() / RAND_MAX) - 0.5f) / 15;
+	//	ps[i].pos = Vector3(x, y, z); // Position
+	//	x = ((float)rand() / RAND_MAX);
+	//	y = ((float)rand() / RAND_MAX);
+	//	z = ((float)rand() / RAND_MAX);
+	//	float a = ((float)rand() / RAND_MAX);
+	//	ps[i].r = x; ps[i].g = y; ps[i].b = z; //Color
+	//	ps[i].life = a;
+	//}
 }
 
 Units::~Units()
@@ -120,7 +120,7 @@ void Units::DrawHealthBar()
 
 void Units::DrawDeath()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
@@ -162,5 +162,5 @@ void Units::DrawDeath()
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_ALPHA_TEST);
 
-	glPopMatrix();
+	glPopMatrix();*/
 }

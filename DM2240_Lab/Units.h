@@ -2,14 +2,14 @@
 
 #include "Entity.h"
 
-#define MAX_PARTICLE 100
-
-typedef struct
-{
-	float r, g, b;
-	float life;
-	Vector3 pos, vel;
-} Particle;
+//#define MAX_PARTICLE 100
+//
+//typedef struct
+//{
+//	float r, g, b;
+//	float life;
+//	Vector3 pos, vel;
+//} Particle;
 
 class Units : public Entity {
 private:
@@ -44,5 +44,5 @@ public:
 	void DrawHealthBar();
 	void DrawDeath();
 
-	Particle ps[MAX_PARTICLE];
+	//Particle ps[MAX_PARTICLE];
 };

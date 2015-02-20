@@ -178,6 +178,7 @@ void CPlayState::Cleanup()
 		delete bullet;
 		bullet = NULL;
 		bulletList.pop_back();
+		free(bullet);
 	}
 
 	while (enemyList.size() > 0)
@@ -186,6 +187,7 @@ void CPlayState::Cleanup()
 		delete creep;
 		creep = NULL;
 		enemyList.pop_back();
+		free(creep);
 	}
 
 	while (towerList.size() > 0)
@@ -194,6 +196,7 @@ void CPlayState::Cleanup()
 		delete tower;
 		tower = NULL;
 		towerList.pop_back();
+		free(tower);
 	}
 
 	while (towerClone.size() > 0)
@@ -202,6 +205,7 @@ void CPlayState::Cleanup()
 		delete clone;
 		clone = NULL;
 		towerClone.pop_back();
+		free(clone);
 	}
 
 	while (enemyClone.size() > 0)
@@ -210,6 +214,7 @@ void CPlayState::Cleanup()
 		delete clone;
 		clone = NULL;
 		enemyClone.pop_back();
+		free(clone);
 	}
 
 	while (spawnList.size() > 0)
@@ -218,6 +223,7 @@ void CPlayState::Cleanup()
 		delete spawn;
 		spawn = NULL;
 		spawnList.pop_back();
+		free(spawn);
 	}
 
 	while (powerList.size() > 0)
@@ -226,6 +232,7 @@ void CPlayState::Cleanup()
 		delete power;
 		power = NULL;
 		powerList.pop_back();
+		free(power);
 	}
 }
 
