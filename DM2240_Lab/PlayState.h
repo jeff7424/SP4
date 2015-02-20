@@ -138,16 +138,16 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
-	TextureImage TileMapTexture[5];
+	//TextureImage TileMapTexture[5];
 	TextureImage Icon[4];
-	TextureImage CreepTexture[5];
+	TextureImage CreepTexture[3];
 	TextureImage BulletTexture[5];
-	TextureImage TowerTexture[5];
-	TextureImage Music[1];
+	
+	//TextureImage Music[1];
 	TextureImage Upgrade[1];
-	TextureImage Quit[3];
-	TextureImage Heart[1];
-	TextureImage Story[1];
+	//TextureImage Quit[3];
+	//TextureImage Heart[1];
+	//TextureImage Story[1];
 	TextureImage Power[2];
 	TextureImage PowerBoom[2];
 
@@ -156,11 +156,9 @@ private:
 	bool LoadTGA(TextureImage *texture, char *filename);
 	void loadlevel();
 	void clearmap();
-	void savegame();
 
 	void DrawBullet(Bullet *bullet);
 	void DrawEnemy(Enemy *creep);
-	void DrawTower(Tower *tower);
 	void RenderStringOnScreen(float x, float y, const char* quote);
 	// Sounds
 	AudioPlayer sound;
@@ -185,19 +183,14 @@ private:
 	void tower2(); // Cannon tower
 	void tower3(); // Lightning tower
 	void tower4(); // Slow tower
-
-	void newload();
+	void power1();
+	void power2();
 
 	// Cursors
 	void RenderUpgrade(int x, int y); // Hover to tower to show upgrade icon
 	void RenderInfo(int x, int y); // Hover to tower selection icon to show info
 
 	// Menus
-	void track();		// Tracklist
-
-	void power1();
-	void power2();
-
 	void exitover();
 	void powerTex(bool yay, int boo);
 	void soundTypes(int type, bool death);

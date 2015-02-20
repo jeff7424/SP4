@@ -63,7 +63,6 @@ void CMenuState::Cleanup()
 		delete ExitButton;
 		ExitButton = NULL;
 	}
-	
 }
 
 void CMenuState::Pause()

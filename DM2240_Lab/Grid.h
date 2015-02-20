@@ -1,8 +1,7 @@
 #pragma once
 #include <vector>
 #include "Vector3.h"
-#include "TowerAtt.h"
-#include "TextureImage.h"
+//#include "TextureImage.h"
 
 using namespace std;
 
@@ -22,25 +21,17 @@ public:
 	int ySize;
 	int terrainType;
 	bool CursorHit;
-	// List of objects in this grid
-	vector<Tower*> ListOfObjects;
+	bool Occupied;
 
-	TextureImage texture;
+	//TextureImage texture;
 	// Init
 	void Init(const int index_x, const int index_y, const int xSize, const int ySize, int terrainType);
-	// Add a new object to this grid
-	void AddObject(Tower *tower);
-	// Render Scene
 	void RenderScene(void);
-	// Render Objects
-	// void RenderObjects();
-	// Delete object from this grid
-	void DeleteObjects(void);
-	// Set color for the grid
 	void SetColor();
 	Vector3 GetCenterPoint();
 	Vector3 GetTopLeft();
 	Vector3 GetBottomRight();
+	void SetOccupied(bool Occupied);
 	bool GetOccupied();
 	void CursorOnGrid(const int x, const int y);
 	void RenderStringOnScreen(float x, float y, const char* quote);

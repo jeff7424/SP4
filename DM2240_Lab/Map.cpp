@@ -19,13 +19,13 @@ CMap::CMap()
 
 CMap::~CMap()
 {
-	for (int i = 0; i < xNumOfGrid; i++)
+	/*for (int i = 0; i < xNumOfGrid; i++)
 	{
 		for (int j = 0; j < yNumOfGrid; j++)
 		{
 			theGrid[i * yNumOfGrid + j].DeleteObjects();
 		}
-	}
+	}*/
 	delete[] theGrid;
 }
 

@@ -12,7 +12,7 @@ CGrid::CGrid()
 , xSize(1)
 , ySize(1)
 , terrainType(0)
-, ListOfObjects(NULL)
+, Occupied(false)
 , CursorHit(false)
 {
 }
@@ -20,7 +20,6 @@ CGrid::CGrid()
 
 CGrid::~CGrid()
 {
-	DeleteObjects();
 }
 
 // Initialization
@@ -31,14 +30,6 @@ void CGrid::Init(const int index_x, const int index_y, const int xSize, const in
 	this->xSize = xSize;
 	this->ySize = ySize;
 	this->terrainType = terrainType;
-}
-
-// Add a new object to this grid
-void CGrid::AddObject(Tower *tower)
-{
-	// If grid has no object, then push into it
-	if (ListOfObjects.size() < 1)
-		ListOfObjects.push_back(tower);
 }
 
 void CGrid::RenderScene(void)
@@ -87,61 +78,8 @@ void CGrid::RenderScene(void)
 	glPopMatrix();
 }
 
-// Render Objects
-//void CGrid::RenderObjects()
-//{
-//	//glPushAttrib(GL_ENABLE_BIT);
-//	//// Draw the grid and its list of objects
-//	//for (int i = 0; i < (int)ListOfObjects.size(); i++)
-//	//{
-//	//	ListOfObjects[i]->Render();
-//	//}
-//	//glPopAttrib();
-//}
-
-// Delete object from this grid
-void CGrid::DeleteObjects(void)
-{
-	for (int i = 0; i < (int)ListOfObjects.size(); i++)
-	{
-		delete ListOfObjects[i];
-		ListOfObjects[i] = NULL;
-	}
-	ListOfObjects.clear();
-}
-
 void CGrid::SetColor()
 {
-	/*if (Quality == 0)
-	{
-	this->r = 0.0f;
-	this->g = 1.0f;
-	this->b = 0.0f;
-	}
-	else if (Quality == 1)
-	{
-	this->r = 1.0f;
-	this->g = 1.0f;
-	this->b = 0.0f;
-	}
-	else if (Quality == 2)
-	{
-	this->r = 1.0f;
-	this->g = 0.0f;
-	this->b = 0.0f;
-	}*/
-	/*if (ListOfObjects.size() > 0)
-	{
-	this->r = 1.0f;
-	this->g = 0.0f;
-	this->b = 0.0f;
-	}
-	else
-	{
-	this->r = 0.0f;
-	this->g = 1.0f;
-	this->b = 0.0f;
-	}*/
 	if (!CursorHit)
 	{
 		if (terrainType == 1)
@@ -190,10 +128,14 @@ Vector3 CGrid::GetBottomRight()
 	return Vector3((index_x + 1) * xSize, (index_y + 1) * ySize, 0);
 }
 
+void CGrid::SetOccupied(bool Occupied)
+{
+	this->Occupied = Occupied;
+}
+
 bool CGrid::GetOccupied()
 {
-	if (ListOfObjects.size() > 0)
-		return true;
+	return Occupied;
 }
 
 void CGrid::CursorOnGrid(const int x, const int y)

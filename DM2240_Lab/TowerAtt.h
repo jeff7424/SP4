@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Units.h"
+#include "TextureImage.h"
 
 class Tower : public Units{
 private:
@@ -22,8 +23,9 @@ public:
 	Tower(TOWER_TYPE type = TOWER_NORMAL);
 	~Tower();
 
+	TextureImage TowerTexture[5];
 	void Init();
-
+	bool LoadTGA(TextureImage *texture, char *filename);
 	void Update(float dt);
 
 	void SetAtt(float firerate, int cost, int damage, int range, int health);
@@ -35,4 +37,5 @@ public:
 
 	void Upgrade();
 	void DrawLevel();
+	void Render();
 };

@@ -23,6 +23,12 @@ void CIntroState::Init()
 
 void CIntroState::Cleanup()
 {
+	if (theCam != NULL)
+	{
+		delete theCam;
+		theCam = NULL;
+		free(theCam);
+	}
 }
 
 void CIntroState::Pause()
