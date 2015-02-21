@@ -3,7 +3,7 @@
 #include "Units.h"
 #include "TextureImage.h"
 
-class Tower : public Units{
+class Tower : public Units {
 private:
 	int cost;
 
@@ -23,8 +23,7 @@ public:
 	Tower(TOWER_TYPE type = TOWER_NORMAL);
 	~Tower();
 
-	TextureImage TowerTexture[5];
-	void Init();
+	TextureImage TowerTexture;
 	bool LoadTGA(TextureImage *texture, char *filename);
 	void Update(float dt);
 

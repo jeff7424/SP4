@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Vector3.h"
-//#include "TextureImage.h"
+#include "TextureImage.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ public:
 	bool CursorHit;
 	bool Occupied;
 
-	//TextureImage texture;
+	TextureImage texture;
 	// Init
 	void Init(const int index_x, const int index_y, const int xSize, const int ySize, int terrainType);
 	void RenderScene(void);
@@ -35,5 +35,6 @@ public:
 	bool GetOccupied();
 	void CursorOnGrid(const int x, const int y);
 	void RenderStringOnScreen(float x, float y, const char* quote);
+	bool LoadTGA(TextureImage *texture, char *filename);
 };
 

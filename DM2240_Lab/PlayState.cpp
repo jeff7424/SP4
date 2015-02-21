@@ -5,7 +5,6 @@
 #include <mmsystem.h>
 #include "glext.h"
 #include <lua.hpp>
-//#include <vld.h>
 
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
@@ -93,7 +92,7 @@ void CPlayState::Init(void)
 	// Initialization
 	theMap = new CMap();
 	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, 96, 96);
+	theMap->LoadMap("bin/maps/MapDesign6.csv", 0, 0, 96, 96);
 
 	/*RenderBackground();
 	RenderTileMap();
@@ -764,7 +763,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			{
 				if (tower = FetchTower())
 				{
-					tower->type = static_cast<Tower::TOWER_TYPE>(selection);
+					//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
 					tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
 						towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 					if (player->GetGold() >= tower->GetCost())
@@ -1135,7 +1134,7 @@ Tower *CPlayState::FetchTower()
 			return temptower;
 		}
 	}
-	temptower = new Tower();
+	temptower = new Tower(static_cast<Tower::TOWER_TYPE>(selection));
 	//temptower->SetActive(true);
 	//towerList.push_back(temptower);
 	return temptower;
@@ -1453,9 +1452,9 @@ void CPlayState::Load()
 		{
 			if (type == "tower")
 			{
-				Tower *tower = new Tower();
+				//Tower *tower = new Tower();
 				getline(inData, value, ',');
-				tower->type = static_cast<Tower::TOWER_TYPE>(stoi(value));
+				Tower *tower = new Tower(static_cast<Tower::TOWER_TYPE>(stoi(value)));
 				getline(inData, value, ',');
 				tower->SetActive(stoi(value));
 				getline(inData, value, ',');
@@ -1593,7 +1592,7 @@ void CPlayState::Save()
 	ofstream file2("save/progress.txt");
 	if (file2.is_open())
 	{
-		Tower *tower = FetchTower();
+		//Tower *tower = FetchTower();
 		for (unsigned int i = 0; i < towerList.size(); ++i)
 		{
 			if (towerList[i]->GetActive())
@@ -1607,7 +1606,7 @@ void CPlayState::Save()
 				}
 			}
 		}
-		Enemy *creep = FetchEnemy();
+		//Enemy *creep = FetchEnemy();
 		for (unsigned int j = 0; j < enemyList.size(); ++j)
 		{
 			if (enemyList[j]->GetActive())
@@ -1621,7 +1620,7 @@ void CPlayState::Save()
 				}
 			}
 		}
-		Bullet *bullet = FetchBullet();
+		//Bullet *bullet = FetchBullet();
 		for (unsigned int k = 0; k < bulletList.size(); ++k)
 		{
 			if (bulletList[k]->GetActive())
@@ -1637,7 +1636,7 @@ void CPlayState::Save()
 			}
 		}
 
-		Spawn *spawn = FetchSpawn();
+		//Spawn *spawn = FetchSpawn();
 		for (unsigned int x = 0; x < spawnList.size(); ++x)
 		{
 			if (spawnList[x]->GetTime() >= spawntimer)
@@ -1645,8 +1644,8 @@ void CPlayState::Save()
 				file2 << "spawnlist, " << spawnList[x]->GetType() << ", " << spawnList[x]->GetTime() << "\n";
 			}
 		}
-		delete spawn;
-		spawn = NULL;
+		/*delete spawn;
+		spawn = NULL;*/
 		file2.close();
 	}
 	else
@@ -1750,10 +1749,10 @@ void CPlayState::LoadAtt()
 	inData.open("save/tower.txt");
 	while (!inData.eof())
 	{
-		Tower *tower = new Tower();
+		//Tower *tower = new Tower();
 
 		getline(inData, index, ',');
-		tower->type = static_cast<Tower::TOWER_TYPE>(stoi(index));
+		Tower *tower = new Tower(static_cast<Tower::TOWER_TYPE>(stoi(index)));
 		getline(inData, value, ',');
 		tower->SetFireRate(stof(value));
 		getline(inData, value, ',');

@@ -11,18 +11,26 @@ Tower::Tower(TOWER_TYPE type)
 : type(type)
 , cost(0)
 {
-	LoadTGA(&TowerTexture[0], "bin/tower/Heavy.tga");
-	LoadTGA(&TowerTexture[1], "bin/textures/cannontower.tga");
-	LoadTGA(&TowerTexture[2], "bin/tower/Soldier.tga");
-	LoadTGA(&TowerTexture[3], "bin/tower/Heavy.tga");
+	char* filename = "";
+	switch (type)
+	{
+	case TOWER_TYPE::TOWER_NORMAL:
+		filename = "bin/tower/Heavy.tga";
+		break;
+	case TOWER_TYPE::TOWER_CANNON:
+		filename = "bin/textures/cannontower.tga";
+		break;
+	case TOWER_TYPE::TOWER_SLOW:
+		filename = "bin/tower/Soldier.tga";
+		break;
+	case TOWER_TYPE::TOWER_SHOCK:
+		filename = "bin/tower/Heavy.tga";
+		break;
+	}
+	LoadTGA(&TowerTexture, filename);
 }
 
 Tower::~Tower()
-{
-
-}
-
-void Tower::Init()
 {
 
 }
@@ -122,39 +130,14 @@ bool Tower::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File
 
 	return true;											// Texture Building Went Ok, Return True
 }
+
 void Tower::SetAtt(float firerate, int cost, int damage, int range, int health)
 {
-	///*switch (type)
-	//{
-	//case Tower::TOWER_NORMAL:
-		SetFireRate(firerate);
-		SetCost(cost);
-		SetDamage(damage);
-		SetRange(range);
-		SetHealth(health);
-	/*	break;
-	case Tower::TOWER_CANNON:
-		SetFireRate(5);
-		SetCost(200);
-		SetDamage(8);
-		SetRange(300);
-		SetHealth(20);
-		break;
-	case Tower::TOWER_SLOW:
-		SetFireRate(4);
-		SetCost(150);
-		SetDamage(2);
-		SetRange(450);
-		SetHealth(15);
-		break;
-	case Tower::TOWER_SHOCK:
-		SetFireRate(0.5f);
-		SetCost(150);
-		SetDamage(3);
-		SetRange(200);
-		SetHealth(10);
-		break;
-	}*/
+	SetFireRate(firerate);
+	SetCost(cost);
+	SetDamage(damage);
+	SetRange(range);
+	SetHealth(health);
 }
 
 void Tower::SetCost(int cost)
@@ -215,79 +198,20 @@ void Tower::Render()
 {
 	DrawHealthBar();
 	DrawLevel();
-	switch (type)
-	{
-	case Tower::TOWER_NORMAL:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, TowerTexture[0].texID);
-		glTranslatef(GetPos().x, GetPos().y, 0);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Tower::TOWER_CANNON:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, TowerTexture[1].texID);
-		glTranslatef(GetPos().x, GetPos().y, 0);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Tower::TOWER_SLOW:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, TowerTexture[2].texID);
-		glTranslatef(GetPos().x, GetPos().y, 0);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Tower::TOWER_SHOCK:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, TowerTexture[3].texID);
-		glTranslatef(GetPos().x, GetPos().y, 0);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	}
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glPushMatrix();
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, TowerTexture.texID);
+	glTranslatef(GetPos().x, GetPos().y, 0);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
+	glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
+	glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
+	glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
 }
