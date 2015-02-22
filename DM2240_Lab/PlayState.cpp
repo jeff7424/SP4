@@ -102,23 +102,14 @@ void CPlayState::Init(void)
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/XPDefaultBackground.tga");
-	//LoadTGA(&TileMapTexture[0], "bin/textures/tile0_blank.tga");
-	//LoadTGA(&TileMapTexture[1], "bin/textures/t1.tga");
-	//LoadTGA(&TileMapTexture[2], "bin/textures/mouseover.tga");
-	//LoadTGA(&TileMapTexture[3], "bin/textures/mouseclick.tga");
-	//LoadTGA(&TileMapTexture[4], "bin/textures/t1.tga");
 
-	//LoadTGA(&Music[0], "bin/menu/Ingamemenu/set/tracklist.tga");
-	//LoadTGA(&TowerTexture[0], "bin/tower/Heavy.tga");
-	//LoadTGA(&TowerTexture[1], "bin/textures/cannontower.tga");
-	//LoadTGA(&TowerTexture[2], "bin/tower/Soldier.tga");
-	//LoadTGA(&TowerTexture[3], "bin/tower/Heavy.tga");
 
 	LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[1], "bin/tower/tower2.tga");
 	LoadTGA(&Icon[2], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[3], "bin/tower/Soldier.tga");
-
+	LoadTGA(&Icon[4], "bin/tower/mine.tga");
+	LoadTGA(&Icon[5], "bin/tower/barricade.tga");
 	//LoadTGA(&Quit[0], "bin/exit/Savegame.TGA");
 	//LoadTGA(&Quit[1], "bin/exit/Savegameyes.TGA");
 	//LoadTGA(&Quit[2], "bin/exit/Savegameno.TGA");
@@ -542,10 +533,10 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		selection = 4;
 		break;
 	case '5':
-
+		selection = 5;
 		break;
 	case '6':
-
+		selection = 6;
 		break;
 	case '7':
 
@@ -1970,6 +1961,78 @@ void CPlayState::tower4()
 	glPopMatrix();
 }
 
+void CPlayState::Unit5()
+{
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	//int w = glutGet(GLUT_WINDOW_WIDTH);
+	//int h = glutGet(GLUT_WINDOW_HEIGHT);
+	gluOrtho2D(0.0, w, 0.0, h);
+
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glLoadIdentity();
+	glBindTexture(GL_TEXTURE_2D, Icon[4].texID);
+
+	glTranslatef((w * 0.75f), (h * 0.926f), 0);
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-w / 20, h / 14, 0);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-w / 20, -h / 14, 0);
+
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(w / 20, -h / 14, 0);
+
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(w / 20, h / 14, 0);
+	glEnd();
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+void CPlayState::Unit6()
+{
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	//int w = glutGet(GLUT_WINDOW_WIDTH);
+	//int h = glutGet(GLUT_WINDOW_HEIGHT);
+	gluOrtho2D(0.0, w, 0.0, h);
+
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glLoadIdentity();
+	glBindTexture(GL_TEXTURE_2D, Icon[5].texID);
+
+	glTranslatef((w * 0.85f), (h * 0.926f), 0);
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-w / 20, h / 14, 0);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-w / 20, -h / 14, 0);
+
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(w / 20, -h / 14, 0);
+
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(w / 20, h / 14, 0);
+	glEnd();
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
 void CPlayState::power1()
 {
 	glMatrixMode(GL_PROJECTION);
@@ -2249,8 +2312,10 @@ void CPlayState::RenderHUD()
 	tower2();
 	tower3();
 	tower4();
-	power1();
-	power2();
+	Unit5();
+	Unit6();
+	//power1();
+	//power2();
 
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);

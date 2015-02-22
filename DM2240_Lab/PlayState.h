@@ -147,7 +147,7 @@ private:
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
 	//TextureImage TileMapTexture[5];
-	TextureImage Icon[4];
+	TextureImage Icon[6];
 	TextureImage CreepTexture[3];
 	
 	//TextureImage Music[1];
@@ -189,6 +189,8 @@ private:
 	void tower2(); // Cannon tower
 	void tower3(); // Lightning tower
 	void tower4(); // Slow tower
+	void Unit5();
+	void Unit6();
 	void power1();
 	void power2();
 
