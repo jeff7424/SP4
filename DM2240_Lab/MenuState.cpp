@@ -437,11 +437,11 @@ int CMenuState::LuaInit()
 		cout << values[j + 6] << ": " << data[j] << endl;
 	}
 
-	StartButton = new Button(textures[1], textures[1], data[0], data[1], data[2], data[3]);
-	SettingsButton = new Button(textures[2], textures[2], data[4], data[5], data[6], data[7]);
-	InstructionsButton = new Button(textures[3], textures[3], data[8], data[9], data[10], data[11]);
-	CreditsButton = new Button(textures[4], textures[4], data[12], data[13], data[14], data[15]);
-	ExitButton = new Button(textures[5], textures[5], data[16], data[17], data[18], data[19]);
+	StartButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
+	SettingsButton = new Button(textures[2], data[4], data[5], data[6], data[7]);
+	InstructionsButton = new Button(textures[3], data[8], data[9], data[10], data[11]);
+	CreditsButton = new Button(textures[4], data[12], data[13], data[14], data[15]);
+	ExitButton = new Button(textures[5], data[16], data[17], data[18], data[19]);
 
 	return 0;
 }

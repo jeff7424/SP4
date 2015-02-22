@@ -102,6 +102,7 @@
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="Powerup.cpp" />
     <ClCompile Include="Spawn.cpp" />
+    <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TowerAtt.cpp" />
     <ClCompile Include="Units.cpp" />
     <ClCompile Include="Vector3.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="Powerup.h" />
     <ClInclude Include="Spawn.h" />
+    <ClInclude Include="Tank.h" />
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="TowerAtt.h" />
     <ClInclude Include="Units.h" />

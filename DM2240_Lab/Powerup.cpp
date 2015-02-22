@@ -10,31 +10,32 @@ Powerup::Powerup(POWER_TYPE type)
 , Shield(50)
 , FireRateMultiply(1.5f)
 , DamageMultiply(1.5f)
-{
-}
-
-Powerup::~Powerup()
-{
-}
-
-void Powerup::SetType(POWER_TYPE type)
+, Duration(0.0f)
 {
 	switch (type)
 	{
 	case POWER_TYPE::POWER_INCREASEBASEHEALTH:
-
+		BaseHealthIncrease = 50;
 		break;
 	case POWER_TYPE::POWER_SHIELD:
-
+		Shield = 50;
 		break;
 	case POWER_TYPE::POWER_FIRERATEMULTIPLY:
-		
+		FireRateMultiply = 1.5f;
+		Duration = 10.0f;
 		break;
 	case POWER_TYPE::POWER_DAMAGEMULTIPLY:
-		
+		DamageMultiply = 1.5f;
+		Duration = 10.0f;
 		break;
-	
+	case POWER_TYPE::POWER_TANKBACKUP:
+		Duration = 10.0f;
+		break;
 	}
+}
+
+Powerup::~Powerup()
+{
 }
 
 int Powerup::GetCost()
@@ -87,7 +88,15 @@ void Powerup::SetDamageMultiply(float DamageMultiply)
 	this->DamageMultiply = DamageMultiply;
 }
 
-//void Powerup::RenderIcon(const int x, const int y)
-//{
-//
-//}
+float Powerup::GetDuration()
+{
+	return Duration;
+}
+
+void Powerup::Update(float dt)
+{
+	Duration -= dt;
+
+	if (Duration <= 0.0f)
+		Duration == 0.0f;
+}

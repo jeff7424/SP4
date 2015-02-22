@@ -26,6 +26,7 @@ extern "C" {
 #include "EnemyProgress.h"
 #include "Powerup.h"
 #include "Map.h"
+#include "Button.h"
 
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 672
@@ -56,6 +57,8 @@ public:
 		return &thePlayState;
 	}
 	void drop();
+
+	std::vector<Bullet*> &GetBulletList(void);
 
 protected:
 	CPlayState(){}
@@ -118,11 +121,16 @@ private:
 	std::vector<Spawn *> spawnList; // Vector list for towers
 	std::vector<Powerup *> powerList; // Vector list for power ups
 
-	std::vector<Tower *> towerClone;
-	std::vector<Enemy *> enemyClone;
+	std::vector<Tower *> towerClone; // For tower stats loaded from txt
+	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
+
+	Button *Power_Shield;
+	Button *Power_BaseHealth;
+	Button *Power_Firerate;
+	Button *Power_Damage;
 
 	// FetchGO
-	Bullet* FetchBullet();
+	Bullet* FetchBullet(Tower *tower);
 	Enemy* FetchEnemy();
 	Tower* FetchTower();
 	Spawn* FetchSpawn();
@@ -141,7 +149,6 @@ private:
 	//TextureImage TileMapTexture[5];
 	TextureImage Icon[4];
 	TextureImage CreepTexture[3];
-	TextureImage BulletTexture[5];
 	
 	//TextureImage Music[1];
 	TextureImage Upgrade[1];
@@ -157,7 +164,6 @@ private:
 	void loadlevel();
 	void clearmap();
 
-	void DrawBullet(Bullet *bullet);
 	void DrawEnemy(Enemy *creep);
 	void RenderStringOnScreen(float x, float y, const char* quote);
 	// Sounds

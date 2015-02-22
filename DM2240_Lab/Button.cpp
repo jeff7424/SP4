@@ -9,15 +9,13 @@ Button::Button()
 
 }
 
-Button::Button(char* filename, char* filenamehover, const int posx, const int posy, const int sizex, const int sizey)
+Button::Button(char* filename, const int posx, const int posy, const int sizex, const int sizey)
 : isHover(false)
 , isClick(false)
 , Position(Vector3(0,0,1))
 , Size(Vector3(0,0,1))
 {
 	if (!LoadTGA(&Image, filename))
-		return;
-	if (!LoadTGA(&Image_Hover, filenamehover))
 		return;
 
 	this->Position.x = posx;
@@ -203,6 +201,7 @@ void Button::Render()
 	glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f, 1.0f);
 
 	glEnd();
+	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }

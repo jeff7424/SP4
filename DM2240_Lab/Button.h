@@ -12,11 +12,10 @@ private:
 	Vector3 Size;
 
 	TextureImage Image;
-	TextureImage Image_Hover;
 
 public:
 	Button();
-	Button(char *filename, char *filenamehover, const int posx, const int posy, const int sizex, const int sizey);
+	Button(char *filename, const int posx, const int posy, const int sizex, const int sizey);
 	~Button(); 
 
 	void SetPosition(const int x, const int y);

@@ -405,9 +405,9 @@ int CLevelSelectState::LuaInit()
 		cout << values[j + 4] << ": " << data[j] << endl;
 	}
 
-	NextButton = new Button(textures[1], textures[1], data[0], data[1], data[2], data[3]);
-	PreviousButton = new Button(textures[2], textures[2], data[4], data[5], data[6], data[7]);
-	BackButton = new Button(textures[3], textures[3], data[8], data[9], data[10], data[11]);
+	NextButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
+	PreviousButton = new Button(textures[2], data[4], data[5], data[6], data[7]);
+	BackButton = new Button(textures[3], data[8], data[9], data[10], data[11]);
 
 	return 0;
 }

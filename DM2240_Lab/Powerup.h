@@ -10,6 +10,7 @@ private:
 	int Shield;
 	float FireRateMultiply;
 	float DamageMultiply;
+	float Duration;
 
 public:
 	enum POWER_TYPE
@@ -19,6 +20,7 @@ public:
 		POWER_SHIELD,
 		POWER_FIRERATEMULTIPLY,
 		POWER_DAMAGEMULTIPLY,
+		POWER_TANKBACKUP,
 		POWER_TOTAL,
 	};
 
@@ -26,8 +28,6 @@ public:
 	
 	Powerup(POWER_TYPE type);
 	~Powerup();
-
-	void SetType(POWER_TYPE type);
 
 	int GetCost();
 	int GetBaseHealthIncrease();
@@ -41,6 +41,7 @@ public:
 	void SetFireRateMultiply(float FireRateMultiply);
 	void SetDamageMultiply(float DamageMultiply);
 
-	//void RenderIcon(const int x, const int y);
+	void Update(float dt);
+	float GetDuration();
 };
 

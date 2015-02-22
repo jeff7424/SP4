@@ -1,3 +1,5 @@
+// Done by Heng Seng
+
 #include "Grid.h"
 #include "stdio.h"
 #include <GL/glut.h>
@@ -17,12 +19,10 @@ CGrid::CGrid()
 {
 }
 
-
 CGrid::~CGrid()
 {
 }
 
-// Initialization
 void CGrid::Init(const int index_x, const int index_y, const int xSize, const int ySize, int terrainType)
 {
 	this->index_x = index_x;
@@ -39,6 +39,10 @@ void CGrid::Init(const int index_x, const int index_y, const int xSize, const in
 		break;
 	case 2:
 		filename = "bin/textures/grid_tex2.tga";
+		Occupied = false;
+		break;
+	case 3:
+		filename = "bin/textures/grid_tex3.tga";
 		Occupied = true;
 		break;
 	}
@@ -47,14 +51,6 @@ void CGrid::Init(const int index_x, const int index_y, const int xSize, const in
 
 void CGrid::RenderScene(void)
 {
-	int id = index_x * 7 + index_y;
-	char tempid[4];
-	itoa(id, tempid, 10);
-	glPushMatrix();
-	glTranslatef((float)index_x * xSize + 20, (float)index_y * ySize + 20, 0);
-	RenderStringOnScreen(index_x, index_y, tempid);
-	glPopMatrix();
-
 	SetColor();
 	glPushMatrix();
 	glTranslatef((float)index_x * xSize, (float)index_y * ySize, 0);
@@ -91,6 +87,14 @@ void CGrid::RenderScene(void)
 	glEnd();
 	glLineWidth(1);
 	glPopAttrib();
+	glPopMatrix();
+
+	int id = index_x * 7 + index_y;
+	char tempid[4];
+	itoa(id, tempid, 10);
+	glPushMatrix();
+	glTranslatef((float)index_x * xSize + 20, (float)index_y * ySize + 20, 0);
+	RenderStringOnScreen(index_x, index_y, tempid);
 	glPopMatrix();
 }
 
