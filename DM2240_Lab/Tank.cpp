@@ -10,7 +10,7 @@ Tank::Tank(State state)
 	SetRange(800);
 	SetFire(false);
 	SetFireRate(3.0f);
-	SetPos(Vector3(0, 336, 0));
+	SetPos(Vector3(-50, 336, 0));
 	Target = NULL;
 	inPosition = false;
 	LoadTGA(&body, "bin/tower/Tank.tga");
@@ -195,7 +195,7 @@ void Tank::ChangeState()
 	}
 	else if (state == STATE_FALLOUT)
 	{
-		if (this->GetPos().x <= 0)
+		if (this->GetPos().x <= -50)
 		{
 			//this->SetPos(Vector3(0, this->GetPos().y, this->GetPos().z));
 			state = STATE_IDLE;
@@ -213,7 +213,7 @@ void Tank::Respond(float dt)
 	case STATE_FALLIN:
 		{
 			if (!inPosition)
-				this->SetPos(Vector3(this->GetPos().x + 1, this->GetPos().y, this->GetPos().z));
+				this->SetPos(Vector3(this->GetPos().x + (50 * dt), this->GetPos().y, this->GetPos().z));
 		}
 		break;
 	case STATE_LOADING:
@@ -238,7 +238,7 @@ void Tank::Respond(float dt)
 	case STATE_FALLOUT:
 		{
 			if (inPosition)
-				this->SetPos(Vector3(this->GetPos().x - 1, this->GetPos().y, this->GetPos().z));
+				this->SetPos(Vector3(this->GetPos().x - (50 * dt), this->GetPos().y, this->GetPos().z));
 		}
 		break;
 	}

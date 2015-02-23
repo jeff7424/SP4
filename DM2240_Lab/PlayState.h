@@ -129,11 +129,20 @@ private:
 	std::vector<Tower *> towerClone; // For tower stats loaded from txt
 	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
 
+	Button *Button_Pause;
+
 	Button *Power_Shield;
 	Button *Power_BaseHealth;
 	Button *Power_Firerate;
 	Button *Power_Damage;
 	Button *Power_BackupTank;
+
+	Button *Unit_Infantry;
+	Button *Unit_Tank;
+	Button *Unit_Heavy;
+	Button *Unit_Sniper;
+	Button *Unit_Mine;
+	Button *Unit_Barricade;
 
 	// FetchGO
 	Bullet* FetchBullet(Tower *tower);

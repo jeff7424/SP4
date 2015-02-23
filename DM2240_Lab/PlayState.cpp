@@ -125,11 +125,20 @@ void CPlayState::Init(void)
 	loadlevel();
 	LoadSpawn();
 
-	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 48, 624, 48, 48);
-	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 144, 624, 48, 48);
-	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 240, 624, 48, 48);
-	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 336, 624, 48, 48);
-	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 432, 624, 48, 48);
+	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
+
+	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
+	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 680, 624, 36, 36);
+	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 752, 624, 36, 36);
+	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 824, 624, 36, 36);
+	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
+
+	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
+	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
+	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
+	Unit_Sniper = new Button("bin/tower/Soldier.tga", 264, 624, 36, 36);
+	Unit_Mine = new Button("bin/tower/mine.tga", 336, 624, 36, 36);
+	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
 
 	backupTank = new Tank();
 }
@@ -274,82 +283,85 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
-	// timer for enemy to spawn
-	spawntimer += dt;
-
-	// Spawn enemies
-	UpdateSpawn();
-
-	if (backupTank->GetActive())
+	if (!pause)
 	{
-		backupTank->Update(dt);
-	}
+		// timer for enemy to spawn
+		spawntimer += dt;
 
-	for (int it = 0; it < enemyList.size(); ++it)
-	{
-		Enemy* enemy = enemyList[it];
-		if (enemy->GetActive())
+		// Spawn enemies
+		UpdateSpawn();
+
+		if (backupTank->GetActive())
 		{
-			backupTank->GetTarget(enemy);
+			backupTank->Update(dt);
 		}
-	}
 
-	// Deactivate out of bounds objects
-	for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
-	{
-		Bullet *bullet = *it;
-		if (bullet->GetActive() && bullet->type != Bullet::GO_BOMBBULLET)
+		for (int it = 0; it < enemyList.size(); ++it)
 		{
-			bullet->Update(dt);
-			if (bullet->GetPos().x >= SCREEN_WIDTH || bullet->GetPos().x < 0)
+			Enemy* enemy = enemyList[it];
+			if (enemy->GetActive())
 			{
-				bullet->SetActive(false);
+				backupTank->GetTarget(enemy);
 			}
 		}
-		else
-		{
-			delete bullet;
-			bulletList.erase(it);
-			bullet = NULL; 
-			free(bullet);
-			break;
-		}
-	}
 
-	// Handle enemies which reaches the base
-	for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
-	{
-		Enemy *creep = *it;
-		if (creep->GetActive() == true)
+		// Deactivate out of bounds objects
+		for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
 		{
-			if (creep->GetFire() == false)
+			Bullet *bullet = *it;
+			if (bullet->GetActive() && bullet->type != Bullet::GO_BOMBBULLET)
 			{
-				// Monster moving speed
-				creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-				if (creep->GetPos().x <= 0)
+				bullet->Update(dt);
+				if (bullet->GetPos().x >= SCREEN_WIDTH || bullet->GetPos().x < 0)
 				{
-					creep->SetActive(false);
-					tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-					enemycounter--;
-					delete creep;
-					enemyList.erase(it);
-					creep = NULL;
-					break;
+					bullet->SetActive(false);
+				}
+			}
+			else
+			{
+				delete bullet;
+				bulletList.erase(it);
+				bullet = NULL;
+				free(bullet);
+				break;
+			}
+		}
+
+		// Handle enemies which reaches the base
+		for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
+		{
+			Enemy *creep = *it;
+			if (creep->GetActive() == true)
+			{
+				if (creep->GetFire() == false)
+				{
+					// Monster moving speed
+					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
+					if (creep->GetPos().x <= 0)
+					{
+						creep->SetActive(false);
+						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+						enemycounter--;
+						delete creep;
+						enemyList.erase(it);
+						creep = NULL;
+						break;
+					}
 				}
 			}
 		}
+
+		//for (unsigned int i = 0; i < bulletList.size(); ++i)
+		//{
+		//	if (bulletList[i]->GetActive() && bulletList[i]->type != Bullet::GO_BOMBBULLET)
+		//	{
+		//		bulletList[i]->SetPos(Vector3(bulletList[i]->GetPos().x + bulletList[i]->GetSpeed() * dt, bulletList[i]->GetPos().y, 0));
+		//	}
+		//}
+
+		// Collision updates and unit triggers
+		Update(dt);
 	}
-
-	//for (unsigned int i = 0; i < bulletList.size(); ++i)
-	//{
-	//	if (bulletList[i]->GetActive() && bulletList[i]->type != Bullet::GO_BOMBBULLET)
-	//	{
-	//		bulletList[i]->SetPos(Vector3(bulletList[i]->GetPos().x + bulletList[i]->GetSpeed() * dt, bulletList[i]->GetPos().y, 0));
-	//	}
-	//}
-
-	// Collision updates and unit triggers
-	Update(dt);
 }
 
 void CPlayState::Draw(CGameStateManager* theGSM) {
@@ -410,8 +422,6 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	{
 		RenderUpgrade(mouseInfo.lastX, (h - mouseInfo.lastY));
 	}
-
-	tEnemyProgress->DrawEnemyCounter(500, 630); // Enemy Progress Bar
 
 	//// Pause == true render pause menu
 	//if (Menu->GetMpausemenu() == true)
@@ -586,50 +596,46 @@ void CPlayState::MouseMove(int x, int y) {
 
 	//moverlevel1(x, y);
 
-	Power_Shield->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	Power_BaseHealth->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	Power_Firerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	Power_Damage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	Power_BackupTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
 	if (!pause)
 	{
-		/*if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
-		{
-			m_ghost.SetActive(true);
-			m_ghost.type = static_cast<Tower::TOWER_TYPE>(selection);
-			m_ghost.SetPos(Vector3((float)x / w * SCREEN_WIDTH, (float)y / h * SCREEN_HEIGHT, 0));
-			upgrade = false;
-		}
-		else if (theMap->theScreenMap[Y][X] == 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
-		{
-			m_ghost.SetActive(false);
-			upgrade = true;
-		}
-		else
-		{
-			m_ghost.SetActive(false);
-		}
-*/
-		if (X == 3 && Y == 0)
+		Power_Shield->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_BaseHealth->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_Firerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_Damage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_BackupTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		Unit_Infantry->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Tank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Heavy->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Sniper->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Mine->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Barricade->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		if (Unit_Infantry->GetIsHover())
 		{
 			info = 1;
-			upgrade = false;
 		}
-		else if (X == 4 && Y == 0)
+		else if (Unit_Tank->GetIsHover())
 		{
 			info = 2;
-			upgrade = false;
 		}
-		else if (X == 5 && Y == 0)
+		else if (Unit_Heavy->GetIsHover())
 		{
 			info = 3;
-			upgrade = false;
 		}
-		else if (X == 6 && Y == 0)
+		else if (Unit_Sniper->GetIsHover())
 		{
 			info = 4;
-			upgrade = false;
+		}
+		else if (Unit_Mine->GetIsHover())
+		{
+			info = 5;
+		}
+		else if (Unit_Barricade->GetIsHover())
+		{
+			info = 6;
 		}
 		else
 		{
@@ -812,28 +818,59 @@ void CPlayState::mclicklevel1(int x, int y)
 		}
 	}
 
-	if (Power_Shield->GetIsHover())
+	if (Button_Pause->GetIsHover())
 	{
-		player->SetMaxShield(player->GetShield() + 50);
-		player->SetShield(player->GetShield() + 50);
+		pause = !pause;
 	}
-	if (Power_BaseHealth->GetIsHover())
+	if (!pause)
 	{
-		player->SetHealth(player->GetHealth() + 50);
-		if (player->GetHealth() >= 100)
-			player->SetHealth(100);
-	}
-	if (Power_Firerate->GetIsHover())
-	{
+		if (Power_Shield->GetIsHover())
+		{
+			player->SetMaxShield(player->GetShield() + 50);
+			player->SetShield(player->GetShield() + 50);
+		}
+		else if (Power_BaseHealth->GetIsHover())
+		{
+			player->SetHealth(player->GetHealth() + 50);
+			if (player->GetHealth() >= 100)
+				player->SetHealth(100);
+		}
+		else if (Power_Firerate->GetIsHover())
+		{
 
-	}
-	if (Power_Damage->GetIsHover())
-	{
+		}
+		else if (Power_Damage->GetIsHover())
+		{
 
-	}
-	if (Power_BackupTank->GetIsHover())
-	{
-		backupTank->SetActive(true);
+		}
+		else if (Power_BackupTank->GetIsHover())
+		{
+			backupTank->SetActive(true);
+		}
+		else if (Unit_Infantry->GetIsHover())
+		{
+			selection = 1;
+		}
+		else if (Unit_Tank->GetIsHover())
+		{
+			selection = 2;
+		}
+		else if (Unit_Heavy->GetIsHover())
+		{
+			selection = 3;
+		}
+		else if (Unit_Sniper->GetIsHover())
+		{
+			selection = 4;
+		}
+		else if (Unit_Mine->GetIsHover())
+		{
+			selection = 5;
+		}
+		else if (Unit_Barricade->GetIsHover())
+		{
+			selection = 6;
+		}
 	}
 }
 
@@ -1984,6 +2021,7 @@ void CPlayState::Unit5()
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
+
 void CPlayState::Unit6()
 {
 	glMatrixMode(GL_PROJECTION);
@@ -2070,10 +2108,10 @@ void CPlayState::RenderInfo(int x, int y)
 	glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
 	glTranslatef(x, y, 1);
 	glBegin(GL_QUADS);
-	glVertex2f(-10, 100);
-	glVertex2f(-10, -20);
-	glVertex2f(150, -20);
-	glVertex2f(150, 100);
+	glVertex2f(0, 0);
+	glVertex2f(0, -120);
+	glVertex2f(160, -120);
+	glVertex2f(160, 0);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
@@ -2099,17 +2137,25 @@ void CPlayState::RenderInfo(int x, int y)
 		{
 			sprintf_s(temp, "Slow Tower");
 		}
-		RenderStringOnScreen(x, y, temp);
-		sprintf_s(temp, "Health: %d (x 1.5)", towerClone[info - 1]->GetHealth());
-		RenderStringOnScreen(x, y + 18, temp);
-		sprintf_s(temp, "Cost: %d (+ 50)", towerClone[info - 1]->GetCost());
-		RenderStringOnScreen(x, y + 36, temp);
-		sprintf_s(temp, "Damage: %d (x 1.5)", towerClone[info - 1]->GetDamage());
-		RenderStringOnScreen(x, y + 54, temp);
+		else if (info == 5)
+		{
+			sprintf_s(temp, "Mine");
+		}
+		else if (info == 6)
+		{
+			sprintf_s(temp, "Barricade");
+		}
+		RenderStringOnScreen(x + 4, y - 98, temp);
+		sprintf_s(temp, "Health: %d", towerClone[info - 1]->GetHealth());
+		RenderStringOnScreen(x + 4, y - 80, temp);
+		sprintf_s(temp, "Cost: %d", towerClone[info - 1]->GetCost());
+		RenderStringOnScreen(x + 4, y - 62, temp);
+		sprintf_s(temp, "Damage: %d", towerClone[info - 1]->GetDamage());
+		RenderStringOnScreen(x + 4, y - 44, temp);
 		sprintf_s(temp, "Firerate: %d", towerClone[info - 1]->GetFireRate());
-		RenderStringOnScreen(x, y + 72, temp);
+		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
-		RenderStringOnScreen(x, y + 90, temp);
+		RenderStringOnScreen(x + 4, y - 8, temp);
 	}
 }
 
@@ -2117,15 +2163,21 @@ void CPlayState::RenderHUD()
 {
 	char temp[512];
 
+	glPushMatrix();
+		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
+	glPopMatrix();
+
 	// On screen texts
 	glColor3f(1.0f, 1.0f, 1.0f);
 
-	tower1();
-	tower2();
-	tower3();
-	tower4();
-	Unit5();
-	Unit6();
+	Button_Pause->Render();
+
+	Unit_Infantry->Render();
+	Unit_Tank->Render();
+	Unit_Heavy->Render();
+	Unit_Sniper->Render();
+	Unit_Mine->Render();
+	Unit_Barricade->Render();
 
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
@@ -2134,7 +2186,6 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(10, 30, temp);
 	sprintf_s(temp, "Shield: ");
 	RenderStringOnScreen(10, 65, temp);
-
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);
 	/*sprintf_s(temp, "FPS: %.2f", m_fps);
@@ -2142,7 +2193,7 @@ void CPlayState::RenderHUD()
 	sprintf_s(temp, "Selection: %d", selection);
 	RenderStringOnScreen(120, 90, temp);
 	sprintf_s(temp, "Enemy left: %d", tEnemyProgress->GetEnemyCounter());
-	RenderStringOnScreen(500, 600, temp);
+	RenderStringOnScreen(500, 32, temp);
 
 	// Mouse over tower selection for info
 	if (info > 0)
@@ -2155,6 +2206,8 @@ void CPlayState::RenderHUD()
 	Power_Firerate->Render();
 	Power_Damage->Render();
 	Power_BackupTank->Render();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
