@@ -2363,6 +2363,13 @@ void CPlayState::RenderHUD()
 	Power_BaseHealth->Render();
 	Power_Firerate->Render();
 	Power_Damage->Render();
+
+	// All enemies defeated
+	if (enemycounter < 1)
+	{
+		sprintf_s(temp, "========== Wave Defeated ==========");
+		RenderStringOnScreen(300, 330, temp);
+	}
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
