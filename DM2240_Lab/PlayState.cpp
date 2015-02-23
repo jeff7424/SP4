@@ -2047,8 +2047,6 @@ void CPlayState::RenderHUD()
 	Power_Damage->Render();
 	Power_BackupTank->Render();
 
-	glColor3f(1.0f, 1.0f, 1.0f);
-
 	// All enemies defeated
 	if (enemycounter < 1)
 	{
@@ -2059,6 +2057,7 @@ void CPlayState::RenderHUD()
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
 	}
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
