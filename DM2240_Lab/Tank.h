@@ -12,8 +12,6 @@
 class Tank : public Units
 {
 private:
-	TextureImage body;
-	TextureImage cannon;
 	Enemy *Target;
 	bool inPosition;
 
@@ -28,8 +26,12 @@ public:
 
 	State state;
 
+	static TextureImage body;
+
 	Tank(State state = STATE_IDLE);
 	~Tank();
+
+	bool LoadTGA(TextureImage *texture, char *filename);
 
 	void ChangeState();
 	void Respond(float dt);

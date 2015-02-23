@@ -18,13 +18,19 @@ Tower::Tower(TOWER_TYPE type)
 		filename = "bin/tower/Heavy.tga";
 		break;
 	case TOWER_TYPE::TOWER_CANNON:
-		filename = "bin/textures/cannontower.tga";
+		filename = "bin/tower/Tank.tga";
 		break;
 	case TOWER_TYPE::TOWER_SLOW:
 		filename = "bin/tower/Soldier.tga";
 		break;
 	case TOWER_TYPE::TOWER_SHOCK:
 		filename = "bin/tower/Heavy.tga";
+		break;
+	case TOWER_TYPE::TOWER_MINE:
+		filename = "bin/tower/mine.tga";
+		break;
+	case TOWER_TYPE::TOWER_BARRICADE:
+		filename = "bin/tower/barricade.tga";
 		break;
 	}
 	LoadTGA(&TowerTexture, filename);

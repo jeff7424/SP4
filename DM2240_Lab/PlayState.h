@@ -153,15 +153,10 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
-	//TextureImage TileMapTexture[5];
-	TextureImage Icon[4];
+	TextureImage Icon[6];
 	TextureImage CreepTexture[3];
 	
-	//TextureImage Music[1];
 	TextureImage Upgrade[1];
-	//TextureImage Quit[3];
-	//TextureImage Heart[1];
-	//TextureImage Story[1];
 
 	void RenderTileMap();
 	void mclicklevel1(int x, int y);
@@ -194,6 +189,8 @@ private:
 	void tower2(); // Cannon tower
 	void tower3(); // Lightning tower
 	void tower4(); // Slow tower
+	void Unit5();
+	void Unit6();
 
 	// Cursors
 	void RenderUpgrade(int x, int y); // Hover to tower to show upgrade icon
