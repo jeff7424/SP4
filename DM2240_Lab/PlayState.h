@@ -144,6 +144,14 @@ private:
 	Button *Unit_Mine;
 	Button *Unit_Barricade;
 
+	Button *Bonus_Attack;
+	Button *Bonus_Armour;
+	Button *Bonus_Dollar;
+
+	float Bonus_MultAttack;
+	float Bonus_MultArmour;
+	float Bonus_MultDollar;
+
 	// FetchGO
 	Bullet* FetchBullet(Tower *tower);
 	Enemy* FetchEnemy();
