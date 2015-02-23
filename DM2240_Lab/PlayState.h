@@ -1,3 +1,6 @@
+#ifndef PLAYSTATE_H_
+#define PLAYSTATE_H_
+
 #pragma once
 
 extern "C" {
@@ -21,6 +24,7 @@ extern "C" {
 #include "Spawn.h"
 #include "TowerAtt.h"
 #include "EnemyAtt.h"				// Enemy
+#include "Tank.h"
 #include "Bullet.h"
 #include "AudioPlayer.h"
 #include "EnemyProgress.h"
@@ -34,6 +38,8 @@ extern "C" {
 #define MAX_TILE 17
 
 using namespace std;
+
+class Tank;
 
 class CPlayState : public CGameState
 {
@@ -119,7 +125,6 @@ private:
 	std::vector<Enemy *> enemyList; // Vector list for creeps
 	std::vector<Tower *> towerList; // Vector list for towers
 	std::vector<Spawn *> spawnList; // Vector list for towers
-	std::vector<Powerup *> powerList; // Vector list for power ups
 
 	std::vector<Tower *> towerClone; // For tower stats loaded from txt
 	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
@@ -128,19 +133,21 @@ private:
 	Button *Power_BaseHealth;
 	Button *Power_Firerate;
 	Button *Power_Damage;
+	Button *Power_BackupTank;
 
 	// FetchGO
 	Bullet* FetchBullet(Tower *tower);
 	Enemy* FetchEnemy();
 	Tower* FetchTower();
 	Spawn* FetchSpawn();
-	Powerup* FetchPower();
 	Tower m_ghost; // ghost
 
 	PlayerInfo *player; // Player profile
 	CMap *theMap; // CSV Map
 	Camera *Cam; // Camera
 	CEnemyProgress *tEnemyProgress;
+
+	Tank* backupTank; // Tank power up
 
 	// Texture mapping
 	//GLuint texture[24];
@@ -155,8 +162,6 @@ private:
 	//TextureImage Quit[3];
 	//TextureImage Heart[1];
 	//TextureImage Story[1];
-	TextureImage Power[2];
-	TextureImage PowerBoom[2];
 
 	void RenderTileMap();
 	void mclicklevel1(int x, int y);
@@ -189,8 +194,6 @@ private:
 	void tower2(); // Cannon tower
 	void tower3(); // Lightning tower
 	void tower4(); // Slow tower
-	void power1();
-	void power2();
 
 	// Cursors
 	void RenderUpgrade(int x, int y); // Hover to tower to show upgrade icon
@@ -198,8 +201,8 @@ private:
 
 	// Menus
 	void exitover();
-	void powerTex(bool yay, int boo);
 	void soundTypes(int type, bool death);
 
 	void RenderHUD();
 };
+#endif

@@ -128,13 +128,7 @@ void CPlayState::Init(void)
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
-	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
-	//LoadTGA(&Story[0], "bin/textures/textBox.tga");
-	LoadTGA(&Power[0], "bin/textures/powerMap.tga");
-	LoadTGA(&Power[1], "bin/textures/powerLane.tga");
-	LoadTGA(&PowerBoom[0], "bin/textures/clearMap.tga");
-	LoadTGA(&PowerBoom[1], "bin/textures/clearLane.tga");
 	// Load the attributes through text file
 	LoadAtt();
 	loadlevel();
@@ -144,6 +138,9 @@ void CPlayState::Init(void)
 	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 144, 624, 48, 48);
 	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 240, 624, 48, 48);
 	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 336, 624, 48, 48);
+	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 432, 624, 48, 48);
+
+	backupTank = new Tank();
 }
 
 void CPlayState::Cleanup()
@@ -223,14 +220,14 @@ void CPlayState::Cleanup()
 		free(spawn);
 	}
 
-	while (powerList.size() > 0)
-	{
-		Powerup *power = powerList.back();
-		delete power;
-		power = NULL;
-		powerList.pop_back();
-		free(power);
-	}
+	//while (powerList.size() > 0)
+	//{
+	//	Powerup *power = powerList.back();
+	//	delete power;
+	//	power = NULL;
+	//	powerList.pop_back();
+	//	free(power);
+	//}
 }
 
 void CPlayState::Pause()
@@ -291,6 +288,20 @@ void CPlayState::Update(CGameStateManager* theGSM)
 
 	// Spawn enemies
 	UpdateSpawn();
+
+	if (backupTank->GetActive())
+	{
+		backupTank->Update(dt);
+	}
+
+	for (int it = 0; it < enemyList.size(); ++it)
+	{
+		Enemy* enemy = enemyList[it];
+		if (enemy->GetActive())
+		{
+			backupTank->GetTarget(enemy);
+		}
+	}
 
 	// Deactivate out of bounds objects
 	for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
@@ -365,6 +376,8 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	RenderBackground();
 	RenderTileMap();
 
+	backupTank->Render();
+
 	// Render towers
 	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
 	{
@@ -405,19 +418,6 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	if (upgrade == true)
 	{
 		RenderUpgrade(mouseInfo.lastX, (h - mouseInfo.lastY));
-	}
-
-	// Draw powerup
-	if (powerfired == true)
-	{
-		if (powerMap == true && ClearMapCounter > 0)
-		{
-			powerTex(true, 1);
-		}
-		else if (powerLane == true && ClearLaneCounter > 0)
-		{
-			powerTex(true, 2);
-		}
 	}
 
 	tEnemyProgress->DrawEnemyCounter(500, 630); // Enemy Progress Bar
@@ -599,6 +599,7 @@ void CPlayState::MouseMove(int x, int y) {
 	Power_BaseHealth->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	Power_Firerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	Power_Damage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Power_BackupTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
 	if (!pause)
 	{
@@ -838,6 +839,10 @@ void CPlayState::mclicklevel1(int x, int y)
 	if (Power_Damage->GetIsHover())
 	{
 
+	}
+	if (Power_BackupTank->GetIsHover())
+	{
+		backupTank->SetActive(true);
 	}
 }
 
@@ -1169,24 +1174,6 @@ Spawn* CPlayState::FetchSpawn()
 	Spawn *tempspawn = new Spawn();
 	spawnList.push_back(tempspawn);
 	return tempspawn;
-}
-
-Powerup* CPlayState::FetchPower()
-{
-	/*for (std::vector<Powerup *>::iterator it = powerList.begin(); it != powerList.end(); ++it)
-	{
-		Powerup *power = *it;
-		if (!power->GetActive())
-		{
-			power->SetActive(true);;
-			return power;
-		}
-	}
-	Powerup *power = new Powerup(Powerup::POWER_DOWN);
-	power->SetActive(true);
-	powerList.push_back(power);*/
-	return NULL;
-
 }
 
 void CPlayState::DrawEnemy(Enemy *creep)
@@ -1970,86 +1957,6 @@ void CPlayState::tower4()
 	glPopMatrix();
 }
 
-void CPlayState::power1()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	int w = glutGet(GLUT_WINDOW_WIDTH);
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Power[0].texID);
-
-	glTranslatef((w * 0.85f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-	glPopMatrix();
-}
-
-void CPlayState::power2()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	int w = glutGet(GLUT_WINDOW_WIDTH);
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Power[1].texID);
-
-	glTranslatef((w * 0.95f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-	glPopMatrix();
-}
-
 void CPlayState::RenderUpgrade(int x, int y)
 {
 	glMatrixMode(GL_PROJECTION);
@@ -2142,102 +2049,6 @@ void CPlayState::RenderInfo(int x, int y)
 	}
 }
 
-void CPlayState::powerTex(bool yay, int boo)
-{
-	if (yay == true && boo == 1)
-	{
-		soundTypes(4, true);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		int w = glutGet(GLUT_WINDOW_WIDTH);
-		int h = glutGet(GLUT_WINDOW_HEIGHT);
-		/*glScalef(w* (w/1313), h * (h/697),0);*/
-		gluOrtho2D(0.0, w, 0.0, h);
-
-		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glPushMatrix();
-		glLoadIdentity();
-		glBindTexture(GL_TEXTURE_2D, PowerBoom[0].texID);
-
-		glTranslatef((w * 0.5f), (h * 0.5f), 0);
-		//glTranslatef((w * 0.5f), (-h * 0.5f) + transition, 0);
-		//glTranslatef((w * 0.95f), (h * 0.03f), 0);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-w * 0.5f, h * 0.5f, 0);
-
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-w * 0.5f, -h * 0.5f, 0);
-
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(w * 0.5f, -h * 0.5f, 0);
-
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(w * 0.5f, h * 0.5f, 0);
-		glEnd();
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-		glPopMatrix();
-
-		yay = false;
-	}
-	else if (yay == true && boo == 2)
-	{
-		soundTypes(5, true);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		int w = glutGet(GLUT_WINDOW_WIDTH);
-		int h = glutGet(GLUT_WINDOW_HEIGHT);
-		/*glScalef(w* (w/1313), h * (h/697),0);*/
-		gluOrtho2D(0.0, w, 0.0, h);
-
-		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glPushMatrix();
-		glLoadIdentity();
-		glBindTexture(GL_TEXTURE_2D, PowerBoom[1].texID);
-
-		glTranslatef((w * 0.5f), (h - mouseInfo.lastY), 0);
-		//glTranslatef((w * 0.5f), (-h * 0.5f) + transition, 0);
-		//glTranslatef((w * 0.95f), (h * 0.03f), 0);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-w * 0.5f, h * 0.2f, 0);
-
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-w * 0.5f, -h * 0.2f, 0);
-
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(w * 0.5f, -h * 0.2f, 0);
-
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(w * 0.5f, h * 0.2f, 0);
-		glEnd();
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		yay = false;
-	}
-
-}
-
 void CPlayState::RenderHUD()
 {
 	char temp[512];
@@ -2249,8 +2060,6 @@ void CPlayState::RenderHUD()
 	tower2();
 	tower3();
 	tower4();
-	power1();
-	power2();
 
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
@@ -2268,10 +2077,6 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(120, 90, temp);
 	sprintf_s(temp, "Enemy left: %d", tEnemyProgress->GetEnemyCounter());
 	RenderStringOnScreen(500, 600, temp);
-	sprintf_s(temp, "x %d", ClearLaneCounter);
-	RenderStringOnScreen(900, 80, temp);
-	sprintf_s(temp, "x %d", ClearMapCounter);
-	RenderStringOnScreen(800, 80, temp);
 
 	// Mouse over tower selection for info
 	if (info > 0)
@@ -2283,6 +2088,7 @@ void CPlayState::RenderHUD()
 	Power_BaseHealth->Render();
 	Power_Firerate->Render();
 	Power_Damage->Render();
+	Power_BackupTank->Render();
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)

@@ -1,16 +1,19 @@
+#ifndef TANK_H_
+#define TANK_H_
+
 #pragma once
 
+#include "PlayState.h"
 #include "EnemyAtt.h"
 #include "Units.h"
 #include "TextureImage.h"
-#include "PlayState.h"
 #include "Bullet.h"
 
 class Tank : public Units
 {
 private:
-	static TextureImage body;
-	static TextureImage cannon;
+	TextureImage body;
+	TextureImage cannon;
 	Enemy *Target;
 	bool inPosition;
 
@@ -32,4 +35,6 @@ public:
 	void Respond(float dt);
 	void Update(float dt);
 	void Render();
+	void GetTarget(Enemy*);
 };
+#endif
