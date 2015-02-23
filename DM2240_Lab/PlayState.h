@@ -162,7 +162,7 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
-	TextureImage Icon[6];
+	//TextureImage Icon[6];
 	TextureImage CreepTexture[3];
 	
 	TextureImage Upgrade[1];
@@ -192,14 +192,6 @@ private:
 
 	// Power up
 	void PowerOn();
-
-	// Icons
-	void tower1(); // Normal tower
-	void tower2(); // Cannon tower
-	void tower3(); // Lightning tower
-	void tower4(); // Slow tower
-	void Unit5();
-	void Unit6();
 
 	// Cursors
 	void RenderUpgrade(int x, int y); // Hover to tower to show upgrade icon

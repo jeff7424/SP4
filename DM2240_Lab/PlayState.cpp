@@ -104,12 +104,12 @@ void CPlayState::Init(void)
 	LoadTGA(&BackgroundTexture[0], "bin/textures/XPDefaultBackground.tga");
 
 
-	LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
+	/*LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[1], "bin/tower/tower2.tga");
 	LoadTGA(&Icon[2], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[3], "bin/tower/Soldier.tga");
 	LoadTGA(&Icon[4], "bin/tower/mine.tga");
-	LoadTGA(&Icon[5], "bin/tower/barricade.tga");
+	LoadTGA(&Icon[5], "bin/tower/barricade.tga");*/
 	//LoadTGA(&Quit[0], "bin/exit/Savegame.TGA");
 	//LoadTGA(&Quit[1], "bin/exit/Savegameyes.TGA");
 	//LoadTGA(&Quit[2], "bin/exit/Savegameno.TGA");
@@ -119,7 +119,9 @@ void CPlayState::Init(void)
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
+	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
+	//LoadTGA(&Story[0], "bin/textures/textBox.tga");
 	// Load the attributes through text file
 	LoadAtt();
 	loadlevel();
@@ -219,15 +221,6 @@ void CPlayState::Cleanup()
 		spawnList.pop_back();
 		free(spawn);
 	}
-
-	//while (powerList.size() > 0)
-	//{
-	//	Powerup *power = powerList.back();
-	//	delete power;
-	//	power = NULL;
-	//	powerList.pop_back();
-	//	free(power);
-	//}
 }
 
 void CPlayState::Pause()
@@ -766,8 +759,8 @@ bool CPlayState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA
 	return true;											// Texture Building Went Ok, Return True
 }
 
-void CPlayState::RenderTileMap(void) {
-
+void CPlayState::RenderTileMap(void) 
+{
 	theMap->RenderScene(mouseInfo.lastX, mouseInfo.lastY);
 }
 
@@ -782,48 +775,47 @@ void CPlayState::mclicklevel1(int x, int y)
 		delete tower;
 		tower = NULL;
 	}
-	if (theMap->GetGrid(X, Y)->CursorHit == true)
-	{
-		// if it is a terrain
-		if (theMap->GetGrid(X, Y)->terrainType != 0)
-		{
-			if (!theMap->GetGrid(X, Y)->GetOccupied())
-			{
-				if (tower = FetchTower())
-				{
-					//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
-					tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
-						towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
-					if (player->GetGold() >= tower->GetCost())
-					{
-						tower->SetActive(true);
-						tower->SetLevel(1);
-						tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
-						theMap->GetGrid(X, Y)->SetOccupied(true);
-						player->SetGold(player->GetGold() - tower->GetCost()); 
-						towerList.push_back(tower);
-					}
-					else
-					{
-						tower->SetActive(false);
-						delete tower;
-						tower = NULL;
-						free(tower);
-					}
-				}
-				/*delete tower;
-				tower = NULL;
-				free(tower);*/
-			}
-		}
-	}
-
 	if (Button_Pause->GetIsHover())
 	{
 		pause = !pause;
 	}
 	if (!pause)
 	{
+		if (theMap->GetGrid(X, Y)->CursorHit == true)
+		{
+			// if it is a terrain
+			if (theMap->GetGrid(X, Y)->terrainType != 0)
+			{
+				if (!theMap->GetGrid(X, Y)->GetOccupied())
+				{
+					if (tower = FetchTower())
+					{
+						//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
+						tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
+							towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
+						if (player->GetGold() >= tower->GetCost())
+						{
+							tower->SetActive(true);
+							tower->SetLevel(1);
+							tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
+							theMap->GetGrid(X, Y)->SetOccupied(true);
+							player->SetGold(player->GetGold() - tower->GetCost()); 
+							towerList.push_back(tower);
+						}
+						else
+						{
+							tower->SetActive(false);
+							delete tower;
+							tower = NULL;
+							free(tower);
+						}
+					}
+					/*delete tower;
+					tower = NULL;
+					free(tower);*/
+				}
+			}
+		}
 		if (Power_Shield->GetIsHover())
 		{
 			player->SetMaxShield(player->GetShield() + 50);
@@ -1001,7 +993,22 @@ void CPlayState::Update(float dt)
 					{
 						soundTypes(creep->type, true);
 						creep->SetActive(false);
-						player->SetGold(player->GetGold() + 50);
+
+						switch (creep->type)
+						{
+						case Enemy::ENEMY_1:
+							player->SetGold(player->GetGold() + Enemy::NME_Y1);
+							break;
+
+						case Enemy::ENEMY_2:
+							player->SetGold(player->GetGold() + Enemy::NME_Y2);
+							break;
+
+						case Enemy::ENEMY_3:
+							player->SetGold(player->GetGold() + Enemy::NME_Y3);
+							break;
+						}
+
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
 						break;
@@ -1837,228 +1844,6 @@ void CPlayState::clearmap()
 	}
 }
 
-void CPlayState::tower1()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[0].texID);
-
-	glTranslatef((w * 0.35f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower2()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[1].texID);
-
-	glTranslatef((w * 0.45f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower3()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[2].texID);
-
-	glTranslatef((w * 0.55f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower4()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[3].texID);
-
-	glTranslatef((w * 0.65f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::Unit5()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[4].texID);
-
-	glTranslatef((w * 0.75f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::Unit6()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[5].texID);
-
-	glTranslatef((w * 0.85f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
 void CPlayState::RenderUpgrade(int x, int y)
 {
 	glMatrixMode(GL_PROJECTION);
@@ -2208,6 +1993,13 @@ void CPlayState::RenderHUD()
 	Power_BackupTank->Render();
 
 	glColor3f(1.0f, 1.0f, 1.0f);
+
+	// All enemies defeated
+	if (enemycounter < 1)
+	{
+		sprintf_s(temp, "========== Wave Defeated ==========");
+		RenderStringOnScreen(300, 330, temp);
+	}
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
