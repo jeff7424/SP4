@@ -61,6 +61,8 @@ void CPlayState::Init(void)
 	powerLane = false;
 	powerfired = false;
 	levelloaded = true;
+	winscreen = false;
+	losescreen = false;
 	m_ghost = Tower::TOWER_NORMAL;
 	m_ghost.SetActive(true);
 	for (int i = 0; i < 255; i++)
@@ -120,6 +122,11 @@ void CPlayState::Init(void)
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
 
+
+	//Win and Lose Screens
+	LoadTGA(&WinScreenTexture[0], "bin/textures/winscreen.tga");
+	LoadTGA(&LoseScreenTexture[0], "bin/textures/losescreen2.tga");
+
 	// Load the attributes through text file
 	LoadAtt();
 	loadlevel();
@@ -130,6 +137,15 @@ void CPlayState::Init(void)
 	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 240, 624, 48, 48);
 	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 336, 624, 48, 48);
 	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 432, 624, 48, 48);
+
+	//For Win Lose Menu
+	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 194, 108, 28);
+	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 294, 108, 28);
+	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
+	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 494, 108, 28);
+
+	//For Mini Game
+	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 594, 108, 28);
 
 	backupTank = new Tank();
 }
@@ -433,6 +449,16 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 
 	RenderHUD();
 
+	if (winscreen == true)
+	{
+		RenderWinScreen();
+	}
+
+	else if (losescreen == true)
+	{
+		RenderLoseScreen();
+	}
+
 	Cam->SetHUD(false);
 
 	glFlush();
@@ -591,6 +617,25 @@ void CPlayState::MouseMove(int x, int y) {
 	Power_Firerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	Power_Damage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	Power_BackupTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	if (winscreen == true)
+	{
+
+		//For Win Screen
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_NextLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_MiniGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
+
+	else if (losescreen == true)
+	{
+		//For Lose Screens
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
 
 	if (!pause)
 	{
@@ -835,10 +880,55 @@ void CPlayState::mclicklevel1(int x, int y)
 	{
 		backupTank->SetActive(true);
 	}
+
+	//For Win Lose Screen
+	if (WinLose_MainMenu->GetIsHover())
+	{
+		cout << " Back To Main Menu!" << endl;
+		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+	}
+
+	if (WinLose_NextLevel->GetIsHover())
+	{
+		cout << " Loading Next Level!" << endl;
+	}
+
+	if (WinLose_RestartLevel->GetIsHover())
+	{
+		cout << " Restart Level!" << endl;
+		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+		winscreen = false;
+		losescreen = false;
+	}
+
+	if (WinLose_Shop->GetIsHover())
+	{
+		cout << "Initialise the Shop!" << endl;
+	}
+
+	if (WinLose_MiniGame->GetIsHover())
+	{
+		cout << "Launching Mini Game!" << endl;
+	}
+
 }
+
 
 void CPlayState::Update(float dt)
 {
+
+	//Player Health
+	player->SetHealth(player->GetHealth() - 1);
+
+	if (player->GetHealth() <= 0)
+	{
+		player->SetHealth(0);
+		winscreen = true;
+	}
+
+	
+
+
 	// Check if in range
 	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
 	{
@@ -2135,6 +2225,16 @@ void CPlayState::RenderHUD()
 	sprintf_s(temp, "Shield: ");
 	RenderStringOnScreen(10, 65, temp);
 
+	sprintf_s(temp, "Health:               %d", player->GetHealth());
+	RenderStringOnScreen(10, 30, temp);
+	sprintf_s(temp, " / 100");
+	RenderStringOnScreen(170, 30, temp);
+
+	if (player->GetHealth() <= 0)
+	{
+	  
+	}
+
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);
 	/*sprintf_s(temp, "FPS: %.2f", m_fps);
@@ -2155,6 +2255,68 @@ void CPlayState::RenderHUD()
 	Power_Firerate->Render();
 	Power_Damage->Render();
 	Power_BackupTank->Render();
+}
+
+void CPlayState::RenderWinScreen()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, WinScreenTexture[0].texID);
+	glTranslatef(0, 0, 0);
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	int height = 100 * 1.333 / 1.5;
+	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
+	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	WinLose_MainMenu->Render();
+	WinLose_NextLevel->Render();
+	WinLose_RestartLevel->Render();
+	WinLose_Shop->Render();
+	WinLose_MiniGame->Render();
+
+}
+
+void CPlayState::RenderLoseScreen()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture[0].texID);
+	glTranslatef(0, 0, 0);
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	int height = 100 * 1.333 / 1.5;
+	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
+	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	WinLose_MainMenu->Render();
+	WinLose_RestartLevel->Render();
+	WinLose_Shop->Render();
+
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
