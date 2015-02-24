@@ -6,11 +6,15 @@ class Powerup : public Entity
 {
 private:
 	int Cost;
-	int BaseHealthIncrease;
+	/*int BaseHealthIncrease;
 	int Shield;
 	float FireRateMultiply;
-	float DamageMultiply;
+	float DamageMultiply;*/
+	bool Ready;
+	float Value;
+	float MaxDuration;
 	float Duration;
+	float Cooldown;
 
 public:
 	enum POWER_TYPE
@@ -30,18 +34,23 @@ public:
 	~Powerup();
 
 	int GetCost();
-	int GetBaseHealthIncrease();
+	/*int GetBaseHealthIncrease();
 	int GetShield();
 	float GetFireRateMultiply();
-	float GetDamageMultiply();
+	float GetDamageMultiply();*/
+	float GetValue();
+	bool GetReady();
 
 	void SetCost(int Cost);
-	void SetBaseHealthIncrease(int BaseHealthIncrease);
-	void SetShield(int Shield);
-	void SetFireRateMultiply(float FireRateMultiply);
-	void SetDamageMultiply(float DamageMultiply);
+	//void SetBaseHealthIncrease(int BaseHealthIncrease);
+	//void SetShield(int Shield);
+	//void SetFireRateMultiply(float FireRateMultiply);
+	//void SetDamageMultiply(float DamageMultiply);
+	void SetValue(float Value);
 
 	void Update(float dt);
 	float GetDuration();
+
+	void RenderDurationBar(int x, int y);
 };
 

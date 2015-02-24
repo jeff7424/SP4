@@ -17,6 +17,13 @@ public:
 		ENEMY_TOTAL,
 	};
 
+	enum ENEMY_YIELD
+	{
+		NME_Y1 = 25,
+		NME_Y2 = 50,
+		NME_Y3 = 100
+	};
+
 	ENEMY_TYPE type;
 	
 	Enemy(ENEMY_TYPE type = ENEMY_1);

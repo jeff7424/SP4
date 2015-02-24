@@ -40,6 +40,7 @@ extern "C" {
 using namespace std;
 
 class Tank;
+class Tower;
 
 class CPlayState : public CGameState
 {
@@ -133,6 +134,14 @@ private:
 	std::vector<Tower *> towerClone; // For tower stats loaded from txt
 	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
 
+	Powerup *Shield;
+	Powerup *BaseHealth;
+	Powerup *Firerate;
+	Powerup *Damage;
+	Powerup *Backup_Tank;
+
+	Button *Button_Pause;
+
 	Button *Power_Shield;
 	Button *Power_BaseHealth;
 	Button *Power_Firerate;
@@ -148,12 +157,27 @@ private:
 	//Mini Game
 	Button *WinLose_MiniGame;
 
+	Button *Unit_Infantry;
+	Button *Unit_Tank;
+	Button *Unit_Heavy;
+	Button *Unit_Sniper;
+	Button *Unit_Mine;
+	Button *Unit_Barricade;
+
+	Button *Bonus_Attack;
+	Button *Bonus_Armour;
+	Button *Bonus_Dollar;
+
+	float Bonus_MultAttack;
+	float Bonus_MultArmour;
+	float Bonus_MultDollar;
+
 	// FetchGO
 	Bullet* FetchBullet(Tower *tower);
 	Enemy* FetchEnemy();
 	Tower* FetchTower();
 	Spawn* FetchSpawn();
-	Tower m_ghost; // ghost
+	//Tower m_ghost; // ghost
 
 	PlayerInfo *player; // Player profile
 	CMap *theMap; // CSV Map
@@ -166,7 +190,7 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
-	TextureImage Icon[6];
+	//TextureImage Icon[6];
 	TextureImage CreepTexture[3];
 	
 	TextureImage Upgrade[1];
@@ -198,14 +222,6 @@ private:
 
 	// Power up
 	void PowerOn();
-
-	// Icons
-	void tower1(); // Normal tower
-	void tower2(); // Cannon tower
-	void tower3(); // Lightning tower
-	void tower4(); // Slow tower
-	void Unit5();
-	void Unit6();
 
 	// Cursors
 	void RenderUpgrade(int x, int y); // Hover to tower to show upgrade icon
