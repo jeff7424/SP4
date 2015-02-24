@@ -243,7 +243,7 @@ void Tower::Respond(float dt)
 			{
 				if (this->GetFire())
 				{
-					Bullet* bullet = new Bullet();
+					Bullet* bullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(type));
 					bullet->SetActive(true);
 					bullet->SetDamage(this->GetDamage());
 					bullet->SetPos(this->GetPos());

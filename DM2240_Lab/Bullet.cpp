@@ -188,7 +188,6 @@ void Bullet::Render()
 	glTranslatef(this->GetPos().x, this->GetPos().y, this->GetPos().z);
 	//glScalef(go->scale.x, go->scale.y, go->scale.z);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(-12, -12);
 	glTexCoord2f(0, 0); glVertex2f(-24, -24);
 	glTexCoord2f(0, 1); glVertex2f(-24, 24);
 	glTexCoord2f(1, 1); glVertex2f(24, 24);
