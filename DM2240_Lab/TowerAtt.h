@@ -5,6 +5,7 @@
 #include "EnemyAtt.h"
 #include "TextureImage.h"
 #include "Bullet.h"
+#include "Powerup.h"
 
 class Tower : public Units {
 private:
@@ -40,8 +41,8 @@ public:
 	bool LoadTGA(TextureImage *texture, char *filename);
 
 	void ChangeState();
-	void Respond(float dt);
-	void Update(float dt);
+	void Respond(float dt, Powerup *firerate, Powerup *damage);
+	void Update(float dt, Powerup *firerate, Powerup *damage);
 
 	void SetAtt(float firerate, int cost, int damage, int range, int health);
 	void SetCost(int cost);

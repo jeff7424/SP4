@@ -122,6 +122,10 @@ private:
 	bool powerfired;
 	bool myKeys[255];
 
+	//For Win and Lose Screens
+	bool winscreen;
+	bool losescreen;
+
 	std::vector<Bullet *> bulletList; // Vector list for bullets
 	std::vector<Enemy *> enemyList; // Vector list for creeps
 	std::vector<Tower *> towerList; // Vector list for towers
@@ -130,6 +134,12 @@ private:
 	std::vector<Tower *> towerClone; // For tower stats loaded from txt
 	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
 
+	Powerup *Shield;
+	Powerup *BaseHealth;
+	Powerup *Firerate;
+	Powerup *Damage;
+	Powerup *Backup_Tank;
+
 	Button *Button_Pause;
 
 	Button *Power_Shield;
@@ -137,6 +147,15 @@ private:
 	Button *Power_Firerate;
 	Button *Power_Damage;
 	Button *Power_BackupTank;
+
+	//For Win Lose Screen Buttons
+	Button *WinLose_MainMenu;
+	Button *WinLose_RestartLevel;
+	Button *WinLose_NextLevel;
+	Button *WinLose_Shop;
+	
+	//Mini Game
+	Button *WinLose_MiniGame;
 
 	Button *Unit_Infantry;
 	Button *Unit_Tank;
@@ -175,6 +194,8 @@ private:
 	TextureImage CreepTexture[3];
 	
 	TextureImage Upgrade[1];
+	TextureImage WinScreenTexture[1];
+	TextureImage LoseScreenTexture[1];
 
 	void RenderTileMap();
 	void mclicklevel1(int x, int y);
@@ -211,5 +232,10 @@ private:
 	void soundTypes(int type, bool death);
 
 	void RenderHUD();
+
+	//For Win and Lose Screens
+	void RenderWinScreen(void);
+	void RenderLoseScreen(void);
+
 };
 #endif

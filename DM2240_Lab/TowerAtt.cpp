@@ -219,7 +219,7 @@ void Tower::ChangeState()
 	}
 }
 
-void Tower::Respond(float dt)
+void Tower::Respond(float dt, Powerup *firerate, Powerup *damage)
 {
 	switch (state)
 	{
@@ -229,7 +229,14 @@ void Tower::Respond(float dt)
 		{
 			if (this->GetFireCounter() > 0.0f)
 			{
-				this->SetFireCounter(this->GetFireCounter() - dt);
+				if (firerate->GetActive())
+				{
+					this->SetFireCounter((this->GetFireCounter() / firerate->GetValue()) - dt);
+				}
+				else
+				{
+					this->SetFireCounter(this->GetFireCounter() - dt);
+				}
 			}
 			else
 			{
@@ -245,7 +252,14 @@ void Tower::Respond(float dt)
 				{
 					Bullet* bullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(type));
 					bullet->SetActive(true);
-					bullet->SetDamage(this->GetDamage());
+					if (damage->GetActive())
+					{
+						bullet->SetDamage(this->GetDamage() * damage->GetValue());
+					}
+					else
+					{
+						bullet->SetDamage(this->GetDamage());
+					}
 					bullet->SetPos(this->GetPos());
 					//bullet->SetVel(Target->GetPos() - this->GetPos());
 					bullet->SetSpeed(400);
@@ -257,10 +271,10 @@ void Tower::Respond(float dt)
 	}
 }
 
-void Tower::Update(float dt)
+void Tower::Update(float dt, Powerup *firerate, Powerup *damage)
 {
 	ChangeState();
-	Respond(dt);
+	Respond(dt, firerate, damage);
 }
 
 void Tower::Upgrade()
