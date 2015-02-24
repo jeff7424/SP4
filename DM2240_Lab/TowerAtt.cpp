@@ -10,6 +10,8 @@ using namespace std;
 Tower::Tower(TOWER_TYPE type)
 : type(type)
 , cost(0)
+, Target(NULL)
+, state(STATE_IDLE)
 {
 	char* filename = "";
 	switch (type)
@@ -139,6 +141,7 @@ bool Tower::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File
 
 void Tower::SetAtt(float firerate, int cost, int damage, int range, int health)
 {
+	SetFire(false);
 	SetFireRate(firerate);
 	SetCost(cost);
 	SetDamage(damage);
@@ -166,9 +169,98 @@ void Tower::DrawTowerLevel()
 	}
 }
 
+void Tower::ChangeState()
+{
+	if (state == STATE_IDLE)
+	{
+		if (Target != NULL && Target->GetActive() && Target->GetHealth() > 0)
+		{
+			float CurrentTarget = Target->GetPos().x - this->GetPos().x;
+			if (this->GetRange() >= CurrentTarget && this->GetPos().y == Target->GetPos().y)
+			{
+				state = STATE_LOADING;
+			}
+		}
+	}
+	else if (state == STATE_LOADING)
+	{
+		if (Target != NULL && Target->GetActive() && Target->GetHealth() > 0)
+		{
+			float CurrentTarget = Target->GetPos().x - this->GetPos().x;
+			if (this->GetRange() >= CurrentTarget && this->GetPos().y == Target->GetPos().y)
+			{
+				if (this->GetFireCounter() <= 0.0f)
+				{
+					state = STATE_ATTACK;
+					this->SetFireCounter(this->GetFireRate());
+					this->SetFire(true);
+				}
+			}
+		}
+		else if (Target == NULL || !Target->GetActive() || Target->GetHealth() <= 0)
+		{
+			state = STATE_IDLE;
+			this->SetFire(false);
+		}
+	}
+	else if (state == STATE_ATTACK)
+	{
+		if (Target != NULL && Target->GetActive() && Target->GetHealth() > 0)
+		{
+			float CurrentTarget = Target->GetPos().x - this->GetPos().x;
+			state = STATE_LOADING;
+			this->SetFire(false);
+		}
+		else if (Target == NULL || !Target->GetActive() || Target->GetHealth() <= 0)
+		{
+			state = STATE_IDLE;
+			this->SetFire(false);
+		}
+	}
+}
+
+void Tower::Respond(float dt)
+{
+	switch (state)
+	{
+	case STATE_IDLE:
+		break;
+	case STATE_LOADING:
+		{
+			if (this->GetFireCounter() > 0.0f)
+			{
+				this->SetFireCounter(this->GetFireCounter() - dt);
+			}
+			else
+			{
+				this->SetFireCounter(0.0f);
+			}
+		}
+		break;
+	case STATE_ATTACK:
+		{
+			if (Target != NULL && Target->GetActive() && Target->GetHealth() > 0)
+			{
+				if (this->GetFire())
+				{
+					Bullet* bullet = new Bullet();
+					bullet->SetActive(true);
+					bullet->SetDamage(this->GetDamage());
+					bullet->SetPos(this->GetPos());
+					//bullet->SetVel(Target->GetPos() - this->GetPos());
+					bullet->SetSpeed(400);
+					CPlayState::Instance()->GetBulletList().push_back(bullet);
+				}
+			}
+		}
+		break;
+	}
+}
+
 void Tower::Update(float dt)
 {
-
+	ChangeState();
+	Respond(dt);
 }
 
 void Tower::Upgrade()
@@ -220,4 +312,27 @@ void Tower::Render()
 	glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
+}
+
+void Tower::GetTarget(std::vector<Enemy*> EnemyList)
+{
+	for (int i = 0; i < EnemyList.size(); ++i)
+	{	
+		if (EnemyList[i]->GetActive() && EnemyList[i]->GetHealth() > 0)
+		{
+			// if enemy in range
+			if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange())
+			{
+				// set target to this enemy
+				Target = EnemyList[i];
+				break;
+			}
+		}
+		else if (!EnemyList[i]->GetActive() || EnemyList[i]->GetHealth() <= 0)
+		{
+			// else if enemy is dead, set target to null
+			Target = NULL;
+			break;
+		}
+	}
 }

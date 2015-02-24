@@ -61,8 +61,8 @@ void CPlayState::Init(void)
 	powerLane = false;
 	powerfired = false;
 	levelloaded = true;
-	m_ghost = Tower::TOWER_NORMAL;
-	m_ghost.SetActive(true);
+	//m_ghost = Tower::TOWER_NORMAL;
+	//m_ghost.SetActive(true);
 	for (int i = 0; i < 255; i++)
 	{
 		myKeys[i] = false;
@@ -101,7 +101,7 @@ void CPlayState::Init(void)
 	theNumOfTiles_Width = theMap->GetXNumOfGrid();
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
-	LoadTGA(&BackgroundTexture[0], "bin/textures/XPDefaultBackground.tga");
+	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
 
 
 	/*LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
@@ -298,6 +298,17 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 		}
 
+		// Tower update
+		for (int it = 0; it < towerList.size(); ++it)
+		{
+			Tower* tower = towerList[it];
+			if (tower->GetActive())
+			{
+				tower->Update(dt);
+				tower->GetTarget(enemyList);
+			}
+		}
+
 		// Deactivate out of bounds objects
 		for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
 		{
@@ -479,7 +490,7 @@ void CPlayState::changeSize(int w, int h) {
 	//gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
-	//float ar = 4.0f / 3.0f;
+	//float ar = 65.0f / 46.0f;
 
 	//int viewW = w;
 	//int viewH = w / ar;
@@ -868,47 +879,6 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	// Check if in range
-	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
-	{
-		Tower *tower = *it;
-		tower->SetFire(false);
-		if (tower->GetActive() == true)
-		{
-			for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
-			{
-				Enemy *creep = *it;
-				if (creep->GetActive() == true)
-				{
-					if (tower->GetPos().y == creep->GetPos().y && creep->GetPos().x - tower->GetPos().x < tower->GetRange() && creep->GetPos().x > tower->GetPos().x)
-					{
-						if (tower->GetFireCounter() > 0)
-						{
-							tower->SetFireCounter(tower->GetFireCounter() - dt);
-							break;
-						}
-						else if (tower->GetFireCounter() <= 0)
-						{
-							tower->SetFire(true);
-							tower->SetFireCounter(tower->GetFireRate());
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// Fire bullets
-	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
-	{
-		Tower *tower = *it;
-		if (tower->GetActive() == true && tower->GetFire() == true)
-		{
-			Bullet *bullet = FetchBullet(tower);
-		}
-	}
-
 	// Bomb radius
 	for (std::vector<Bullet *>::iterator itp = bulletList.begin(); itp != bulletList.end(); ++itp)
 	{
@@ -1026,7 +996,7 @@ void CPlayState::Update(float dt)
 	}
 
 	// Spawn bomb for cannon (radius)
-	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
+	/*for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
 		Bullet *bullet = *it3;
 		if (bullet->GetActive() && bullet->type == Bullet::GO_CANNONBULLET)
@@ -1064,7 +1034,7 @@ void CPlayState::Update(float dt)
 				}
 			}
 		}
-	}
+	}*/
 
 	// Check if creep in range
 	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
@@ -1952,8 +1922,7 @@ void CPlayState::RenderHUD()
 		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
 	glPopMatrix();
 
-	// On screen texts
-	glColor3f(1.0f, 1.0f, 1.0f);
+	
 
 	Button_Pause->Render();
 
@@ -1966,6 +1935,9 @@ void CPlayState::RenderHUD()
 
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
+
+	// On screen texts
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	sprintf_s(temp, "Health: ");
 	RenderStringOnScreen(10, 30, temp);

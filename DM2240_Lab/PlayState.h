@@ -40,6 +40,7 @@ extern "C" {
 using namespace std;
 
 class Tank;
+class Tower;
 
 class CPlayState : public CGameState
 {
@@ -149,7 +150,7 @@ private:
 	Enemy* FetchEnemy();
 	Tower* FetchTower();
 	Spawn* FetchSpawn();
-	Tower m_ghost; // ghost
+	//Tower m_ghost; // ghost
 
 	PlayerInfo *player; // Player profile
 	CMap *theMap; // CSV Map
