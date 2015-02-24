@@ -11,17 +11,17 @@ Bullet::Bullet(BULLET_TYPE type)
 	switch (type)
 	{
 	case GO_NORMALBULLET:
-		filename = "bin/textures/normalbullet.tga";
+		filename = "bin/textures/Soldier_shell.tga";
 		break;
 	case GO_CANNONBULLET:
-		filename = "bin/textures/cannonbullet.tga";
+		filename = "bin/textures/Tank_shell.tga";
 		break;
 	case GO_SHOCKBULLET:
 		health = 3;
-		filename = "bin/textures/lightningbullet.tga";
+		filename = "bin/textures/Missile_shot.tga";
 		break;
 	case GO_SLOWBULLET:
-		filename = "bin/textures/slowbullet.tga";
+		filename = "bin/textures/Sniper_shell.tga";
 		break;
 	}
 	LoadTGA(&texture, filename);
@@ -189,9 +189,10 @@ void Bullet::Render()
 	//glScalef(go->scale.x, go->scale.y, go->scale.z);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0); glVertex2f(-12, -12);
-	glTexCoord2f(0, 1); glVertex2f(-12, 12);
-	glTexCoord2f(1, 1); glVertex2f(12, 12);
-	glTexCoord2f(1, 0); glVertex2f(12, -12);
+	glTexCoord2f(0, 0); glVertex2f(-24, -24);
+	glTexCoord2f(0, 1); glVertex2f(-24, 24);
+	glTexCoord2f(1, 1); glVertex2f(24, 24);
+	glTexCoord2f(1, 0); glVertex2f(24, -24);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
