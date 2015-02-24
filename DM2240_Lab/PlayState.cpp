@@ -143,6 +143,14 @@ void CPlayState::Init(void)
 	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
 
 	backupTank = new Tank();
+
+	Bonus_Attack = new Button("bin/ui/hud/button_powerdmg.tga", 300, 270, 48, 48);
+	Bonus_Armour = new Button("bin/ui/hud/button_powerdmg.tga", 400, 270, 48, 48);
+	Bonus_Dollar = new Button("bin/ui/hud/button_powerdmg.tga", 500, 270, 48, 48);
+
+	Bonus_MultAttack = 1;
+	Bonus_MultArmour = 1;
+	Bonus_MultDollar = 1;
 }
 
 void CPlayState::Cleanup()
@@ -645,6 +653,16 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			info = 0;
 		}
+
+
+		if (enemycounter < 1)
+		{
+			Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+			Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+			Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		}
+
+
 	}
 }
 
@@ -777,103 +795,140 @@ void CPlayState::RenderTileMap(void)
 
 void CPlayState::mclicklevel1(int x, int y)
 {
-	int X = (float)x / w * theMap->GetXNumOfGrid();
-	int Y = (float)y / h * theMap->GetYNumOfGrid();
+	if (enemycounter > 0)
+	{
+		int X = (float)x / w * theMap->GetXNumOfGrid();
+		int Y = (float)y / h * theMap->GetYNumOfGrid();
 
-	Tower *tower = NULL;
-	if (tower != NULL)
-	{
-		delete tower;
-		tower = NULL;
-	}
-	if (Button_Pause->GetIsHover())
-	{
-		pause = !pause;
-	}
-	if (!pause)
-	{
-		if (theMap->GetGrid(X, Y)->CursorHit == true)
+		Tower *tower = NULL;
+		if (tower != NULL)
 		{
-			// if it is a terrain
-			if (theMap->GetGrid(X, Y)->terrainType != 0)
+			delete tower;
+			tower = NULL;
+		}
+		if (Button_Pause->GetIsHover())
+		{
+			pause = !pause;
+		}
+		if (!pause)
+		{
+			if (theMap->GetGrid(X, Y)->CursorHit == true)
 			{
-				if (!theMap->GetGrid(X, Y)->GetOccupied())
+				// if it is a terrain
+				if (theMap->GetGrid(X, Y)->terrainType != 0)
 				{
-					if (tower = FetchTower())
+					if (!theMap->GetGrid(X, Y)->GetOccupied())
 					{
-						//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
-						tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
-							towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
-						if (player->GetGold() >= tower->GetCost())
+						if (tower = FetchTower())
 						{
-							tower->SetActive(true);
-							tower->SetLevel(1);
-							tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
-							theMap->GetGrid(X, Y)->SetOccupied(true);
-							player->SetGold(player->GetGold() - tower->GetCost()); 
-							towerList.push_back(tower);
+							//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
+							tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
+								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
+							if (player->GetGold() >= tower->GetCost())
+							{
+								tower->SetActive(true);
+								tower->SetLevel(1);
+								tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
+								theMap->GetGrid(X, Y)->SetOccupied(true);
+								player->SetGold(player->GetGold() - tower->GetCost()); 
+								towerList.push_back(tower);
+							}
+							else
+							{
+								tower->SetActive(false);
+								delete tower;
+								tower = NULL;
+								free(tower);
+							}
 						}
-						else
-						{
-							tower->SetActive(false);
-							delete tower;
-							tower = NULL;
-							free(tower);
-						}
+						/*delete tower;
+						tower = NULL;
+						free(tower);*/
 					}
-					/*delete tower;
-					tower = NULL;
-					free(tower);*/
 				}
 			}
-		}
-		if (Power_Shield->GetIsHover())
-		{
-			player->SetMaxShield(player->GetShield() + 50);
-			player->SetShield(player->GetShield() + 50);
-		}
-		else if (Power_BaseHealth->GetIsHover())
-		{
-			player->SetHealth(player->GetHealth() + 50);
-			if (player->GetHealth() >= 100)
-				player->SetHealth(100);
-		}
-		else if (Power_Firerate->GetIsHover())
-		{
+			if (Power_Shield->GetIsHover())
+			{
+				player->SetMaxShield(player->GetShield() + 50);
+				player->SetShield(player->GetShield() + 50);
+			}
+			else if (Power_BaseHealth->GetIsHover())
+			{
+				player->SetHealth(player->GetHealth() + 50);
+				if (player->GetHealth() >= 100)
+					player->SetHealth(100);
+			}
+			else if (Power_Firerate->GetIsHover())
+			{
 
-		}
-		else if (Power_Damage->GetIsHover())
-		{
+			}
+			else if (Power_Damage->GetIsHover())
+			{
 
+			}
+			else if (Power_BackupTank->GetIsHover())
+			{
+				backupTank->SetActive(true);
+			}
+			else if (Unit_Infantry->GetIsHover())
+			{
+				selection = 1;
+			}
+			else if (Unit_Tank->GetIsHover())
+			{
+				selection = 2;
+			}
+			else if (Unit_Heavy->GetIsHover())
+			{
+				selection = 3;
+			}
+			else if (Unit_Sniper->GetIsHover())
+			{
+				selection = 4;
+			}
+			else if (Unit_Mine->GetIsHover())
+			{
+				selection = 5;
+			}
+			else if (Unit_Barricade->GetIsHover())
+			{
+				selection = 6;
+			}
 		}
-		else if (Power_BackupTank->GetIsHover())
+	}
+	else
+	{ // End-of-round bonus selection menu - Allow clicks to register
+
+		// Placeholder Bonuses
+
+		// Bonus 1: Alpha Damage +10%
+		if (Bonus_Attack->GetIsHover())
 		{
-			backupTank->SetActive(true);
+			// Stuff
+			Bonus_MultAttack *= 1.1f;
+
+			// Start spawning the next wave
 		}
-		else if (Unit_Infantry->GetIsHover())
+
+
+		// Bonus 2: Durability +10%
+		if (Bonus_Armour->GetIsHover())
 		{
-			selection = 1;
+			// Stuff
+			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
+
+			// Start spawning the next wave
 		}
-		else if (Unit_Tank->GetIsHover())
+
+		// Bonus 3: Loot Drop +10%
+		if (Bonus_Dollar->GetIsHover())
 		{
-			selection = 2;
+			// Stuff
+			Bonus_MultDollar *= 1.1f;
+
+			// Start spawning the next wave
 		}
-		else if (Unit_Heavy->GetIsHover())
-		{
-			selection = 3;
-		}
-		else if (Unit_Sniper->GetIsHover())
-		{
-			selection = 4;
-		}
-		else if (Unit_Mine->GetIsHover())
-		{
-			selection = 5;
-		}
-		else if (Unit_Barricade->GetIsHover())
-		{
-			selection = 6;
-		}
+
 	}
 }
 
@@ -957,9 +1012,9 @@ void CPlayState::Update(float dt)
 						}
 					}
 
-					creep->SetHealth(creep->GetHealth() - bullet->GetDamage());
+					creep->SetHealth(creep->GetHealth() - (bullet->GetDamage())*Bonus_MultAttack); // Damage the creep
 
-					if (creep->GetHealth() <= 0)
+					if (creep->GetHealth() <= 0) // kill the creep
 					{
 						soundTypes(creep->type, true);
 						creep->SetActive(false);
@@ -967,15 +1022,15 @@ void CPlayState::Update(float dt)
 						switch (creep->type)
 						{
 						case Enemy::ENEMY_1:
-							player->SetGold(player->GetGold() + Enemy::NME_Y1);
+							player->SetGold(player->GetGold() + (Enemy::NME_Y1)*Bonus_MultDollar);
 							break;
 
 						case Enemy::ENEMY_2:
-							player->SetGold(player->GetGold() + Enemy::NME_Y2);
+							player->SetGold(player->GetGold() + (Enemy::NME_Y2)*Bonus_MultDollar);
 							break;
 
 						case Enemy::ENEMY_3:
-							player->SetGold(player->GetGold() + Enemy::NME_Y3);
+							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
 							break;
 						}
 
@@ -1061,7 +1116,7 @@ void CPlayState::Update(float dt)
 							else if (creep->GetFireCounter() <= 0)
 							{
 								creep->SetFire(true);
-								tower->SetHealth(tower->GetHealth() - creep->GetDamage());
+								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())*Bonus_MultArmour);
 								creep->SetFireCounter(creep->GetFireRate());
 								if (tower->GetHealth() <= 0)
 								{
@@ -1964,14 +2019,17 @@ void CPlayState::RenderHUD()
 	Power_Damage->Render();
 	Power_BackupTank->Render();
 
-	glColor3f(1.0f, 1.0f, 1.0f);
-
 	// All enemies defeated
 	if (enemycounter < 1)
 	{
 		sprintf_s(temp, "========== Wave Defeated ==========");
-		RenderStringOnScreen(300, 330, temp);
+		RenderStringOnScreen(300, 230, temp);
+
+		Bonus_Attack->Render();
+		Bonus_Armour->Render();
+		Bonus_Dollar->Render();
 	}
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
