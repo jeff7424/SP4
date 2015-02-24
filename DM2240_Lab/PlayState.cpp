@@ -314,6 +314,18 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			{
 				tower->Update(dt);
 				tower->GetTarget(enemyList);
+				if (tower->state == Tower::STATE_ATTACK)
+				{
+					switch (tower->type)
+					{
+						case Tower::TOWER_SLOW:
+							soundTypes(6, false);
+						break;
+						case Tower::TOWER_NORMAL:
+							soundTypes(7, false);
+						break;
+					}
+				}
 			}
 		}
 
@@ -1803,6 +1815,18 @@ void CPlayState::soundTypes(int type, bool death)
 	else if (type == 5)
 	{
 		se->play2D("bin/sounds/laserSFX.mp3", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 6)
+	{
+		se->play2D("bin/sounds/sniper.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 7)
+	{
+		se->play2D("bin/sounds/Soldier.wav", false);
 		se->setSoundVolume(0.25);
 		death = false;
 	}
