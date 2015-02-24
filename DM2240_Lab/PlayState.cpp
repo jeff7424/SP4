@@ -315,6 +315,10 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			backupTank->SetActive(false);
 		}
 		backupTank->Update(dt);
+		Shield->Update(dt);
+		BaseHealth->Update(dt);
+		Firerate->Update(dt);
+		Damage->Update(dt);
 
 		for (int it = 0; it < enemyList.size(); ++it)
 		{
@@ -331,7 +335,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			Tower* tower = towerList[it];
 			if (tower->GetActive())
 			{
-				tower->Update(dt);
+				tower->Update(dt, Firerate, Damage);
 				tower->GetTarget(enemyList);
 				if (tower->state == Tower::STATE_ATTACK)
 				{
@@ -880,14 +884,25 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			if (Power_Shield->GetIsHover())
 			{
-				player->SetMaxShield(player->GetShield() + 50);
-				player->SetShield(player->GetShield() + 50);
+				if (Shield->GetReady())
+				{
+					Shield->SetActive(true);
+					player->SetMaxShield(player->GetShield() + 50);
+					player->SetShield(player->GetShield() + 50);
+				}
 			}
 			else if (Power_BaseHealth->GetIsHover())
 			{
-				player->SetHealth(player->GetHealth() + 50);
-				if (player->GetHealth() >= 100)
-					player->SetHealth(100);
+				if (BaseHealth->GetReady())
+				{
+					if (player->GetHealth() < player->GetMaxHealth())
+					{
+						BaseHealth->SetActive(true);
+						player->SetHealth(player->GetHealth() + 50);
+						if (player->GetHealth() >= 100)
+							player->SetHealth(100);
+					}
+				}
 			}
 			else if (Power_Firerate->GetIsHover())
 			{
