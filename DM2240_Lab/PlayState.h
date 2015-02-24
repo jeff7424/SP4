@@ -130,6 +130,12 @@ private:
 	std::vector<Tower *> towerClone; // For tower stats loaded from txt
 	std::vector<Enemy *> enemyClone; // For enemy stats loaded from txt
 
+	Powerup *Shield;
+	Powerup *BaseHealth;
+	Powerup *Firerate;
+	Powerup *Damage;
+	Powerup *Backup_Tank;
+
 	Button *Button_Pause;
 
 	Button *Power_Shield;

@@ -53,7 +53,7 @@ Vector3 Button::GetSize()
 
 void Button::SetIsHover(int x, int y)
 {
-	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&
+	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&                                                                                      
 		y > (Position.y - (Size.y)) && y < (Position.y + (Size.y)))
 	{
 		isHover = true;

@@ -127,6 +127,12 @@ void CPlayState::Init(void)
 	loadlevel();
 	LoadSpawn();
 
+	Shield = new Powerup(Powerup::POWER_SHIELD);
+	BaseHealth = new Powerup(Powerup::POWER_INCREASEBASEHEALTH);
+	Firerate = new Powerup(Powerup::POWER_FIRERATEMULTIPLY);
+	Damage = new Powerup(Powerup::POWER_DAMAGEMULTIPLY);
+	Backup_Tank = new Powerup(Powerup::POWER_TANKBACKUP);
+	
 	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
 
 	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
@@ -284,18 +290,31 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
+	
 	if (!pause)
 	{
 		// timer for enemy to spawn
 		spawntimer += dt;
 
+		// power ups update (duration & cooldown)
+		Shield->Update(dt);
+		BaseHealth->Update(dt);
+		Firerate->Update(dt);
+		Damage->Update(dt);
+		Backup_Tank->Update(dt);
+
 		// Spawn enemies
 		UpdateSpawn();
 
-		if (backupTank->GetActive())
+		if (Backup_Tank->GetActive())
 		{
-			backupTank->Update(dt);
+			backupTank->SetActive(true);
 		}
+		else
+		{
+			backupTank->SetActive(false);
+		}
+		backupTank->Update(dt);
 
 		for (int it = 0; it < enemyList.size(); ++it)
 		{
@@ -860,15 +879,18 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Power_Firerate->GetIsHover())
 			{
-
+				Firerate->SetActive(true);
 			}
 			else if (Power_Damage->GetIsHover())
 			{
-
+				Damage->SetActive(true);
 			}
 			else if (Power_BackupTank->GetIsHover())
 			{
-				backupTank->SetActive(true);
+				if (Backup_Tank->GetReady())
+				{
+					Backup_Tank->SetActive(true);
+				}
 			}
 			else if (Unit_Infantry->GetIsHover())
 			{
@@ -934,50 +956,6 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	// Bomb radius
-	for (std::vector<Bullet *>::iterator itp = bulletList.begin(); itp != bulletList.end(); ++itp)
-	{
-		Bullet *go2 = *itp;
-		if (go2->GetActive())
-		{
-			if (go2->type == Bullet::GO_BOMBBULLET)
-			{
-				//go2->scale.Set(10, 10, 0);
-				for (std::vector<Enemy *>::iterator itp = enemyList.begin(); itp != enemyList.end(); ++itp)
-				{
-					Enemy *creepz = *itp;
-					if (creepz->GetActive())
-					{
-						Vector3 temp3;
-						temp3.x = creepz->GetPos().x;
-						temp3.y = creepz->GetPos().y;
-						if (abs((temp3 - go2->GetPos()).Length()) < 100)
-						{
-							creepz->SetHealth(creepz->GetHealth() - go2->GetDamage());
-							go2->SetActive(false);
-
-							if (creepz->GetHealth() <= 0)
-							{
-								creepz->SetActive(false);
-								player->SetGold(player->GetGold() + ((rand() % 10 + 1) * creepz->GetLevel()));
-								tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-								enemycounter--;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			delete go2;
-			bulletList.erase(itp);
-			go2 = NULL;
-			break;
-		}
-	}
-
 	// Despawn creep if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
@@ -987,7 +965,7 @@ void CPlayState::Update(float dt)
 			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 			{
 				Enemy *creep = *it2;
-				if (creep->GetActive() && bullet->type != Bullet::GO_CANNONBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if (creep->GetActive() && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
 				{
 					if (bullet->GetHealth() > 0)
 					{
@@ -1764,7 +1742,6 @@ void CPlayState::playSound(void)
 		//sound.setVolume(50);
 		sound.playSoundThreaded();
 	}
-
 }
 
 void CPlayState::shooting(bool firing)
@@ -1977,8 +1954,6 @@ void CPlayState::RenderHUD()
 		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
 	glPopMatrix();
 
-	
-
 	Button_Pause->Render();
 
 	Unit_Infantry->Render();
@@ -2018,6 +1993,12 @@ void CPlayState::RenderHUD()
 	Power_Firerate->Render();
 	Power_Damage->Render();
 	Power_BackupTank->Render();
+
+	Shield->RenderDurationBar(Power_Shield->GetPosition().x, Power_Shield->GetPosition().y);
+	BaseHealth->RenderDurationBar(Power_BaseHealth->GetPosition().x, Power_BaseHealth->GetPosition().y);
+	Firerate->RenderDurationBar(Power_Firerate->GetPosition().x, Power_Firerate->GetPosition().y);
+	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
+	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
 	// All enemies defeated
 	if (enemycounter < 1)
