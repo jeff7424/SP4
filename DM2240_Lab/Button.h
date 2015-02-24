@@ -2,7 +2,7 @@
 
 #include "Vector3.h"
 #include "TextureImage.h"
-
+#include "AudioPlayer.h"
 class Button {
 private:
 	bool isHover;
@@ -12,7 +12,7 @@ private:
 	Vector3 Size;
 
 	TextureImage Image;
-
+	ISoundEngine *se;
 public:
 	Button();
 	Button(char *filename, const int posx, const int posy, const int sizex, const int sizey);

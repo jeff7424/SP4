@@ -13,7 +13,7 @@ void CMenuState::Init()
 {
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
-
+	//se = createIrrKlangDevice();
 	glEnable(GL_TEXTURE_2D);
 	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
 		return; //false;										// If Loading Failed, Return False
@@ -307,7 +307,7 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 		if (mouseInfo.mLButtonUp == false)
 		{
 			if (StartButton->GetIsHover())
-			{
+			{	
 				CGameStateManager::getInstance()->ChangeState(CGameModeState::Instance());
 			}
 			else if (SettingsButton->GetIsHover())

@@ -5,15 +5,23 @@
 #include <mmsystem.h>
 #include "glext.h"
 #include <lua.hpp>
+#include <stdlib.h>
+#include <time.h>
 
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
 
 CPlayState CPlayState::thePlayState;
 lua_State *L;
+int a = 1;
+int RNGesus(void)
+{
+	return rand() % 3 + 1;
+}
 
 void CPlayState::Init(void)
 {
+	srand(time(NULL));
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
@@ -78,7 +86,7 @@ void CPlayState::Init(void)
 	player = new PlayerInfo();
 
 	se = createIrrKlangDevice();
-	playSound();
+	playSound(a);
 
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
@@ -358,6 +366,9 @@ void CPlayState::Update(CGameStateManager* theGSM)
 						case Tower::TOWER_SHOCK:
 							soundTypes(9, false);
 						break;
+						case Tower::TOWER_CANNON:
+							soundTypes(10, false);
+							break;
 					}
 				}
 			}
@@ -377,6 +388,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
+				soundTypes(11, false);
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
@@ -620,6 +632,13 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 
 		break;
 	case '-':
+		a++;
+		if (a > 3)
+		{
+			a = 1;
+		}
+		playSound(a);
+		break;
 	case '_':
 		sound.decreaseVolume();
 		break;
@@ -1801,13 +1820,29 @@ void CPlayState::LoadAtt()
 	inData.close();
 }
 
-void CPlayState::playSound(void)
+void CPlayState::playSound(int a)
 {
 	if (soundon == true)
 	{
-		sound.setFileName("bin/sounds/gameTheme_3.mp3");
-		//sound.setVolume(50);
-		sound.playSoundThreaded();
+		if (a == 1)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/BGM.mp3");
+			//sound.setVolume(25);
+			sound.playSoundThreaded();
+		}
+		else if (a == 2)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/tempBGM.mp3");
+			sound.playSoundThreaded();
+		}
+		else if (a == 3)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/Snake_Eater.mp3");
+			sound.playSoundThreaded();
+		}
 	}
 }
 
@@ -1873,6 +1908,34 @@ void CPlayState::soundTypes(int type, bool death)
 		se->play2D("bin/sounds/Missile.wav", false);
 		se->setSoundVolume(0.25);
 		death = false;
+	}
+	else if (type == 10)
+	{
+		se->play2D("bin/sounds/TankFire.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 11)
+	{
+		int random = RNGesus();
+		switch (random)
+		{
+		case 1:
+			se->play2D("bin/sounds/Hit_1.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 2:
+			se->play2D("bin/sounds/Hit_2.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 3:
+			se->play2D("bin/sounds/Hit_3.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		}
 	}
 }
 

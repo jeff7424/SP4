@@ -318,10 +318,10 @@ void Tower::Render()
 	glBindTexture(GL_TEXTURE_2D, TowerTexture.texID);
 	glTranslatef(GetPos().x, GetPos().y, 0);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-	glTexCoord2f(0, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-	glTexCoord2f(1, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-	glTexCoord2f(1, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
+	glTexCoord2f(1, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
+	glTexCoord2f(1, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
+	glTexCoord2f(0, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
+	glTexCoord2f(0, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
