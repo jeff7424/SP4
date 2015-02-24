@@ -323,6 +323,10 @@ void CPlayState::Update(CGameStateManager* theGSM)
 						break;
 						case Tower::TOWER_NORMAL:
 							soundTypes(7, false);
+							soundTypes(8, false);
+						break;
+						case Tower::TOWER_SHOCK:
+							soundTypes(9, false);
 						break;
 					}
 				}
@@ -1827,6 +1831,18 @@ void CPlayState::soundTypes(int type, bool death)
 	else if (type == 7)
 	{
 		se->play2D("bin/sounds/Soldier.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 8)
+	{
+		se->play2D("bin/sounds/shells.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 9)
+	{
+		se->play2D("bin/sounds/Missile.wav", false);
 		se->setSoundVolume(0.25);
 		death = false;
 	}
