@@ -137,13 +137,13 @@ void CPlayState::Init(void)
 	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
 
 	//For Win Lose Menu
-	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 194, 108, 28);
-	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 294, 108, 28);
-	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
-	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 494, 108, 28);
+	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
+	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
+//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
+	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
 
 	//For Mini Game
-	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 594, 108, 28);
+	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
 	backupTank = new Tank();
 
@@ -880,7 +880,7 @@ void CPlayState::MouseMove(int x, int y) {
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_NextLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_MiniGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		
 		Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
@@ -893,7 +893,7 @@ void CPlayState::MouseMove(int x, int y) {
 		//For Lose Screens
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	if (!pause)
@@ -1284,10 +1284,10 @@ void CPlayState::mclicklevel1(int x, int y)
 		losescreen = false;
 	}
 
-	if (WinLose_Shop->GetIsHover())
+/*	if (WinLose_Shop->GetIsHover())
 	{
 		cout << "Initialise the Shop!" << endl;
-	}
+	} */
 
 	if (WinLose_MiniGame->GetIsHover())
 	{
@@ -2532,7 +2532,7 @@ void CPlayState::RenderWinScreen()
 	WinLose_MainMenu->Render();
 	WinLose_NextLevel->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
+//	WinLose_Shop->Render();
 	WinLose_MiniGame->Render();
 
 }
@@ -2563,7 +2563,7 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
+//	WinLose_Shop->Render();
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
