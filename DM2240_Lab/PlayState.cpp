@@ -561,8 +561,9 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				{
 					// Monster moving speed
 					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-					if (creep->GetPos().x <= 0)
+					if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 					{
+						player->SetHealth((player->GetHealth())-10);
 						creep->SetActive(false);
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
@@ -1211,7 +1212,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultAttack *= 1.1f;
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 
@@ -1221,7 +1222,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 		// Bonus 3: Loot Drop +10%
@@ -1230,7 +1231,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultDollar *= 1.1f;
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 	}
 
