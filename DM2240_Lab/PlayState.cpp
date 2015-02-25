@@ -2166,7 +2166,7 @@ void CPlayState::RenderHUD()
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
 	// All enemies defeated
-//	if (enemycounter < 1)
+	if (enemycounter < 1)
 	{
 		sprintf_s(temp, "========== Wave Defeated ==========");
 		RenderStringOnScreen(300, 230, temp);
