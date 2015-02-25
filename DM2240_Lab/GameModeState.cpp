@@ -294,6 +294,7 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 		{
 			if (CampaignButton->GetIsHover())
 			{
+				CPlayState::Instance()->SetLevel(1);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (SkirmishButton->GetIsHover())

@@ -79,7 +79,7 @@ void CPlayState::Init(void)
 	SpawnTowers();
 	SpawnEnemy();*/
 
-	winscreen = true;
+	winscreen = false;
 	losescreen = false;
 
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
