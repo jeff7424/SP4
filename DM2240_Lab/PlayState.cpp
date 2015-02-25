@@ -561,8 +561,43 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				{
 					// Monster moving speed
 					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-					if (creep->GetPos().x <= 0)
+					if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 					{
+						switch (creep->type)
+						{
+						case Enemy::ENEMY_1:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-10);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth(player->GetHealth()-10);
+							break;
+
+						case Enemy::ENEMY_2:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-20);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-20);
+							break;
+
+						case Enemy::ENEMY_3:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-30);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-30);
+							break;
+						}
 						creep->SetActive(false);
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
@@ -1211,7 +1246,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultAttack *= 1.1f;
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 
@@ -1221,7 +1256,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 		// Bonus 3: Loot Drop +10%
@@ -1230,7 +1265,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			// Stuff
 			Bonus_MultDollar *= 1.1f;
 
-			// Start spawning the next wave
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 	}
 
@@ -1275,7 +1310,7 @@ void CPlayState::Update(float dt)
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
-		winscreen = true;
+		losescreen = true;
 	}
 
 	// Despawn creep if bullet collides
