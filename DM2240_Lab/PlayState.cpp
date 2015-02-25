@@ -886,6 +886,19 @@ void CPlayState::MouseMove(int x, int y) {
 		Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		if (Bonus_Attack->GetIsHover())
+		{
+			info = -1;
+		}
+		if (Bonus_Armour->GetIsHover())
+		{
+			info = -2;
+		}
+		if (Bonus_Dollar->GetIsHover())
+		{
+			info = -3;
+		}
 	}
 
 	else if (losescreen == true)
@@ -1230,7 +1243,6 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 1: Alpha Damage +10%
 		if (Bonus_Attack->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultAttack *= 1.1f;
 			if (player->GetBonus()-10 > 0)
 			player->SetBonus(player->GetBonus()-10);
@@ -1241,7 +1253,6 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 2: Durability +10%
 		if (Bonus_Armour->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
 			if (player->GetBonus()-10 > 0)
 				player->SetBonus(player->GetBonus()-10);
@@ -1251,7 +1262,6 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 3: Loot Drop +10%
 		if (Bonus_Dollar->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultDollar *= 1.1f;
 			if (player->GetBonus()-10 > 0)
 				player->SetBonus(player->GetBonus()-10);
@@ -1356,6 +1366,7 @@ void CPlayState::Update(float dt)
 
 						case Enemy::ENEMY_3:
 							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
+							player->SetBonus(player->GetBonus() + 1);
 							break;
 						}
 
@@ -2311,7 +2322,7 @@ void CPlayState::RenderInfo(int x, int y)
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	char temp[256];
-	if (info > 0)
+	if (info > 0) // Unit Info
 	{
 		if (info == 1)
 		{
@@ -2348,6 +2359,30 @@ void CPlayState::RenderInfo(int x, int y)
 		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
 		RenderStringOnScreen(x + 4, y - 8, temp);
+	}
+	else if (info < 0) // Bonus Selection Info
+	{
+		if (info == -1)
+		{
+			sprintf_s(temp, "Increase bullet damage by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -2)
+		{
+			sprintf_s(temp, "Increase damage resistance by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -3)
+		{
+			sprintf_s(temp, "Increase gold drop by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
 	}
 }
 
@@ -2399,7 +2434,7 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(500, 32, temp);
 
 	// Mouse over tower selection for info
-	if (info > 0)
+	if (info != 0)
 	{
 		RenderInfo(mouseInfo.lastX, mouseInfo.lastY);
 	}
@@ -2450,11 +2485,6 @@ void CPlayState::RenderHUD()
 		RenderLoseScreen();
 	}
 
-	// All enemies defeated
-	if (enemycounter < 1)
-	{
-
-	}
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
