@@ -10,6 +10,7 @@ PlayerInfo::PlayerInfo()
 , shield(0)
 , maxshield(shield)
 , gold(700)
+, bonus_currency(0)
 {
 
 }
@@ -42,6 +43,11 @@ void PlayerInfo::SetMaxShield(int maxshield)
 void PlayerInfo::SetGold(int gold)
 {
 	this->gold = gold;
+}
+
+void PlayerInfo::SetBonus(int bonus)
+{
+	this->bonus_currency = bonus;
 }
 
 void PlayerInfo::SetQtyBaseHealth(int QtyBaseHealth)
@@ -87,6 +93,11 @@ int PlayerInfo::GetMaxShield()
 int PlayerInfo::GetGold()
 {
 	return gold;
+}
+
+int PlayerInfo::GetBonus()
+{
+	return bonus_currency;
 }
 
 int PlayerInfo::GetQtyBaseHealth()
