@@ -311,6 +311,8 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/select.wav", false);
 			if (StartButton->GetIsHover())
 			{	
 				bgm.stop();

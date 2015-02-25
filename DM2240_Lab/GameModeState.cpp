@@ -12,6 +12,7 @@ CGameModeState CGameModeState::modeState;
 
 void CGameModeState::Init()
 {
+	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
 	glEnable(GL_TEXTURE_2D);
@@ -23,7 +24,7 @@ void CGameModeState::Init()
 	return;*/
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
-
+	buttons = createIrrKlangDevice();
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
@@ -276,6 +277,37 @@ void CGameModeState::MouseMove(int x, int y)
 	CampaignButton->SetIsHover(x, y);
 	SkirmishButton->SetIsHover(x, y);
 	BackButton->SetIsHover(x, y);
+	if (CampaignButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (SkirmishButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (BackButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else
+	{
+		isplaying = true;
+	}
 }
 
 void CGameModeState::MouseClick(int button, int state, int x, int y)

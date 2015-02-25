@@ -2124,6 +2124,7 @@ void CPlayState::soundTypes(int type, bool death)
 {
 	if (type == 1)
 	{
+		
 		se->play2D("bin/sounds/chipDeath.mp3", false);
 		se->setSoundVolume(0.25);
 		death = false;
