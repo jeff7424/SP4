@@ -30,7 +30,7 @@ void CPlayState::Init(void)
 	selection = 1;
 	enemycounter = 0;
 	heroAnimationCounter = 0;
-	progress = 1;
+	//progress = 1;
 	info = 0;
 	spawntimer = 0.0f;
 	ratio = 0;
@@ -2562,4 +2562,9 @@ void CPlayState::RenderLoseScreen()
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
 {
 	return bulletList;
+}
+
+void CPlayState::SetLevel(int level)
+{
+	this->progress = level;
 }

@@ -67,6 +67,7 @@ public:
 	void drop();
 
 	std::vector<Bullet*> &GetBulletList(void);
+	void SetLevel(int level);
 
 protected:
 	CPlayState(){}
