@@ -13,8 +13,11 @@
 CPlayState CPlayState::thePlayState;
 lua_State *L;
 
+int lane[6] = {0};
+
 void CPlayState::Init(void)
 {
+	//temp = 10;
 	Cam = NULL;
 	player = NULL;
 	w = glutGet(GLUT_WINDOW_WIDTH);
@@ -130,6 +133,7 @@ void CPlayState::Init(void)
 	LoadTGA(&BulletTexture[1], "bin/textures/cannonbullet.tga");
 	LoadTGA(&BulletTexture[2], "bin/textures/slowbullet.tga");
 	LoadTGA(&BulletTexture[3], "bin/textures/lightningbullet.tga");
+	LoadTGA(&BulletTexture[5], "bin/textures/sniperbullet.tga");
 
 	LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
@@ -317,31 +321,49 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	}
 
 	// Handle enemies which reaches the base
+	//cout << laneCheck() << endl;
+	//cout << laneCheck() << endl;
+	theEnemy->SetMovement(enemyList, TILE_SIZE, dt, laneCheck());
+
+	//if enemy reaches base delete enemy and decrease enemy count
 	for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
 	{
 		Enemy *creep = *it;
-		if (creep->GetActive() == true)
+		if (creep->GetPos().x <= 0)
 		{
-			if (creep->GetFire() == false)
-			{
-				// Monster moving speed
-				creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-				if (creep->GetPos().x <= 0)
-				{
-					creep->SetActive(false);
-					tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-					enemycounter--;
-					delete creep;
-					enemyList.erase(it);
-					creep = NULL;
-					break;
-				}
-			}
+			creep->SetActive(false);
+			tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+			enemycounter -= 1;
+			delete creep;
+			enemyList.erase(it);
+			creep = NULL;
+			break;
 		}
 	}
 
+	//cout << wLane << endl;
 	// Collision updates and unit triggers
 	Update(dt);
+}
+
+int CPlayState::laneCheck()
+{
+	int k = 1; 
+    int min = lane[1];       // start with max = first element
+	
+     for(int i = 1; i < 6; i++)
+     {
+          if(lane[i] < min)
+          {
+			  min = lane[i];
+			  k = i;
+		  }
+
+			cout << lane[i] << " ";
+     }
+	 cout << " { " << k << " } " << endl;
+	 //cout << " [ " << min << " ] " << endl;
+     return k;                // return strongest lane 
 }
 
 void CPlayState::Draw(CGameStateManager* theGSM) {
@@ -769,6 +791,8 @@ void CPlayState::mclicklevel1(int x, int y)
 						towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 					if (player->GetGold() >= tower->GetCost())
 					{
+						lane[Y] += 1;
+						//cout << Y << endl;
 						tower->SetActive(true);
 						tower->SetLevel(1);
 						tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
@@ -825,6 +849,53 @@ void CPlayState::Update(float dt)
 		}
 	}
 
+		// Check if creep in range
+	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
+	{
+		Enemy *creep = *it2;
+		creep->SetFire(false);
+
+		if (creep->GetActive() == true)
+		{
+			for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
+			{
+				Tower *tower = *it;
+				if (tower->GetActive() == true)
+				{
+					if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+					{
+						
+							if (creep->GetFireCounter() > 0)
+							{
+								creep->SetFireCounter(creep->GetFireCounter() - dt);
+								break;
+							}
+							else if (creep->GetFireCounter() <= 0)
+							{
+								creep->SetFire(true);
+								creep->SetFireCounter(creep->GetFireRate());
+								if (tower->GetHealth() <= 0)
+								{
+									se->play2D("bin/sounds/towerDeath.mp3", false);
+									se->setSoundVolume(0.25);
+									creep->SetFire(false);
+								}
+								break;
+							}
+						
+					}
+				}
+			}
+		}
+		else
+		{
+			delete creep;
+			enemyList.erase(it2);
+			creep = NULL;
+			break;
+		}
+	}
+
 	// Fire bullets
 	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
 	{
@@ -856,6 +927,30 @@ void CPlayState::Update(float dt)
 				bullet->SetDamage(tower->GetDamage());
 				bullet->SetVel(Vector3(200, 0, 0));
 				bullet->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, 0));
+			}
+		}
+	}
+
+	for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
+	{
+		Enemy *creep = *it;
+		if (creep->GetActive() == true && creep->GetFire() == true)
+		{
+			Bullet *bullet;
+			if (bullet = FetchBullet())
+			{
+				bullet->SetActive(true);
+				if (creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4)
+				{
+					bullet->type = Bullet::GO_SNIPERBULLET;
+				}
+				else if (creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_2)
+				{
+					bullet->type = Bullet::GO_CLOSEBULLET;
+				}
+				bullet->SetDamage(creep->GetDamage());
+				bullet->SetVel(Vector3(-200, 0, 0));
+				bullet->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y, 0));
 			}
 		}
 	}
@@ -913,16 +1008,44 @@ void CPlayState::Update(float dt)
 		}
 	}
 
-	// Despawn creep if bullet collides
+	// Despawn creep/ tower if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
 		Bullet *bullet = *it3;
 		if (bullet->GetActive())
 		{
+			for (std::vector<Tower *>::iterator it2 = towerList.begin(); it2 != towerList.end(); ++it2)
+			{
+				Tower *tower = *it2;
+				if (tower->GetActive() && (bullet->type == Bullet::GO_SNIPERBULLET || bullet->type == Bullet::GO_CLOSEBULLET) && tower->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(tower->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				{
+					if (bullet->GetHealth() > 0)
+					{
+						bullet->SetHealth(bullet->GetHealth() - 1);
+						bullet->SetPos(bullet->GetPos() + 20);
+					}
+					else if (bullet->GetHealth() <= 0)
+					{
+						bullet->SetActive(false);
+					}
+
+					tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
+
+					if (tower->GetHealth() <= 0)
+					{
+						int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+						int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+						theMap->GetGrid(x, y)->SetOccupied(false);
+						tower->SetActive(false);
+						break;
+					}
+				}
+			}
+
 			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 			{
 				Enemy *creep = *it2;
-				if (creep->GetActive() && bullet->type != Bullet::GO_CANNONBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if (creep->GetActive() && bullet->type != Bullet::GO_CANNONBULLET && bullet->type != Bullet::GO_CLOSEBULLET && bullet->type != Bullet::GO_SNIPERBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
 				{
 					if (bullet->GetHealth() > 0)
 					{
@@ -1008,59 +1131,6 @@ void CPlayState::Update(float dt)
 					break;
 				}
 			}
-		}
-	}
-
-	// Check if creep in range
-	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
-	{
-		Enemy *creep = *it2;
-		if (creep->GetActive() == true)
-		{
-			creep->SetFire(false);
-			for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
-			{
-				Tower *tower = *it;
-				if (tower->GetActive() == true)
-				{
-					if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
-					{
-						creep->SetFire(true);
-						if (creep->GetActive() == true && creep->GetFire() == true)
-						{
-							if (creep->GetFireCounter() > 0)
-							{
-								creep->SetFireCounter(creep->GetFireCounter() - dt);
-								break;
-							}
-							else if (creep->GetFireCounter() <= 0)
-							{
-								creep->SetFire(true);
-								tower->SetHealth(tower->GetHealth() - creep->GetDamage());
-								creep->SetFireCounter(creep->GetFireRate());
-								if (tower->GetHealth() <= 0)
-								{
-									se->play2D("bin/sounds/towerDeath.mp3", false);
-									se->setSoundVolume(0.25);
-									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
-									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-									theMap->GetGrid(x, y)->SetOccupied(false);
-									tower->SetActive(false);
-									creep->SetFire(false);
-								}
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			delete creep;
-			enemyList.erase(it2);
-			creep = NULL;
-			break;
 		}
 	}
 }
@@ -1263,6 +1333,27 @@ void CPlayState::DrawBullet(Bullet *bullet)
 		glTexCoord2f(1, 0); glVertex2f(75, -75);
 		glEnd();
 		glPopMatrix();
+		break;
+	case Bullet::GO_SNIPERBULLET:
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glPushMatrix();
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, BulletTexture[5].texID);
+		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
+		//glScalef(go->scale.x, go->scale.y, go->scale.z);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex2f(-12, -12);
+		glTexCoord2f(0, 1); glVertex2f(-12, 12);
+		glTexCoord2f(1, 1); glVertex2f(12, 12);
+		glTexCoord2f(1, 0); glVertex2f(12, -12);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		break;
+	case Bullet::GO_CLOSEBULLET:
 		break;
 	}
 }

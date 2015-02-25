@@ -44,7 +44,7 @@ public:
 	void HandleEvents(CGameStateManager* theGSM);
 	void Update(CGameStateManager* theGSM);
 	void Draw(CGameStateManager* theGSM);
-
+	int laneCheck ();
 	void changeSize(int w, int h);
 	void inputKey(int key, int x, int y);
 	void KeyboardDown(unsigned char key, int x, int y);
@@ -82,6 +82,7 @@ private:
 	int rearWallFineOffset_x, rearWallFineOffset_y;
 	int selection; // tower selection
 	int enemycounter; // numbers of enemies left
+	//int temp;
 	// Inventory
 	int ClearMapCounter;
 	int ClearLaneCounter;
@@ -132,6 +133,7 @@ private:
 	PlayerInfo *player; // Player profile
 	CMap *theMap; // CSV Map
 	Camera *Cam; // Camera
+	Enemy* theEnemy;
 	CEnemyProgress *tEnemyProgress;
 
 	// Texture mapping
@@ -141,7 +143,7 @@ private:
 	//TextureImage TileMapTexture[5];
 	TextureImage Icon[4];
 	TextureImage CreepTexture[3];
-	TextureImage BulletTexture[5];
+	TextureImage BulletTexture[7];
 	
 	//TextureImage Music[1];
 	TextureImage Upgrade[1];
@@ -156,7 +158,6 @@ private:
 	bool LoadTGA(TextureImage *texture, char *filename);
 	void loadlevel();
 	void clearmap();
-
 	void DrawBullet(Bullet *bullet);
 	void DrawEnemy(Enemy *creep);
 	void RenderStringOnScreen(float x, float y, const char* quote);
