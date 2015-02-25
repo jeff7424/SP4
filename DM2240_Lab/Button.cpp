@@ -1,12 +1,12 @@
 #include "Button.h"
 
+bool playsound = false;
 Button::Button()
 : isHover(false)
 , isClick(false)
 , Position(Vector3(0, 0, 0))
 , Size(Vector3(0, 0, 0))
 {
-
 }
 
 Button::Button(char* filename, const int posx, const int posy, const int sizex, const int sizey)
@@ -56,10 +56,17 @@ void Button::SetIsHover(int x, int y)
 	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&                                                                                      
 		y > (Position.y - (Size.y)) && y < (Position.y + (Size.y)))
 	{
+		playsound = true;
+		if (playsound == true)
+		{
+			playsound = false;
+		}
 		isHover = true;
 	}
 	else
 	{
+		playsound = false;
+		//hovering = 0;
 		isHover = false;
 	}
 }

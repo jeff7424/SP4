@@ -5,15 +5,23 @@
 #include <mmsystem.h>
 #include "glext.h"
 #include <lua.hpp>
+#include <stdlib.h>
+#include <time.h>
 
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
 
 CPlayState CPlayState::thePlayState;
 lua_State *L;
+int a = 1;
+int RNGesus(void)
+{
+	return rand() % 3 + 1;
+}
 
 void CPlayState::Init(void)
 {
+	srand(time(NULL));
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
@@ -53,7 +61,7 @@ void CPlayState::Init(void)
 	player = new PlayerInfo();
 
 	se = createIrrKlangDevice();
-	playSound();
+	playSound(a);
 
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
@@ -134,9 +142,9 @@ void CPlayState::Init(void)
 
 	backupTank = new Tank();
 
-	Bonus_Attack = new Button("bin/ui/hud/button_powerdmg.tga", 300, 270, 48, 48);
-	Bonus_Armour = new Button("bin/ui/hud/button_powerdmg.tga", 400, 270, 48, 48);
-	Bonus_Dollar = new Button("bin/ui/hud/button_powerdmg.tga", 500, 270, 48, 48);
+	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
+	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
+	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
 
 	Bonus_MultAttack = 1;
 	Bonus_MultArmour = 1;
@@ -336,7 +344,14 @@ void CPlayState::Update(CGameStateManager* theGSM)
 						break;
 						case Tower::TOWER_NORMAL:
 							soundTypes(7, false);
+							soundTypes(8, false);
 						break;
+						case Tower::TOWER_SHOCK:
+							soundTypes(9, false);
+						break;
+						case Tower::TOWER_CANNON:
+							soundTypes(10, false);
+							break;
 					}
 				}
 			}
@@ -356,6 +371,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
+				soundTypes(11, false);
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
@@ -598,6 +614,13 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 
 		break;
 	case '-':
+		a++;
+		if (a > 3)
+		{
+			a = 1;
+		}
+		playSound(a);
+		break;
 	case '_':
 		sound.decreaseVolume();
 		break;
@@ -1812,13 +1835,29 @@ void CPlayState::LoadAtt()
 	inData.close();
 }
 
-void CPlayState::playSound(void)
+void CPlayState::playSound(int a)
 {
 	if (soundon == true)
 	{
-		sound.setFileName("bin/sounds/gameTheme_3.mp3");
-		//sound.setVolume(50);
-		sound.playSoundThreaded();
+		if (a == 1)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/BGM.mp3");
+			//sound.setVolume(25);
+			sound.playSoundThreaded();
+		}
+		else if (a == 2)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/tempBGM.mp3");
+			sound.playSoundThreaded();
+		}
+		else if (a == 3)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/Snake_Eater.mp3");
+			sound.playSoundThreaded();
+		}
 	}
 }
 
@@ -1872,6 +1911,46 @@ void CPlayState::soundTypes(int type, bool death)
 		se->play2D("bin/sounds/Soldier.wav", false);
 		se->setSoundVolume(0.25);
 		death = false;
+	}
+	else if (type == 8)
+	{
+		se->play2D("bin/sounds/shells.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 9)
+	{
+		se->play2D("bin/sounds/Missile.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 10)
+	{
+		se->play2D("bin/sounds/TankFire.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 11)
+	{
+		int random = RNGesus();
+		switch (random)
+		{
+		case 1:
+			se->play2D("bin/sounds/Hit_1.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 2:
+			se->play2D("bin/sounds/Hit_2.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 3:
+			se->play2D("bin/sounds/Hit_3.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		}
 	}
 }
 
@@ -2114,7 +2193,7 @@ void CPlayState::RenderHUD()
 	}
 
 	// All enemies defeated
-	if (enemycounter < 1)
+//	if (enemycounter < 1)
 	{
 		winscreen = true;
 		sprintf_s(temp, "========== Wave Defeated ==========");

@@ -43,7 +43,6 @@ protected:
 	CMenuState() { }
 
 private:
-
 	Button *StartButton;
 	Button *SettingsButton;
 	Button *InstructionsButton;

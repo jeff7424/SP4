@@ -198,7 +198,7 @@ private:
 	// Sounds
 	AudioPlayer sound;
 	ISoundEngine *se;
-	void playSound(void);
+	void playSound(int a);
 	void shooting(bool firing);
 
 	void RenderBackground();
