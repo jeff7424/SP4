@@ -184,8 +184,8 @@ private:
 	TextureImage CreepTexture[3];
 	
 	TextureImage Upgrade[1];
-	TextureImage WinScreenTexture[1];
-	TextureImage LoseScreenTexture[1];
+	TextureImage WinScreenTexture;
+	TextureImage LoseScreenTexture;
 	TextureImage PauseMenu;
 	TextureImage ExitMenu;
 

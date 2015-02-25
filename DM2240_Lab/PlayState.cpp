@@ -106,6 +106,8 @@ void CPlayState::Init(void)
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
 	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
 	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
+	LoadTGA(&WinScreenTexture, "bin/textures/winscreen.tga");
+	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
 	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
 	// Load the attributes through text file
@@ -295,36 +297,7 @@ void CPlayState::Cleanup()
 		Power_BackupTank = NULL;
 		free(Power_BackupTank);
 	}
-	if (WinLose_MainMenu != NULL)
-	{
-		delete WinLose_MainMenu;
-		WinLose_MainMenu = NULL;
-		free(WinLose_MainMenu);
-	}
-	if (WinLose_RestartLevel != NULL)
-	{
-		delete WinLose_RestartLevel;
-		WinLose_RestartLevel = NULL;
-		free(WinLose_RestartLevel);
-	}
-	if (WinLose_NextLevel != NULL)
-	{
-		delete WinLose_NextLevel;
-		WinLose_NextLevel = NULL;
-		free(WinLose_NextLevel);
-	}
-	if (WinLose_Shop != NULL)
-	{
-		delete WinLose_Shop;
-		WinLose_Shop = NULL;
-		free(WinLose_Shop);
-	}
-	if (WinLose_MiniGame != NULL)
-	{
-		delete WinLose_MiniGame;
-		WinLose_MiniGame = NULL;
-		free(WinLose_MiniGame);
-	}
+
 	if (Unit_Infantry != NULL)
 	{
 		delete Unit_Infantry;
@@ -1259,12 +1232,53 @@ void CPlayState::mclicklevel1(int x, int y)
 
 			// Start spawning the next wave
 		}
+	}
 
+	//For Win Lose Screen
+	if (WinLose_MainMenu->GetIsHover())
+	{
+		cout << " Back To Main Menu!" << endl;
+		winscreen = false;
+		losescreen = false;
+		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+	}
+
+	if (WinLose_NextLevel->GetIsHover())
+	{
+		cout << " Loading Next Level!" << endl;
+		progress = 2;
+		winscreen = false;
+		losescreen = false;
+	}
+
+	if (WinLose_RestartLevel->GetIsHover())
+	{
+		cout << " Restart Level!" << endl;
+		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+		winscreen = false;
+		losescreen = false;
+	}
+
+	if (WinLose_Shop->GetIsHover())
+	{
+		cout << "Initialise the Shop!" << endl;
+	}
+
+	if (WinLose_MiniGame->GetIsHover())
+	{
+		cout << "Launching Mini Game!" << endl;
 	}
 }
 
 void CPlayState::Update(float dt)
 {
+	//player->SetHealth(player->GetHealth() - 1);
+	if (player->GetHealth() <= 0)
+	{
+		player->SetHealth(0);
+		winscreen = true;
+	}
+
 	// Despawn creep if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
@@ -2458,7 +2472,7 @@ void CPlayState::RenderWinScreen()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, WinScreenTexture[0].texID);
+	glBindTexture(GL_TEXTURE_2D, WinScreenTexture.texID);
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -2490,7 +2504,7 @@ void CPlayState::RenderLoseScreen()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture[0].texID);
+	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture.texID);
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);

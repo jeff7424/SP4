@@ -114,6 +114,9 @@
     <ClCompile Include="Tank.cpp">
       <Filter>Powers</Filter>
     </ClCompile>
+    <ClCompile Include="BG.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="Tank.h">
       <Filter>Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="BG.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
