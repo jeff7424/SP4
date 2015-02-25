@@ -53,7 +53,7 @@ public:
 	void HandleEvents(CGameStateManager* theGSM);
 	void Update(CGameStateManager* theGSM);
 	void Draw(CGameStateManager* theGSM);
-
+	int laneCheck ();
 	void changeSize(int w, int h);
 	void inputKey(int key, int x, int y);
 	void KeyboardDown(unsigned char key, int x, int y);
@@ -174,7 +174,7 @@ private:
 	CMap *theMap; // CSV Map
 	Camera *Cam; // Camera
 	CEnemyProgress *tEnemyProgress;
-
+	Enemy* theEnemy;
 	Tank* backupTank; // Tank power up
 
 	// Texture mapping

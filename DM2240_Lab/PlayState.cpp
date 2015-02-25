@@ -13,7 +13,10 @@
 
 CPlayState CPlayState::thePlayState;
 lua_State *L;
+
 int a = 1;
+int lane[6] = {0};
+
 int RNGesus(void)
 {
 	return rand() % 3 + 1;
@@ -551,62 +554,57 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 		}
 
+		theEnemy->SetMovement(enemyList, TILE_SIZE, dt, laneCheck());
+
 		// Handle enemies which reaches the base
 		for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
 		{
 			Enemy *creep = *it;
-			if (creep->GetActive() == true)
+			if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 			{
-				if (creep->GetFire() == false)
+				/*switch (creep->type)
 				{
-					// Monster moving speed
-					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-					if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
+				case Enemy::ENEMY_1:
+					if (player->GetShield() > 0)
 					{
-						switch (creep->type)
-						{
-						case Enemy::ENEMY_1:
-							if (player->GetShield() > 0)
-							{
-								player->SetShield(player->GetShield()-10);
-								if (player->GetShield() < 0)
-									player->SetShield(0);
-							}
-							else
-							player->SetHealth(player->GetHealth()-10);
-							break;
-
-						case Enemy::ENEMY_2:
-							if (player->GetShield() > 0)
-							{
-								player->SetShield(player->GetShield()-20);
-								if (player->GetShield() < 0)
-									player->SetShield(0);
-							}
-							else
-							player->SetHealth((player->GetHealth())-20);
-							break;
-
-						case Enemy::ENEMY_3:
-							if (player->GetShield() > 0)
-							{
-								player->SetShield(player->GetShield()-30);
-								if (player->GetShield() < 0)
-									player->SetShield(0);
-							}
-							else
-							player->SetHealth((player->GetHealth())-30);
-							break;
-						}
-						creep->SetActive(false);
-						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-						enemycounter--;
-						delete creep;
-						enemyList.erase(it);
-						creep = NULL;
-						break;
+						player->SetShield(player->GetShield()-10);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
 					}
-				}
+					else
+						player->SetHealth(player->GetHealth()-10);
+					break;
+
+				case Enemy::ENEMY_2:
+					if (player->GetShield() > 0)
+					{
+						player->SetShield(player->GetShield()-20);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
+					}
+					else
+						player->SetHealth((player->GetHealth())-20);
+					break;
+
+				case Enemy::ENEMY_3:
+					if (player->GetShield() > 0)
+					{
+						player->SetShield(player->GetShield()-30);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
+					}
+					else
+						player->SetHealth((player->GetHealth())-30);
+					break;
+				}*/
+				creep->SetActive(false);
+				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+				player->SetHealth(player->GetHealth() - creep->GetDamage());
+				enemycounter--;
+				delete creep;
+				enemyList.erase(it);
+				creep = NULL;
+				break;
 			}
 		}
 
@@ -621,6 +619,26 @@ void CPlayState::Update(CGameStateManager* theGSM)
 		// Collision updates and unit triggers
 		Update(dt);
 	}
+}
+
+int CPlayState::laneCheck()
+{
+	int k = 1; 
+    int min = lane[1];       // start with max = first element
+	
+     for(int i = 1; i < 6; i++)
+     {
+          if(lane[i] < min)
+          {
+			  min = lane[i];
+			  k = i;
+		  }
+
+			cout << lane[i] << " ";
+     }
+	 cout << " { " << k << " } " << endl;
+	 //cout << " [ " << min << " ] " << endl;
+     return k;                // return strongest lane 
 }
 
 void CPlayState::Draw(CGameStateManager* theGSM) {
@@ -1150,6 +1168,7 @@ void CPlayState::mclicklevel1(int x, int y)
 								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 							if (player->GetGold() >= tower->GetCost())
 							{
+								lane[Y] += 1;
 								tower->SetActive(true);
 								tower->SetLevel(1);
 								tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
