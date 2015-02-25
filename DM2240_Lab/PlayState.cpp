@@ -165,9 +165,9 @@ void CPlayState::Init(void)
 
 	backupTank = new Tank();
 
-	Bonus_Attack = new Button("bin/ui/hud/button_powerdmg.tga", 300, 270, 48, 48);
-	Bonus_Armour = new Button("bin/ui/hud/button_powerdmg.tga", 400, 270, 48, 48);
-	Bonus_Dollar = new Button("bin/ui/hud/button_powerdmg.tga", 500, 270, 48, 48);
+	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
+	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
+	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
 
 	Bonus_MultAttack = 1;
 	Bonus_MultArmour = 1;
@@ -2166,7 +2166,7 @@ void CPlayState::RenderHUD()
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
 	// All enemies defeated
-	if (enemycounter < 1)
+//	if (enemycounter < 1)
 	{
 		sprintf_s(temp, "========== Wave Defeated ==========");
 		RenderStringOnScreen(300, 230, temp);
