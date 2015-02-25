@@ -563,7 +563,41 @@ void CPlayState::Update(CGameStateManager* theGSM)
 					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
 					if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 					{
-						player->SetHealth((player->GetHealth())-10);
+						switch (creep->type)
+						{
+						case Enemy::ENEMY_1:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-10);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth(player->GetHealth()-10);
+							break;
+
+						case Enemy::ENEMY_2:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-20);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-20);
+							break;
+
+						case Enemy::ENEMY_3:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-30);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-30);
+							break;
+						}
 						creep->SetActive(false);
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
