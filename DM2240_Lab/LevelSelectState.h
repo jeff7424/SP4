@@ -44,15 +44,18 @@ protected:
 
 private:
 
-	Button *NextButton;
-	Button *PreviousButton;
 	Button *BackButton;
+	Button *Button_Level1;
+	Button *Button_Level2;
+	Button *Button_Level3;
+	Button *Button_Level4;
+	Button *Button_Level5;
+	Button *Button_Level6;
 
 	bool myKeys[255];
-	TextureImage menu[1];
-	TextureImage button[2];
+	TextureImage Map;
 
-	char* textures[4];
+	char* textures[3];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
@@ -65,7 +68,6 @@ private:
 	void printw(float x, float y, float z, char* format, ...);
 
 	void RenderMenu(void);
-
 	void CursorOnButton(int x, int y);
 
 	int LuaInit();

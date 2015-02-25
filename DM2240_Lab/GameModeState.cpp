@@ -325,12 +325,17 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 		{
 			if (CampaignButton->GetIsHover())
 			{
+<<<<<<< HEAD
 				se.playSound("bin/sounds/gamestart.wav");
 				if (!se.isSoundPlaying())
 				{
 					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				}
 				
+=======
+				CPlayState::Instance()->SetLevel(1);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+>>>>>>> 5f82f4283f50ea8d7da56c59a6c1029f37258e79
 			}
 			else if (SkirmishButton->GetIsHover())
 			{

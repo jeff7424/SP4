@@ -16,8 +16,8 @@ void CLevelSelectState::Init()
 	LuaInit();
 
 	glEnable(GL_TEXTURE_2D);
-	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
-		return; //false;										// If Loading Failed, Return False
+	if (!LoadTGA(&Map, textures[0]))
+		return;
 	/*if (!LoadTGA(&button[0], textures[1]))
 	return;
 	if (!LoadTGA(&button[1], textures[2]))
@@ -38,16 +38,6 @@ void CLevelSelectState::Cleanup()
 	{
 		delete theCam;
 		theCam = NULL;
-	}
-	if (NextButton != NULL)
-	{
-		delete NextButton;
-		NextButton = NULL;
-	}
-	if (PreviousButton != NULL)
-	{
-		delete PreviousButton;
-		PreviousButton = NULL;
 	}
 	if (BackButton != NULL)
 	{
@@ -113,8 +103,7 @@ void CLevelSelectState::Draw(CGameStateManager* theGSM)
 	theCam->SetHUD(true);
 
 	RenderMenu();
-	NextButton->Render();
-	PreviousButton->Render();
+
 	BackButton->Render();
 
 	theCam->SetHUD(false);
@@ -279,6 +268,13 @@ void CLevelSelectState::MouseMove(int x, int y)
 {
 	mouseInfo.lastX = x;
 	mouseInfo.lastY = y;
+
+	Button_Level1->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Level2->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Level3->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Level4->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Level5->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	Button_Level6->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 }
 
 void CLevelSelectState::MouseClick(int button, int state, int x, int y)
@@ -295,17 +291,41 @@ void CLevelSelectState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
-			if (NextButton->GetIsHover())
-			{
-				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-			}
-			else if (PreviousButton->GetIsHover())
-			{
-
-			}
-			else if (BackButton->GetIsHover())
+			if (BackButton->GetIsHover())
 			{
 				CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			}
+			else if (Button_Level1->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(1);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			}
+			else if (Button_Level2->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(2);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			}
+			else if (Button_Level3->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(3);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+				
+			}
+			else if (Button_Level4->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(4);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+				
+			}
+			else if (Button_Level5->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(5);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			}
+			else if (Button_Level6->GetIsHover())
+			{
+				CPlayState::Instance()->SetLevel(6);
+				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 		}
 
@@ -319,7 +339,7 @@ void CLevelSelectState::RenderMenu(void)
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, menu[0].texID);
+	glBindTexture(GL_TEXTURE_2D, Map.texID);
 	glTranslatef(0, 0, -0.1f);
 	glColor3f(1, 1, 1);
 	glBegin(GL_QUADS);
@@ -332,12 +352,17 @@ void CLevelSelectState::RenderMenu(void)
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
+
+	Button_Level1->Render();
+	Button_Level2->Render();
+	Button_Level3->Render();
+	Button_Level4->Render();
+	Button_Level5->Render();
+	Button_Level6->Render();
 }
 
 void CLevelSelectState::CursorOnButton(int x, int y)
 {
-	NextButton->SetIsHover(x, y);
-	PreviousButton->SetIsHover(x, y);
 	BackButton->SetIsHover(x, y);
 }
 
@@ -346,28 +371,43 @@ int CLevelSelectState::LuaInit()
 	cout << "\nLEVEL SELECTION INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[16] = {
-		"TEXTURE_MENU",
-		"TEXTURE_NEXT",
-		"TEXTURE_PREVIOUS",
+	const char *values[31] = {
+		"TEXTURE_MAP",
 		"TEXTURE_BACK",
-		"NEXTBUTTON_POS_X",
-		"NEXTBUTTON_POS_Y",
-		"NEXTBUTTON_SIZE_X",
-		"NEXTBUTTON_SIZE_Y",
-		"PREVIOUSBUTTON_POS_X",
-		"PREVIOUSBUTTON_POS_Y",
-		"PREVIOUSBUTTON_SIZE_X",
-		"PREVIOUSBUTTON_SIZE_Y",
+		"TEXTURE_LVL",
 		"BACKBUTTON_POS_X",
 		"BACKBUTTON_POS_Y",
 		"BACKBUTTON_SIZE_X",
-		"BACKBUTTON_SIZE_Y"
+		"BACKBUTTON_SIZE_Y",
+		"LVL1_POS_X",
+		"LVL1_POS_Y",
+		"LVL1_SIZE_X",
+		"LVL1_SIZE_Y",
+		"LVL2_POS_X",
+		"LVL2_POS_Y",
+		"LVL2_SIZE_X",
+		"LVL2_SIZE_Y",
+		"LVL3_POS_X",
+		"LVL3_POS_Y",
+		"LVL3_SIZE_X",
+		"LVL3_SIZE_Y",
+		"LVL4_POS_X",
+		"LVL4_POS_Y",
+		"LVL4_SIZE_X",
+		"LVL4_SIZE_Y",
+		"LVL5_POS_X",
+		"LVL5_POS_Y",
+		"LVL5_SIZE_X",
+		"LVL5_SIZE_Y",
+		"LVL6_POS_X",
+		"LVL6_POS_Y",
+		"LVL6_SIZE_X",
+		"LVL6_SIZE_Y",
 	};
 
-	int data[12];
+	int data[28];
 
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < 28; i++)
 	{
 		data[i] = 0;
 	}
@@ -378,7 +418,7 @@ int CLevelSelectState::LuaInit()
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 4; k++)
+	for (int k = 0; k < 3; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -393,21 +433,25 @@ int CLevelSelectState::LuaInit()
 		cout << values[k] << ": " << textures[k] << endl;
 	}
 
-	for (int j = 0; j < 12; j++)
+	for (int j = 0; j < 28; j++)
 	{
-		lua_getglobal(L, values[j + 4]);
+		lua_getglobal(L, values[j + 3]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 4] << ": " << data[j] << endl;
+		cout << values[j + 3] << ": " << data[j] << endl;
 	}
 
-	NextButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
-	PreviousButton = new Button(textures[2], data[4], data[5], data[6], data[7]);
-	BackButton = new Button(textures[3], data[8], data[9], data[10], data[11]);
+	BackButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
+	Button_Level1 = new Button(textures[2], data[4], data[5], data[6], data[7]);
+	Button_Level2 = new Button(textures[2], data[8], data[9], data[10], data[11]);
+	Button_Level3 = new Button(textures[2], data[12], data[13], data[14], data[15]);
+	Button_Level4 = new Button(textures[2], data[16], data[17], data[18], data[19]);
+	Button_Level5 = new Button(textures[2], data[20], data[21], data[22], data[23]);
+	Button_Level6 = new Button(textures[2], data[24], data[25], data[26], data[27]);
 
 	return 0;
 }
