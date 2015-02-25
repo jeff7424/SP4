@@ -17,49 +17,24 @@ void CPlayState::Init(void)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
-	pos_x = 0;
-	pos_y = 0;
 	WX = w;
 	WY = h;
-	mapOffset_x = 0;
-	mapOffset_y = 0;
-	tileOffset_x = 0;
-	tileOffset_y = 0;
-	mapFineOffset_x = 0;
-	mapFineOffset_y = 0;
-	theNumOfTiles_Height = 0;
-	theNumOfTiles_Width = 0;
-	rearWallOffset_x = 0;
-	rearWallOffset_y = 0;
-	rearWalltileOffset_x = 0;
-	rearWalltileOffset_y = 0;
-	rearWallFineOffset_x = 0;
-	rearWallFineOffset_y = 0;
 	selection = 1;
 	enemycounter = 0;
-	ClearMapCounter = 0;
-	ClearLaneCounter = 0;
 	heroAnimationCounter = 0;
 	progress = 1;
 	info = 0;
-	spawntimer = 0;
+	spawntimer = 0.0f;
 	ratio = 0;
-	m_fps = 30;
-	m_speed = 1;
-	m_worldSizeY = 100;
-	m_worldSizeX = m_worldSizeY;
-	gamesave = 1;
+	m_fps = 60.0f;
+	m_speed = 1.0f;
 	saveandload = false;
 	playmusic = true;
 	pause = false;
+	exitmenu = false;
 	soundon = true;
 	upgrade = false;
-	next = false;
-	back = false;
 	level = 1;
-	powerMap = false;
-	powerLane = false;
-	powerfired = false;
 	levelloaded = true;
 
 	for (int i = 0; i < 255; i++)
@@ -118,6 +93,8 @@ void CPlayState::Init(void)
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
+	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
+	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
 	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
 	// Load the attributes through text file
@@ -164,6 +141,13 @@ void CPlayState::Init(void)
 	Bonus_MultAttack = 1;
 	Bonus_MultArmour = 1;
 	Bonus_MultDollar = 1;
+
+	// For Pause Menu
+	PauseMenu_Resume = new Button("bin/ui/pausemenu/button_resume.tga", 480, 250, 128, 32);
+	PauseMenu_Restart = new Button("bin/ui/pausemenu/button_restart.tga", 480, 350, 128, 32);
+	PauseMenu_Exit = new Button("bin/ui/pausemenu/button_quit.tga", 480, 450, 128, 32);
+	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
+	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 }
 
 void CPlayState::Cleanup()
@@ -297,7 +281,6 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
-	
 	if (!pause)
 	{
 		// timer for enemy to spawn
@@ -538,7 +521,6 @@ void CPlayState::changeSize(int w, int h) {
 		h = 1;
 
 	ratio = (float)w / h;
-	m_worldSizeX = m_worldSizeY * ratio;
 
 	WX = w;
 	WY = h;
@@ -546,7 +528,7 @@ void CPlayState::changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, m_worldSizeX, 0, m_worldSizeY);
+	gluOrtho2D(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
 	//gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
@@ -647,8 +629,6 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 }
 
 void CPlayState::MouseMove(int x, int y) {
-	int tile_topleft_x = (int)floor((float)(mapOffset_x + pos_x) / TILE_SIZE);
-	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
 	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
 	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
 
@@ -661,6 +641,16 @@ void CPlayState::MouseMove(int x, int y) {
 	//moverlevel1(x, y);
 
 	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	PauseMenu_Resume->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Restart->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Exit->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	if (exitmenu)
+	{
+		ExitMenu_Yes->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		ExitMenu_No->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
 
 	if (winscreen == true)
 	{
@@ -880,8 +870,43 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (Button_Pause->GetIsHover())
 		{
 			pause = !pause;
+			exitmenu = false;
+			std::cout << pause << std::endl;
 		}
-		if (!pause)
+	
+		if (pause)
+		{
+			if (!exitmenu)
+			{
+				if (PauseMenu_Resume->GetIsHover())
+				{
+					pause = false;
+					std::cout << pause << std::endl;
+				}
+				else if (PauseMenu_Restart->GetIsHover())
+				{
+
+				}
+				else if (PauseMenu_Exit->GetIsHover())
+				{
+					exitmenu = true;
+				}
+			}
+			
+			else if (exitmenu)
+			{
+				if (ExitMenu_Yes->GetIsHover())
+				{
+					sound.stop();
+					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+				}
+				else if (ExitMenu_No->GetIsHover())
+				{
+					exitmenu = false;
+				}
+			}
+		}
+		else if (!pause)
 		{
 			if (theMap->GetGrid(X, Y)->CursorHit == true)
 			{
@@ -1442,14 +1467,6 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetEnemyCounter(stoi(value));
 			}
-			else if (type == "armageddon")
-			{
-				ClearMapCounter = stoi(value);
-			}
-			else if (type == "lasercannon")
-			{
-				ClearLaneCounter = stoi(value);
-			}
 		}
 	}
 	inData.close();
@@ -1588,8 +1605,6 @@ void CPlayState::Save()
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
-		file << "armageddon, " << ClearMapCounter << "\n";
-		file << "lasercannon, " << ClearLaneCounter << "\n";
 		file.close();
 	}
 	else
@@ -2086,9 +2101,22 @@ void CPlayState::RenderHUD()
 	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
+	if (pause)
+	{
+		if (!exitmenu)
+		{
+			RenderPauseMenu();
+		}
+		else
+		{
+			RenderExitMenu();
+		}
+	}
+
 	// All enemies defeated
 	if (enemycounter < 1)
 	{
+		winscreen = true;
 		sprintf_s(temp, "========== Wave Defeated ==========");
 		RenderStringOnScreen(300, 230, temp);
 
@@ -2097,6 +2125,53 @@ void CPlayState::RenderHUD()
 		Bonus_Dollar->Render();
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void CPlayState::RenderPauseMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, PauseMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	PauseMenu_Resume->Render();
+	PauseMenu_Restart->Render();
+	PauseMenu_Exit->Render();
+}
+
+void CPlayState::RenderExitMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, ExitMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	ExitMenu_Yes->Render();
+	ExitMenu_No->Render();
 }
 
 void CPlayState::RenderWinScreen()
@@ -2158,7 +2233,6 @@ void CPlayState::RenderLoseScreen()
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
 	WinLose_Shop->Render();
-
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
