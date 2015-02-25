@@ -130,7 +130,6 @@ bool Bullet::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA Fil
 
 void Bullet::Update(float dt)
 {
-	//bulletList[i]->SetPos(Vector3(bulletList[i]->GetPos().x + bulletList[i]->GetSpeed() * dt, bulletList[i]->GetPos().y, 0));
 	if (this->GetActive())
 	{
 		this->SetPos(this->GetPos() + this->GetVel().Normalized() * (this->GetSpeed() * dt));

@@ -25,49 +25,24 @@ void CPlayState::Init(void)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
-	pos_x = 0;
-	pos_y = 0;
 	WX = w;
 	WY = h;
-	mapOffset_x = 0;
-	mapOffset_y = 0;
-	tileOffset_x = 0;
-	tileOffset_y = 0;
-	mapFineOffset_x = 0;
-	mapFineOffset_y = 0;
-	theNumOfTiles_Height = 0;
-	theNumOfTiles_Width = 0;
-	rearWallOffset_x = 0;
-	rearWallOffset_y = 0;
-	rearWalltileOffset_x = 0;
-	rearWalltileOffset_y = 0;
-	rearWallFineOffset_x = 0;
-	rearWallFineOffset_y = 0;
 	selection = 1;
 	enemycounter = 0;
-	ClearMapCounter = 0;
-	ClearLaneCounter = 0;
 	heroAnimationCounter = 0;
 	progress = 1;
 	info = 0;
-	spawntimer = 0;
+	spawntimer = 0.0f;
 	ratio = 0;
-	m_fps = 30;
-	m_speed = 1;
-	m_worldSizeY = 100;
-	m_worldSizeX = m_worldSizeY;
-	gamesave = 1;
+	m_fps = 60.0f;
+	m_speed = 1.0f;
 	saveandload = false;
 	playmusic = true;
 	pause = false;
+	exitmenu = false;
 	soundon = true;
 	upgrade = false;
-	next = false;
-	back = false;
 	level = 1;
-	powerMap = false;
-	powerLane = false;
-	powerfired = false;
 	levelloaded = true;
 
 	for (int i = 0; i < 255; i++)
@@ -97,12 +72,15 @@ void CPlayState::Init(void)
 	// Initialization
 	theMap = new CMap();
 	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
+	//theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
 
 	/*RenderBackground();
 	RenderTileMap();
 	SpawnTowers();
 	SpawnEnemy();*/
+
+	winscreen = true;
+	losescreen = false;
 
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
 	theNumOfTiles_Width = theMap->GetXNumOfGrid();
@@ -126,6 +104,10 @@ void CPlayState::Init(void)
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
+	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
+	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
+	LoadTGA(&WinScreenTexture, "bin/textures/winscreen.tga");
+	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
 	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
 	// Load the attributes through text file
@@ -155,23 +137,32 @@ void CPlayState::Init(void)
 	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
 
 	//For Win Lose Menu
-	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 194, 108, 28);
-	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 294, 108, 28);
-	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
-	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 494, 108, 28);
+	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
+	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
+//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
+	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
 
 	//For Mini Game
-	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 594, 108, 28);
+	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
 	backupTank = new Tank();
 
 	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
+	
+	Shop_BG	     = new BG("bin/ui/hud/ShopBG32.tga", 470, 290, 193, 97);
 
 	Bonus_MultAttack = 1;
 	Bonus_MultArmour = 1;
 	Bonus_MultDollar = 1;
+
+	// For Pause Menu
+	PauseMenu_Resume = new Button("bin/ui/pausemenu/button_resume.tga", 480, 250, 128, 32);
+	PauseMenu_Restart = new Button("bin/ui/pausemenu/button_restart.tga", 480, 350, 128, 32);
+	PauseMenu_Exit = new Button("bin/ui/pausemenu/button_quit.tga", 480, 450, 128, 32);
+	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
+	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 }
 
 void CPlayState::Cleanup()
@@ -197,6 +188,170 @@ void CPlayState::Cleanup()
 		free(tEnemyProgress);
 	}
 
+	// Power ups deconstruct
+	if (Shield != NULL) 
+	{ 
+		delete Shield; 
+		Shield = NULL; 
+		free(Shield); 
+	}
+
+	if (BaseHealth != NULL) 
+	{ 
+		delete BaseHealth; 
+		BaseHealth = NULL; 
+		free(BaseHealth); 
+	}
+
+	if (Firerate != NULL) 
+	{ 
+		delete Firerate; 
+		Firerate = NULL; 
+		free(Firerate); 
+	}
+	
+	if (Damage != NULL) 
+	{ 
+		delete Damage; 
+		Damage = NULL; 
+		free(Damage); 
+	}
+	
+	if (Backup_Tank != NULL) 
+	{ 
+		delete Backup_Tank; 
+		Backup_Tank = NULL; 
+		free(Backup_Tank); 
+	}
+
+	// Buttons deconstruct
+	if (Button_Pause != NULL) 
+	{ 
+		delete Button_Pause; 
+		Button_Pause = NULL; 
+		free(Button_Pause); 
+	}
+
+	if (PauseMenu_Resume != NULL) 
+	{ 
+		delete PauseMenu_Resume; 
+		PauseMenu_Resume = NULL; 
+		free(PauseMenu_Resume); 
+	}
+	
+	if (PauseMenu_Restart != NULL) 
+	{ 
+		delete PauseMenu_Restart; 
+		PauseMenu_Restart = NULL; 
+		free(PauseMenu_Restart); 
+	}
+	
+	if (PauseMenu_Exit != NULL) 
+	{ 
+		delete PauseMenu_Exit; 
+		PauseMenu_Exit = NULL; 
+		free(PauseMenu_Exit); 
+	}
+	
+	if (ExitMenu_Yes != NULL) 
+	{ 
+		delete ExitMenu_Yes; 
+		ExitMenu_Yes = NULL; 
+		free(ExitMenu_Yes); 
+	}
+
+	if (ExitMenu_No != NULL)
+	{
+		delete ExitMenu_No;
+		ExitMenu_No = NULL;
+		free(ExitMenu_No);
+	}
+
+	if (Power_Shield != NULL)
+	{
+		delete Power_Shield;
+		Power_Shield = NULL;
+		free(Power_Shield);
+	}
+	if (Power_BaseHealth != NULL)
+	{
+		delete Power_BaseHealth;
+		Power_BaseHealth = NULL;
+		free(Power_BaseHealth);
+	}
+	if (Power_Firerate != NULL)
+	{
+		delete Power_Firerate;
+		Power_Firerate = NULL;
+		free(Power_Firerate);
+	}
+	if (Power_Damage != NULL)
+	{
+		delete Power_Damage;
+		Power_Damage = NULL;
+		free(Power_Damage);
+	}
+	if (Power_BackupTank != NULL)
+	{
+		delete Power_BackupTank;
+		Power_BackupTank = NULL;
+		free(Power_BackupTank);
+	}
+
+	if (Unit_Infantry != NULL)
+	{
+		delete Unit_Infantry;
+		Unit_Infantry = NULL;
+		free(Unit_Infantry);
+	}
+	if (Unit_Tank != NULL)
+	{
+		delete Unit_Tank;
+		Unit_Tank = NULL;
+		free(Unit_Tank);
+	}
+	if (Unit_Heavy != NULL)
+	{
+		delete Unit_Heavy;
+		Unit_Heavy = NULL;
+		free(Unit_Heavy);
+	}
+	if (Unit_Sniper != NULL)
+	{
+		delete Unit_Sniper;
+		Unit_Sniper = NULL;
+		free(Unit_Sniper);
+	}
+	if (Unit_Mine != NULL)
+	{
+		delete Unit_Mine;
+		Unit_Mine = NULL;
+		free(Unit_Mine);
+	}
+	if (Unit_Barricade != NULL)
+	{
+		delete Unit_Barricade;
+		Unit_Barricade = NULL;
+		free(Unit_Barricade);
+	}
+	if (Bonus_Attack != NULL)
+	{
+		delete Bonus_Attack;
+		Bonus_Attack = NULL;
+		free(Bonus_Attack);
+	}
+	if (Bonus_Armour != NULL)
+	{
+		delete Bonus_Armour;
+		Bonus_Armour = NULL;
+		free(Bonus_Armour);
+	}
+	if (Bonus_Dollar != NULL)
+	{
+		delete Bonus_Dollar;
+		Bonus_Dollar = NULL;
+		free(Bonus_Dollar);
+	}
 	while (bulletList.size() > 0)
 	{
 		Bullet *bullet = bulletList.back();
@@ -305,7 +460,6 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
-	
 	if (!pause)
 	{
 		// timer for enemy to spawn
@@ -407,8 +561,43 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				{
 					// Monster moving speed
 					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x * dt, creep->GetPos().y, 0));
-					if (creep->GetPos().x <= 0)
+					if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 					{
+						switch (creep->type)
+						{
+						case Enemy::ENEMY_1:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-10);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth(player->GetHealth()-10);
+							break;
+
+						case Enemy::ENEMY_2:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-20);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-20);
+							break;
+
+						case Enemy::ENEMY_3:
+							if (player->GetShield() > 0)
+							{
+								player->SetShield(player->GetShield()-30);
+								if (player->GetShield() < 0)
+									player->SetShield(0);
+							}
+							else
+							player->SetHealth((player->GetHealth())-30);
+							break;
+						}
 						creep->SetActive(false);
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
@@ -513,15 +702,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 
 	RenderHUD();
 
-	if (winscreen == true)
-	{
-		RenderWinScreen();
-	}
-
-	else if (losescreen == true)
-	{
-		RenderLoseScreen();
-	}
+	
 
 	Cam->SetHUD(false);
 
@@ -554,7 +735,6 @@ void CPlayState::changeSize(int w, int h) {
 		h = 1;
 
 	ratio = (float)w / h;
-	m_worldSizeX = m_worldSizeY * ratio;
 
 	WX = w;
 	WY = h;
@@ -562,7 +742,7 @@ void CPlayState::changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, m_worldSizeX, 0, m_worldSizeY);
+	gluOrtho2D(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
 	//gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
@@ -670,8 +850,6 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 }
 
 void CPlayState::MouseMove(int x, int y) {
-	int tile_topleft_x = (int)floor((float)(mapOffset_x + pos_x) / TILE_SIZE);
-	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
 	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
 	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
 
@@ -685,14 +863,28 @@ void CPlayState::MouseMove(int x, int y) {
 
 	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
+	PauseMenu_Resume->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Restart->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Exit->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	if (exitmenu)
+	{
+		ExitMenu_Yes->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		ExitMenu_No->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
+
 	if (winscreen == true)
 	{
 		//For Win Screen
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_NextLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_MiniGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		
+		Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	else if (losescreen == true)
@@ -700,7 +892,7 @@ void CPlayState::MouseMove(int x, int y) {
 		//For Lose Screens
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	if (!pause)
@@ -746,16 +938,6 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			info = 0;
 		}
-
-
-		if (enemycounter < 1)
-		{
-			Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-			Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-			Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		}
-
-
 	}
 }
 
@@ -902,8 +1084,43 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (Button_Pause->GetIsHover())
 		{
 			pause = !pause;
+			exitmenu = false;
+			std::cout << pause << std::endl;
 		}
-		if (!pause)
+	
+		if (pause)
+		{
+			if (!exitmenu)
+			{
+				if (PauseMenu_Resume->GetIsHover())
+				{
+					pause = false;
+					std::cout << pause << std::endl;
+				}
+				else if (PauseMenu_Restart->GetIsHover())
+				{
+
+				}
+				else if (PauseMenu_Exit->GetIsHover())
+				{
+					exitmenu = true;
+				}
+			}
+			
+			else if (exitmenu)
+			{
+				if (ExitMenu_Yes->GetIsHover())
+				{
+					sound.stop();
+					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+				}
+				else if (ExitMenu_No->GetIsHover())
+				{
+					exitmenu = false;
+				}
+			}
+		}
+		else if (!pause)
 		{
 			if (theMap->GetGrid(X, Y)->CursorHit == true)
 			{
@@ -1003,7 +1220,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 		}
 	}
-	else
+	
+	if (winscreen == true)
 	{ // End-of-round bonus selection menu - Allow clicks to register
 
 		// Placeholder Bonuses
@@ -1013,8 +1231,9 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			// Stuff
 			Bonus_MultAttack *= 1.1f;
-
-			// Start spawning the next wave
+			if (player->GetBonus()-10 > 0)
+			player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 
@@ -1023,8 +1242,9 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			// Stuff
 			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
-
-			// Start spawning the next wave
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 		// Bonus 3: Loot Drop +10%
@@ -1032,15 +1252,56 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			// Stuff
 			Bonus_MultDollar *= 1.1f;
-
-			// Start spawning the next wave
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
+	}
 
+	//For Win Lose Screen
+	if (WinLose_MainMenu->GetIsHover())
+	{
+		cout << " Back To Main Menu!" << endl;
+		winscreen = false;
+		losescreen = false;
+		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+	}
+
+	if (WinLose_NextLevel->GetIsHover())
+	{
+		cout << " Loading Next Level!" << endl;
+		progress = 2;
+		winscreen = false;
+		losescreen = false;
+	}
+
+	if (WinLose_RestartLevel->GetIsHover())
+	{
+		cout << " Restart Level!" << endl;
+		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+		winscreen = false;
+		losescreen = false;
+	}
+
+/*	if (WinLose_Shop->GetIsHover())
+	{
+		cout << "Initialise the Shop!" << endl;
+	} */
+
+	if (WinLose_MiniGame->GetIsHover())
+	{
+		cout << "Launching Mini Game!" << endl;
 	}
 }
 
 void CPlayState::Update(float dt)
 {
+	if (player->GetHealth() <= 0)
+	{
+		player->SetHealth(0);
+		losescreen = true;
+	}
+
 	// Despawn creep if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
@@ -1464,14 +1725,6 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetEnemyCounter(stoi(value));
 			}
-			else if (type == "armageddon")
-			{
-				ClearMapCounter = stoi(value);
-			}
-			else if (type == "lasercannon")
-			{
-				ClearLaneCounter = stoi(value);
-			}
 		}
 	}
 	inData.close();
@@ -1610,8 +1863,6 @@ void CPlayState::Save()
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
-		file << "armageddon, " << ClearMapCounter << "\n";
-		file << "lasercannon, " << ClearLaneCounter << "\n";
 		file.close();
 	}
 	else
@@ -1955,35 +2206,35 @@ void CPlayState::soundTypes(int type, bool death)
 
 void CPlayState::loadlevel()
 {
-	/*if (progress == 1)
+	if (progress == 1)
 	{
-		theMap->LoadMap("bin/maps/MapDesign.csv");
+		theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 2)
 	{
-		theMap->LoadMap("bin/maps/MapDesign2.csv");
+		theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 3)
 	{
-		theMap->LoadMap("bin/maps/MapDesign3.csv");
+		theMap->LoadMap("bin/maps/MapDesign3.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 4)
 	{
-		theMap->LoadMap("bin/maps/MapDesign4.csv");
+		theMap->LoadMap("bin/maps/MapDesign4.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 5)
 	{
-		theMap->LoadMap("bin/maps/MapDesign5.csv");
+		theMap->LoadMap("bin/maps/MapDesign5.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 6)
 	{
-		theMap->LoadMap("bin/maps/MapDesign6.csv");
-	}*/
+		theMap->LoadMap("bin/maps/MapDesign6.csv", 0, 0, TILE_SIZE, TILE_SIZE);
+	}
 }
 
 void CPlayState::clearmap()
@@ -2181,15 +2432,94 @@ void CPlayState::RenderHUD()
 
 	// All enemies defeated
 	if (enemycounter < 1)
+	if (pause)
 	{
-		sprintf_s(temp, "========== Wave Defeated ==========");
-		RenderStringOnScreen(300, 230, temp);
+		if (!exitmenu)
+		{
+			RenderPauseMenu();
+		}
+		else
+		{
+			RenderExitMenu();
+		}
+	}
 
+	if (winscreen == true)
+//>>>>>>> 384bf701f56b8ab73a29280394d534f201892b85
+	{
+		RenderWinScreen();
+
+		Shop_BG->Render();
 		Bonus_Attack->Render();
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
+
+		char temp[16];
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+		sprintf_s(temp, "Bonus: %d", player->GetBonus());
+		RenderStringOnScreen(450, 200, temp);
+		glColor3f(1.0f, 1.0f, 1.0f);
+	}
+
+	else if (losescreen == true)
+	{
+		RenderLoseScreen();
+	}
+
+	// All enemies defeated
+	if (enemycounter < 1)
+	{
+
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void CPlayState::RenderPauseMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, PauseMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	PauseMenu_Resume->Render();
+	PauseMenu_Restart->Render();
+	PauseMenu_Exit->Render();
+}
+
+void CPlayState::RenderExitMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, ExitMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	ExitMenu_Yes->Render();
+	ExitMenu_No->Render();
 }
 
 void CPlayState::RenderWinScreen()
@@ -2200,7 +2530,7 @@ void CPlayState::RenderWinScreen()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, WinScreenTexture[0].texID);
+	glBindTexture(GL_TEXTURE_2D, WinScreenTexture.texID);
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -2219,7 +2549,7 @@ void CPlayState::RenderWinScreen()
 	WinLose_MainMenu->Render();
 	WinLose_NextLevel->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
+//	WinLose_Shop->Render();
 	WinLose_MiniGame->Render();
 
 }
@@ -2232,7 +2562,7 @@ void CPlayState::RenderLoseScreen()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture[0].texID);
+	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture.texID);
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -2250,8 +2580,7 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
-
+//	WinLose_Shop->Render();
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
