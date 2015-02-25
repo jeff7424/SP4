@@ -184,6 +184,199 @@ void CPlayState::Cleanup()
 		free(tEnemyProgress);
 	}
 
+	// Power ups deconstruct
+	if (Shield != NULL) 
+	{ 
+		delete Shield; 
+		Shield = NULL; 
+		free(Shield); 
+	}
+
+	if (BaseHealth != NULL) 
+	{ 
+		delete BaseHealth; 
+		BaseHealth = NULL; 
+		free(BaseHealth); 
+	}
+
+	if (Firerate != NULL) 
+	{ 
+		delete Firerate; 
+		Firerate = NULL; 
+		free(Firerate); 
+	}
+	
+	if (Damage != NULL) 
+	{ 
+		delete Damage; 
+		Damage = NULL; 
+		free(Damage); 
+	}
+	
+	if (Backup_Tank != NULL) 
+	{ 
+		delete Backup_Tank; 
+		Backup_Tank = NULL; 
+		free(Backup_Tank); 
+	}
+
+	// Buttons deconstruct
+	if (Button_Pause != NULL) 
+	{ 
+		delete Button_Pause; 
+		Button_Pause = NULL; 
+		free(Button_Pause); 
+	}
+
+	if (PauseMenu_Resume != NULL) 
+	{ 
+		delete PauseMenu_Resume; 
+		PauseMenu_Resume = NULL; 
+		free(PauseMenu_Resume); 
+	}
+	
+	if (PauseMenu_Restart != NULL) 
+	{ 
+		delete PauseMenu_Restart; 
+		PauseMenu_Restart = NULL; 
+		free(PauseMenu_Restart); 
+	}
+	
+	if (PauseMenu_Exit != NULL) 
+	{ 
+		delete PauseMenu_Exit; 
+		PauseMenu_Exit = NULL; 
+		free(PauseMenu_Exit); 
+	}
+	
+	if (ExitMenu_Yes != NULL) 
+	{ 
+		delete ExitMenu_Yes; 
+		ExitMenu_Yes = NULL; 
+		free(ExitMenu_Yes); 
+	}
+
+	if (ExitMenu_No != NULL)
+	{
+		delete ExitMenu_No;
+		ExitMenu_No = NULL;
+		free(ExitMenu_No);
+	}
+
+	if (Power_Shield != NULL)
+	{
+		delete Power_Shield;
+		Power_Shield = NULL;
+		free(Power_Shield);
+	}
+	if (Power_BaseHealth != NULL)
+	{
+		delete Power_BaseHealth;
+		Power_BaseHealth = NULL;
+		free(Power_BaseHealth);
+	}
+	if (Power_Firerate != NULL)
+	{
+		delete Power_Firerate;
+		Power_Firerate = NULL;
+		free(Power_Firerate);
+	}
+	if (Power_Damage != NULL)
+	{
+		delete Power_Damage;
+		Power_Damage = NULL;
+		free(Power_Damage);
+	}
+	if (Power_BackupTank != NULL)
+	{
+		delete Power_BackupTank;
+		Power_BackupTank = NULL;
+		free(Power_BackupTank);
+	}
+	if (WinLose_MainMenu != NULL)
+	{
+		delete WinLose_MainMenu;
+		WinLose_MainMenu = NULL;
+		free(WinLose_MainMenu);
+	}
+	if (WinLose_RestartLevel != NULL)
+	{
+		delete WinLose_RestartLevel;
+		WinLose_RestartLevel = NULL;
+		free(WinLose_RestartLevel);
+	}
+	if (WinLose_NextLevel != NULL)
+	{
+		delete WinLose_NextLevel;
+		WinLose_NextLevel = NULL;
+		free(WinLose_NextLevel);
+	}
+	if (WinLose_Shop != NULL)
+	{
+		delete WinLose_Shop;
+		WinLose_Shop = NULL;
+		free(WinLose_Shop);
+	}
+	if (WinLose_MiniGame != NULL)
+	{
+		delete WinLose_MiniGame;
+		WinLose_MiniGame = NULL;
+		free(WinLose_MiniGame);
+	}
+	if (Unit_Infantry != NULL)
+	{
+		delete Unit_Infantry;
+		Unit_Infantry = NULL;
+		free(Unit_Infantry);
+	}
+	if (Unit_Tank != NULL)
+	{
+		delete Unit_Tank;
+		Unit_Tank = NULL;
+		free(Unit_Tank);
+	}
+	if (Unit_Heavy != NULL)
+	{
+		delete Unit_Heavy;
+		Unit_Heavy = NULL;
+		free(Unit_Heavy);
+	}
+	if (Unit_Sniper != NULL)
+	{
+		delete Unit_Sniper;
+		Unit_Sniper = NULL;
+		free(Unit_Sniper);
+	}
+	if (Unit_Mine != NULL)
+	{
+		delete Unit_Mine;
+		Unit_Mine = NULL;
+		free(Unit_Mine);
+	}
+	if (Unit_Barricade != NULL)
+	{
+		delete Unit_Barricade;
+		Unit_Barricade = NULL;
+		free(Unit_Barricade);
+	}
+	if (Bonus_Attack != NULL)
+	{
+		delete Bonus_Attack;
+		Bonus_Attack = NULL;
+		free(Bonus_Attack);
+	}
+	if (Bonus_Armour != NULL)
+	{
+		delete Bonus_Armour;
+		Bonus_Armour = NULL;
+		free(Bonus_Armour);
+	}
+	if (Bonus_Dollar != NULL)
+	{
+		delete Bonus_Dollar;
+		Bonus_Dollar = NULL;
+		free(Bonus_Dollar);
+	}
 	while (bulletList.size() > 0)
 	{
 		Bullet *bullet = bulletList.back();
