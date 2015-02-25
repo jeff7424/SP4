@@ -19,9 +19,6 @@
     <Filter Include="Characters">
       <UniqueIdentifier>{22abd889-5739-41f4-a84b-15b97d5e5392}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vector3">
-      <UniqueIdentifier>{934da9ea-6534-48ab-9845-9d82ac1315d9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Cursor">
       <UniqueIdentifier>{3f4117a2-bc75-49bc-a3a2-1793bd2da118}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,12 @@
     </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{89a4c066-26f6-4243-9654-b9968a60d35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Powers">
+      <UniqueIdentifier>{ef9f79ab-522e-492b-aae7-d18f2ae0bfc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vector3">
+      <UniqueIdentifier>{934da9ea-6534-48ab-9845-9d82ac1315d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,9 +96,6 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Characters</Filter>
     </ClCompile>
-    <ClCompile Include="Powerup.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
     <ClCompile Include="GameModeState.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
@@ -107,6 +107,15 @@
     </ClCompile>
     <ClCompile Include="Grid.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Powerup.cpp">
+      <Filter>Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="BG.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +182,6 @@
     <ClInclude Include="Bullet.h">
       <Filter>Characters</Filter>
     </ClInclude>
-    <ClInclude Include="Powerup.h">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="GameModeState.h">
       <Filter>GameState</Filter>
     </ClInclude>
@@ -187,6 +193,15 @@
     </ClInclude>
     <ClInclude Include="Grid.h">
       <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Powerup.h">
+      <Filter>Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="BG.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

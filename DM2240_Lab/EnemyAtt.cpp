@@ -3,8 +3,8 @@
 
 Enemy::Enemy(ENEMY_TYPE type)
 : type(type)
-, state(ENEMY_LANE)
 , buff(0)
+, state(ENEMY_LANE)
 , speed(0)
 , offsetX(0)
 , offsetY(0)
@@ -28,31 +28,6 @@ void Enemy::SetAtt(float firerate, int damage, int range, int health, float spee
 	SetFireRate(firerate);
 	SetRange(range);
 	SetSpeed(speed);
-}
-
-void Enemy::SetBuff(float buff)
-{
-	this->buff = buff;
-}
-
-void Enemy::SetSpeed(float speed)
-{
-	this->speed = speed;
-}
-
-float Enemy::GetBuff()
-{
-	return buff;
-}
-
-float Enemy::GetSpeed()
-{
-	return speed;
-}
-
-void Enemy::Update(float dt)
-{
-
 }
 
 void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int laneSwap)
@@ -82,11 +57,11 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 				//Enemy change lane
 				if(creep->state == ENEMY_STATE::ENEMY_LANE)
 				{
-					if(creep->type == Enemy::ENEMY_4)	//after 2 tiles move up/ down
+					if(creep->type == Enemy::ENEMY_1)	//after 2 tiles move up/ down
 					{	
 						if(!creep->called)
 						{
-							if(creep->offsetY > 1)
+							if(creep->offsetY > 1 && creep->offsetY < 5)
 							{
 								if(random == 1)
 								creep->offsetY2 = creep->offsetY - 1;
@@ -94,8 +69,11 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 								else
 								creep->offsetY2 = creep->offsetY + 1;
 							}
-							else if(creep->offsetY < 5)
+							else if(creep->offsetY == 5)
+							{creep->offsetY2 = creep->offsetY - 1;}
+							else if(creep->offsetY == 1)
 							{creep->offsetY2 = creep->offsetY + 1;}
+
 							creep->called = true;
 						}
 
@@ -112,7 +90,7 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 						}
 					}
 
-					if(creep->type == Enemy::ENEMY_3)
+					if(creep->type == Enemy::ENEMY_2)
 					{
 						if(laneSwap < creep->offsetY ) //move up
 						creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y + creep->GetVel().x*dt, 0));
@@ -125,22 +103,22 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 				//Change state
 				switch (creep->type){
 
-				case Enemy::ENEMY_1:
+			/*	case Enemy::ENEMY_1:
 					creep->state = ENEMY_STATE::ENEMY_ADVANCE;
 					break;
 
 				case Enemy::ENEMY_2:
 					creep->state = ENEMY_STATE::ENEMY_ADVANCE;
-					break;
+					break;*/
 
-				case Enemy::ENEMY_3:
+				case Enemy::ENEMY_1:
 					if(creep->currentTile == creep->tilesTravelled)
 						creep->state = ENEMY_STATE::ENEMY_LANE;
 					else
 						creep->state = ENEMY_STATE::ENEMY_ADVANCE;
 					break;
 
-				case Enemy::ENEMY_4:
+				case Enemy::ENEMY_2:
 					if(creep->offsetY != laneSwap)
 						creep->state = ENEMY_STATE::ENEMY_LANE;
 					else 
@@ -153,35 +131,27 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 	}
 }
 
-//void Enemy::laneCheck(CMap* theMap)
-//{
-//	int xGrid = theMap->GetXNumOfGrid();
-//	int yGrid = theMap->GetYNumOfGrid();
-//	int lane[6] = {0};
-//	int temp = 10;
-//
-//	//Check lane for towers
-//	for(int x = 0 ; x < xGrid; x++ )	
-//	{
-//		for(int y = 0; y < yGrid; y++)
-//		{
-//			if(theMap->GetGrid(x,y)->GetOccupied())
-//			{
-//				lane[y] += 1;
-//			}
-//		}
-//	}
-//
-//	//return lane with least tower
-//	for(int i = 1; i < 6; i++)
-//	{
-//		if(lane[i] < temp)
-//		{
-//			temp = lane[i];
-//			//return i;
-//			//cout << temp << endl;
-//		}
-//		
-//			cout << lane[i] << endl;
-//	}
-//}
+void Enemy::SetBuff(float buff)
+{
+	this->buff = buff;
+}
+
+void Enemy::SetSpeed(float speed)
+{
+	this->speed = speed;
+}
+
+float Enemy::GetBuff()
+{
+	return buff;
+}
+
+float Enemy::GetSpeed()
+{
+	return speed;
+}
+
+void Enemy::Update(float dt)
+{
+
+}

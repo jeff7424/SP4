@@ -5,7 +5,8 @@
 #include <mmsystem.h>
 #include "glext.h"
 #include <lua.hpp>
-//#include <vld.h>
+#include <stdlib.h>
+#include <time.h>
 
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
@@ -13,62 +14,40 @@
 CPlayState CPlayState::thePlayState;
 lua_State *L;
 
+int a = 1;
 int lane[6] = {0};
+
+int RNGesus(void)
+{
+	return rand() % 3 + 1;
+}
 
 void CPlayState::Init(void)
 {
-	//temp = 10;
-	Cam = NULL;
-	player = NULL;
+	srand(time(NULL));
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
-	pos_x = 0;
-	pos_y = 0;
 	WX = w;
 	WY = h;
-	mapOffset_x = 0;
-	mapOffset_y = 0;
-	tileOffset_x = 0;
-	tileOffset_y = 0;
-	mapFineOffset_x = 0;
-	mapFineOffset_y = 0;
-	theNumOfTiles_Height = 0;
-	theNumOfTiles_Width = 0;
-	rearWallOffset_x = 0;
-	rearWallOffset_y = 0;
-	rearWalltileOffset_x = 0;
-	rearWalltileOffset_y = 0;
-	rearWallFineOffset_x = 0;
-	rearWallFineOffset_y = 0;
 	selection = 1;
 	enemycounter = 0;
-	ClearMapCounter = 0;
-	ClearLaneCounter = 0;
 	heroAnimationCounter = 0;
 	progress = 1;
 	info = 0;
-	spawntimer = 0;
+	spawntimer = 0.0f;
 	ratio = 0;
-	m_fps = 30;
-	m_speed = 1;
-	m_worldSizeY = 100;
-	m_worldSizeX = m_worldSizeY;
-	gamesave = 1;
+	m_fps = 60.0f;
+	m_speed = 1.0f;
 	saveandload = false;
 	playmusic = true;
 	pause = false;
+	exitmenu = false;
 	soundon = true;
 	upgrade = false;
-	next = false;
-	back = false;
 	level = 1;
-	powerMap = false;
-	powerLane = false;
-	powerfired = false;
 	levelloaded = true;
-	m_ghost = Tower::TOWER_NORMAL;
-	m_ghost.SetActive(true);
+
 	for (int i = 0; i < 255; i++)
 	{
 		myKeys[i] = false;
@@ -85,7 +64,7 @@ void CPlayState::Init(void)
 	player = new PlayerInfo();
 
 	se = createIrrKlangDevice();
-	playSound();
+	playSound(a);
 
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
@@ -96,61 +75,97 @@ void CPlayState::Init(void)
 	// Initialization
 	theMap = new CMap();
 	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, 96, 96);
+	//theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
 
 	/*RenderBackground();
 	RenderTileMap();
 	SpawnTowers();
 	SpawnEnemy();*/
 
+	winscreen = true;
+	losescreen = false;
+
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
 	theNumOfTiles_Width = theMap->GetXNumOfGrid();
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
-	LoadTGA(&BackgroundTexture[0], "bin/textures/XPDefaultBackground.tga");
-	//LoadTGA(&TileMapTexture[0], "bin/textures/tile0_blank.tga");
-	//LoadTGA(&TileMapTexture[1], "bin/textures/t1.tga");
-	//LoadTGA(&TileMapTexture[2], "bin/textures/mouseover.tga");
-	//LoadTGA(&TileMapTexture[3], "bin/textures/mouseclick.tga");
-	//LoadTGA(&TileMapTexture[4], "bin/textures/t1.tga");
+	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
 
-	//LoadTGA(&Music[0], "bin/menu/Ingamemenu/set/tracklist.tga");
-	//LoadTGA(&TowerTexture[0], "bin/tower/Heavy.tga");
-	//LoadTGA(&TowerTexture[1], "bin/textures/cannontower.tga");
-	//LoadTGA(&TowerTexture[2], "bin/tower/Soldier.tga");
-	//LoadTGA(&TowerTexture[3], "bin/tower/Heavy.tga");
 
-	LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
+	/*LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[1], "bin/tower/tower2.tga");
 	LoadTGA(&Icon[2], "bin/tower/Heavy.tga");
 	LoadTGA(&Icon[3], "bin/tower/Soldier.tga");
-
+	LoadTGA(&Icon[4], "bin/tower/mine.tga");
+	LoadTGA(&Icon[5], "bin/tower/barricade.tga");*/
 	//LoadTGA(&Quit[0], "bin/exit/Savegame.TGA");
 	//LoadTGA(&Quit[1], "bin/exit/Savegameyes.TGA");
 	//LoadTGA(&Quit[2], "bin/exit/Savegameno.TGA");
-
-	LoadTGA(&BulletTexture[0], "bin/textures/normalbullet.tga");
-	LoadTGA(&BulletTexture[1], "bin/textures/cannonbullet.tga");
-	LoadTGA(&BulletTexture[2], "bin/textures/slowbullet.tga");
-	LoadTGA(&BulletTexture[3], "bin/textures/lightningbullet.tga");
-	LoadTGA(&BulletTexture[5], "bin/textures/sniperbullet.tga");
 
 	LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
 	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
+	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
+	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
+	LoadTGA(&WinScreenTexture, "bin/textures/winscreen.tga");
+	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
 	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
-	//LoadTGA(&Story[0], "bin/textures/textBox.tga");
-	LoadTGA(&Power[0], "bin/textures/powerMap.tga");
-	LoadTGA(&Power[1], "bin/textures/powerLane.tga");
-	LoadTGA(&PowerBoom[0], "bin/textures/clearMap.tga");
-	LoadTGA(&PowerBoom[1], "bin/textures/clearLane.tga");
 	// Load the attributes through text file
 	LoadAtt();
 	loadlevel();
 	LoadSpawn();
+
+	Shield = new Powerup(Powerup::POWER_SHIELD);
+	BaseHealth = new Powerup(Powerup::POWER_INCREASEBASEHEALTH);
+	Firerate = new Powerup(Powerup::POWER_FIRERATEMULTIPLY);
+	Damage = new Powerup(Powerup::POWER_DAMAGEMULTIPLY);
+	Backup_Tank = new Powerup(Powerup::POWER_TANKBACKUP);
+	
+	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
+
+	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
+	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 680, 624, 36, 36);
+	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 752, 624, 36, 36);
+	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 824, 624, 36, 36);
+	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
+
+	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
+	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
+	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
+	Unit_Sniper = new Button("bin/tower/Soldier.tga", 264, 624, 36, 36);
+	Unit_Mine = new Button("bin/tower/mine.tga", 336, 624, 36, 36);
+	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
+
+	//For Win Lose Menu
+	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
+	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
+//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
+	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
+
+	//For Mini Game
+	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
+
+	backupTank = new Tank();
+
+	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
+	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
+	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
+	
+	Shop_BG	     = new BG("bin/ui/hud/ShopBG32.tga", 470, 290, 193, 97);
+
+	Bonus_MultAttack = 1;
+	Bonus_MultArmour = 1;
+	Bonus_MultDollar = 1;
+
+	// For Pause Menu
+	PauseMenu_Resume = new Button("bin/ui/pausemenu/button_resume.tga", 480, 250, 128, 32);
+	PauseMenu_Restart = new Button("bin/ui/pausemenu/button_restart.tga", 480, 350, 128, 32);
+	PauseMenu_Exit = new Button("bin/ui/pausemenu/button_quit.tga", 480, 450, 128, 32);
+	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
+	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 }
 
 void CPlayState::Cleanup()
@@ -176,6 +191,170 @@ void CPlayState::Cleanup()
 		free(tEnemyProgress);
 	}
 
+	// Power ups deconstruct
+	if (Shield != NULL) 
+	{ 
+		delete Shield; 
+		Shield = NULL; 
+		free(Shield); 
+	}
+
+	if (BaseHealth != NULL) 
+	{ 
+		delete BaseHealth; 
+		BaseHealth = NULL; 
+		free(BaseHealth); 
+	}
+
+	if (Firerate != NULL) 
+	{ 
+		delete Firerate; 
+		Firerate = NULL; 
+		free(Firerate); 
+	}
+	
+	if (Damage != NULL) 
+	{ 
+		delete Damage; 
+		Damage = NULL; 
+		free(Damage); 
+	}
+	
+	if (Backup_Tank != NULL) 
+	{ 
+		delete Backup_Tank; 
+		Backup_Tank = NULL; 
+		free(Backup_Tank); 
+	}
+
+	// Buttons deconstruct
+	if (Button_Pause != NULL) 
+	{ 
+		delete Button_Pause; 
+		Button_Pause = NULL; 
+		free(Button_Pause); 
+	}
+
+	if (PauseMenu_Resume != NULL) 
+	{ 
+		delete PauseMenu_Resume; 
+		PauseMenu_Resume = NULL; 
+		free(PauseMenu_Resume); 
+	}
+	
+	if (PauseMenu_Restart != NULL) 
+	{ 
+		delete PauseMenu_Restart; 
+		PauseMenu_Restart = NULL; 
+		free(PauseMenu_Restart); 
+	}
+	
+	if (PauseMenu_Exit != NULL) 
+	{ 
+		delete PauseMenu_Exit; 
+		PauseMenu_Exit = NULL; 
+		free(PauseMenu_Exit); 
+	}
+	
+	if (ExitMenu_Yes != NULL) 
+	{ 
+		delete ExitMenu_Yes; 
+		ExitMenu_Yes = NULL; 
+		free(ExitMenu_Yes); 
+	}
+
+	if (ExitMenu_No != NULL)
+	{
+		delete ExitMenu_No;
+		ExitMenu_No = NULL;
+		free(ExitMenu_No);
+	}
+
+	if (Power_Shield != NULL)
+	{
+		delete Power_Shield;
+		Power_Shield = NULL;
+		free(Power_Shield);
+	}
+	if (Power_BaseHealth != NULL)
+	{
+		delete Power_BaseHealth;
+		Power_BaseHealth = NULL;
+		free(Power_BaseHealth);
+	}
+	if (Power_Firerate != NULL)
+	{
+		delete Power_Firerate;
+		Power_Firerate = NULL;
+		free(Power_Firerate);
+	}
+	if (Power_Damage != NULL)
+	{
+		delete Power_Damage;
+		Power_Damage = NULL;
+		free(Power_Damage);
+	}
+	if (Power_BackupTank != NULL)
+	{
+		delete Power_BackupTank;
+		Power_BackupTank = NULL;
+		free(Power_BackupTank);
+	}
+
+	if (Unit_Infantry != NULL)
+	{
+		delete Unit_Infantry;
+		Unit_Infantry = NULL;
+		free(Unit_Infantry);
+	}
+	if (Unit_Tank != NULL)
+	{
+		delete Unit_Tank;
+		Unit_Tank = NULL;
+		free(Unit_Tank);
+	}
+	if (Unit_Heavy != NULL)
+	{
+		delete Unit_Heavy;
+		Unit_Heavy = NULL;
+		free(Unit_Heavy);
+	}
+	if (Unit_Sniper != NULL)
+	{
+		delete Unit_Sniper;
+		Unit_Sniper = NULL;
+		free(Unit_Sniper);
+	}
+	if (Unit_Mine != NULL)
+	{
+		delete Unit_Mine;
+		Unit_Mine = NULL;
+		free(Unit_Mine);
+	}
+	if (Unit_Barricade != NULL)
+	{
+		delete Unit_Barricade;
+		Unit_Barricade = NULL;
+		free(Unit_Barricade);
+	}
+	if (Bonus_Attack != NULL)
+	{
+		delete Bonus_Attack;
+		Bonus_Attack = NULL;
+		free(Bonus_Attack);
+	}
+	if (Bonus_Armour != NULL)
+	{
+		delete Bonus_Armour;
+		Bonus_Armour = NULL;
+		free(Bonus_Armour);
+	}
+	if (Bonus_Dollar != NULL)
+	{
+		delete Bonus_Dollar;
+		Bonus_Dollar = NULL;
+		free(Bonus_Dollar);
+	}
 	while (bulletList.size() > 0)
 	{
 		Bullet *bullet = bulletList.back();
@@ -228,15 +407,6 @@ void CPlayState::Cleanup()
 		spawn = NULL;
 		spawnList.pop_back();
 		free(spawn);
-	}
-
-	while (powerList.size() > 0)
-	{
-		Powerup *power = powerList.back();
-		delete power;
-		power = NULL;
-		powerList.pop_back();
-		free(power);
 	}
 }
 
@@ -293,57 +463,162 @@ void CPlayState::Update(CGameStateManager* theGSM)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
-	// timer for enemy to spawn
-	spawntimer += dt;
-
-	// Spawn enemies
-	UpdateSpawn();
-
-	// Deactivate out of bounds objects
-	for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
+	if (!pause)
 	{
-		Bullet *bullet = *it;
-		if (bullet->GetActive())
+		// timer for enemy to spawn
+		spawntimer += dt;
+
+		// power ups update (duration & cooldown)
+		Shield->Update(dt);
+		BaseHealth->Update(dt);
+		Firerate->Update(dt);
+		Damage->Update(dt);
+		Backup_Tank->Update(dt);
+
+		// Spawn enemies
+		UpdateSpawn();
+
+		if (Backup_Tank->GetActive())
 		{
-			if (bullet->GetPos().x >= SCREEN_WIDTH || bullet->GetPos().x < 0)
-			{
-				bullet->SetActive(false);
-			}
+			backupTank->SetActive(true);
 		}
 		else
 		{
-			delete bullet;
-			bulletList.erase(it);
-			bullet = NULL; 
-			free(bullet);
-			break;
+			backupTank->SetActive(false);
 		}
-	}
+		backupTank->Update(dt);
+		Shield->Update(dt);
+		BaseHealth->Update(dt);
+		Firerate->Update(dt);
+		Damage->Update(dt);
 
-	// Handle enemies which reaches the base
-	//cout << laneCheck() << endl;
-	//cout << laneCheck() << endl;
-	theEnemy->SetMovement(enemyList, TILE_SIZE, dt, laneCheck());
-
-	//if enemy reaches base delete enemy and decrease enemy count
-	for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
-	{
-		Enemy *creep = *it;
-		if (creep->GetPos().x <= 0)
+		for (int it = 0; it < enemyList.size(); ++it)
 		{
-			creep->SetActive(false);
-			tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-			enemycounter -= 1;
-			delete creep;
-			enemyList.erase(it);
-			creep = NULL;
-			break;
+			Enemy* enemy = enemyList[it];
+			if (enemy->GetActive())
+			{
+				backupTank->GetTarget(enemy);
+			}
 		}
-	}
 
-	//cout << wLane << endl;
-	// Collision updates and unit triggers
-	Update(dt);
+		// Tower update
+		for (int it = 0; it < towerList.size(); ++it)
+		{
+			Tower* tower = towerList[it];
+			if (tower->GetActive())
+			{
+				tower->Update(dt, Firerate, Damage);
+				tower->GetTarget(enemyList);
+				if (tower->state == Tower::STATE_ATTACK)
+				{
+					switch (tower->type)
+					{
+						case Tower::TOWER_SLOW:
+							soundTypes(6, false);
+						break;
+						case Tower::TOWER_NORMAL:
+							soundTypes(7, false);
+							soundTypes(8, false);
+						break;
+						case Tower::TOWER_SHOCK:
+							soundTypes(9, false);
+						break;
+						case Tower::TOWER_CANNON:
+							soundTypes(10, false);
+							break;
+					}
+				}
+			}
+		}
+
+		// Deactivate out of bounds objects
+		for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
+		{
+			Bullet *bullet = *it;
+			if (bullet->GetActive() && bullet->type != Bullet::GO_BOMBBULLET)
+			{
+				bullet->Update(dt);
+				if (bullet->GetPos().x >= SCREEN_WIDTH || bullet->GetPos().x < 0)
+				{
+					bullet->SetActive(false);
+				}
+			}
+			else
+			{
+				soundTypes(11, false);
+				delete bullet;
+				bulletList.erase(it);
+				bullet = NULL;
+				free(bullet);
+				break;
+			}
+		}
+
+		theEnemy->SetMovement(enemyList, TILE_SIZE, dt, laneCheck());
+
+		// Handle enemies which reaches the base
+		for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
+		{
+			Enemy *creep = *it;
+			if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
+			{
+				/*switch (creep->type)
+				{
+				case Enemy::ENEMY_1:
+					if (player->GetShield() > 0)
+					{
+						player->SetShield(player->GetShield()-10);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
+					}
+					else
+						player->SetHealth(player->GetHealth()-10);
+					break;
+
+				case Enemy::ENEMY_2:
+					if (player->GetShield() > 0)
+					{
+						player->SetShield(player->GetShield()-20);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
+					}
+					else
+						player->SetHealth((player->GetHealth())-20);
+					break;
+
+				case Enemy::ENEMY_3:
+					if (player->GetShield() > 0)
+					{
+						player->SetShield(player->GetShield()-30);
+						if (player->GetShield() < 0)
+							player->SetShield(0);
+					}
+					else
+						player->SetHealth((player->GetHealth())-30);
+					break;
+				}*/
+				creep->SetActive(false);
+				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+				player->SetHealth(player->GetHealth() - creep->GetDamage());
+				enemycounter--;
+				delete creep;
+				enemyList.erase(it);
+				creep = NULL;
+				break;
+			}
+		}
+
+		//for (unsigned int i = 0; i < bulletList.size(); ++i)
+		//{
+		//	if (bulletList[i]->GetActive() && bulletList[i]->type != Bullet::GO_BOMBBULLET)
+		//	{
+		//		bulletList[i]->SetPos(Vector3(bulletList[i]->GetPos().x + bulletList[i]->GetSpeed() * dt, bulletList[i]->GetPos().y, 0));
+		//	}
+		//}
+
+		// Collision updates and unit triggers
+		Update(dt);
+	}
 }
 
 int CPlayState::laneCheck()
@@ -381,6 +656,8 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	RenderBackground();
 	RenderTileMap();
 
+	backupTank->Render();
+
 	// Render towers
 	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
 	{
@@ -407,7 +684,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 		Bullet *bullet = *it3;
 		if (bullet->GetActive() == true)
 		{
-			DrawBullet(bullet);
+			bullet->Render();
 		}
 	}
 
@@ -422,27 +699,6 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	{
 		RenderUpgrade(mouseInfo.lastX, (h - mouseInfo.lastY));
 	}
-
-	// Mouse over tower selection for info
-	if (info > 0)
-	{
-		RenderInfo(mouseInfo.lastX, mouseInfo.lastY);
-	}
-
-	// Draw powerup
-	if (powerfired == true)
-	{
-		if (powerMap == true && ClearMapCounter > 0)
-		{
-			powerTex(true, 1);
-		}
-		else if (powerLane == true && ClearLaneCounter > 0)
-		{
-			powerTex(true, 2);
-		}
-	}
-
-	tEnemyProgress->DrawEnemyCounter(500, 630); // Enemy Progress Bar
 
 	//// Pause == true render pause menu
 	//if (Menu->GetMpausemenu() == true)
@@ -463,6 +719,8 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 	//}
 
 	RenderHUD();
+
+	
 
 	Cam->SetHUD(false);
 
@@ -495,7 +753,6 @@ void CPlayState::changeSize(int w, int h) {
 		h = 1;
 
 	ratio = (float)w / h;
-	m_worldSizeX = m_worldSizeY * ratio;
 
 	WX = w;
 	WY = h;
@@ -503,9 +760,33 @@ void CPlayState::changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, m_worldSizeX, 0, m_worldSizeY);
+	gluOrtho2D(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
 	//gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	//float ar = 65.0f / 46.0f;
+
+	//int viewW = w;
+	//int viewH = w / ar;
+	//if (viewH > h)
+	//{
+	//	viewH = h;
+	//	viewW = h * ar;
+	//}
+
+	//int vpX = (w - viewW) / 2;
+	//int vpY = (h - viewH) / 2;
+
+	//// Reset the coordinate system before modifying
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+
+	//// Set the viewport to be the entire window
+	//glViewport(vpX, vpY, viewW, viewH);
+
+	//// Set the correct perspective.
+	//gluPerspective(45, ar, 1, 1000);
+	//glMatrixMode(GL_MODELVIEW);
 }
 
 void CPlayState::inputKey(int key, int x, int y) {
@@ -540,15 +821,22 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		selection = 4;
 		break;
 	case '5':
-
+		selection = 5;
 		break;
 	case '6':
-
+		selection = 6;
 		break;
 	case '7':
 
 		break;
 	case '-':
+		a++;
+		if (a > 3)
+		{
+			a = 1;
+		}
+		playSound(a);
+		break;
 	case '_':
 		sound.decreaseVolume();
 		break;
@@ -580,10 +868,8 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 }
 
 void CPlayState::MouseMove(int x, int y) {
-	int tile_topleft_x = (int)floor((float)(mapOffset_x + pos_x) / TILE_SIZE);
-	int tile_topleft_y = (int)floor((float)pos_y / TILE_SIZE);
-	mouseInfo.lastX = x;
-	mouseInfo.lastY = y;
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
 
 	int X = (int)((float)x / WX * 10);
 	int Y = (int)((float)y / WY * 7);
@@ -593,44 +879,92 @@ void CPlayState::MouseMove(int x, int y) {
 
 	//moverlevel1(x, y);
 
+	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	PauseMenu_Resume->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Restart->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	PauseMenu_Exit->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+	if (exitmenu)
+	{
+		ExitMenu_Yes->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		ExitMenu_No->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
+
+	if (winscreen == true)
+	{
+
+		//For Win Screen
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_NextLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_MiniGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		
+		Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		if (Bonus_Attack->GetIsHover())
+		{
+			info = -1;
+		}
+		if (Bonus_Armour->GetIsHover())
+		{
+			info = -2;
+		}
+		if (Bonus_Dollar->GetIsHover())
+		{
+			info = -3;
+		}
+	}
+
+	else if (losescreen == true)
+	{
+		//For Lose Screens
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	}
+
 	if (!pause)
 	{
-		/*if (theMap->theScreenMap[Y][X] != 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
-		{
-			m_ghost.SetActive(true);
-			m_ghost.type = static_cast<Tower::TOWER_TYPE>(selection);
-			m_ghost.SetPos(Vector3((float)x / w * SCREEN_WIDTH, (float)y / h * SCREEN_HEIGHT, 0));
-			upgrade = false;
-		}
-		else if (theMap->theScreenMap[Y][X] == 3 && X >= 1 && X <= 10 && Y >= 1 && Y <= 5)
-		{
-			m_ghost.SetActive(false);
-			upgrade = true;
-		}
-		else
-		{
-			m_ghost.SetActive(false);
-		}
-*/
-		if (X == 3 && Y == 0)
+		Power_Shield->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_BaseHealth->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_Firerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_Damage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Power_BackupTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		Unit_Infantry->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Tank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Heavy->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Sniper->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Mine->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Unit_Barricade->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		if (Unit_Infantry->GetIsHover())
 		{
 			info = 1;
-			upgrade = false;
 		}
-		else if (X == 4 && Y == 0)
+		else if (Unit_Tank->GetIsHover())
 		{
 			info = 2;
-			upgrade = false;
 		}
-		else if (X == 5 && Y == 0)
+		else if (Unit_Heavy->GetIsHover())
 		{
 			info = 3;
-			upgrade = false;
 		}
-		else if (X == 6 && Y == 0)
+		else if (Unit_Sniper->GetIsHover())
 		{
 			info = 4;
-			upgrade = false;
+		}
+		else if (Unit_Mine->GetIsHover())
+		{
+			info = 5;
+		}
+		else if (Unit_Barricade->GetIsHover())
+		{
+			info = 6;
 		}
 		else
 		{
@@ -761,291 +1095,253 @@ bool CPlayState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA
 	return true;											// Texture Building Went Ok, Return True
 }
 
-void CPlayState::RenderTileMap(void) {
-
+void CPlayState::RenderTileMap(void) 
+{
 	theMap->RenderScene(mouseInfo.lastX, mouseInfo.lastY);
 }
 
 void CPlayState::mclicklevel1(int x, int y)
 {
-	int X = (float)x / w * theMap->GetXNumOfGrid();
-	int Y = (float)y / h * theMap->GetYNumOfGrid();
+	if (enemycounter > 0)
+	{
+		int X = (float)x / w * theMap->GetXNumOfGrid();
+		int Y = (float)y / h * theMap->GetYNumOfGrid();
 
-	Tower *tower = NULL;
-	if (tower != NULL)
-	{
-		delete tower;
-		tower = NULL;
-	}
-	if (theMap->GetGrid(X, Y)->CursorHit == true)
-	{
-		// if it is a terrain
-		if (theMap->GetGrid(X, Y)->terrainType != 0)
+		Tower *tower = NULL;
+		if (tower != NULL)
 		{
-			if (!theMap->GetGrid(X, Y)->GetOccupied())
+			delete tower;
+			tower = NULL;
+		}
+		if (Button_Pause->GetIsHover())
+		{
+			pause = !pause;
+			exitmenu = false;
+			std::cout << pause << std::endl;
+		}
+	
+		if (pause)
+		{
+			if (!exitmenu)
 			{
-				if (tower = FetchTower())
+				if (PauseMenu_Resume->GetIsHover())
 				{
-					tower->type = static_cast<Tower::TOWER_TYPE>(selection);
-					tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
-						towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
-					if (player->GetGold() >= tower->GetCost())
-					{
-						lane[Y] += 1;
-						//cout << Y << endl;
-						tower->SetActive(true);
-						tower->SetLevel(1);
-						tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
-						theMap->GetGrid(X, Y)->SetOccupied(true);
-						player->SetGold(player->GetGold() - tower->GetCost()); 
-						towerList.push_back(tower);
-					}
-					else
-					{
-						tower->SetActive(false);
-						delete tower;
-						tower = NULL;
-						free(tower);
-					}
+					pause = false;
+					std::cout << pause << std::endl;
 				}
-				/*delete tower;
-				tower = NULL;
-				free(tower);*/
+				else if (PauseMenu_Restart->GetIsHover())
+				{
+
+				}
+				else if (PauseMenu_Exit->GetIsHover())
+				{
+					exitmenu = true;
+				}
+			}
+			
+			else if (exitmenu)
+			{
+				if (ExitMenu_Yes->GetIsHover())
+				{
+					sound.stop();
+					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+				}
+				else if (ExitMenu_No->GetIsHover())
+				{
+					exitmenu = false;
+				}
 			}
 		}
+		else if (!pause)
+		{
+			if (theMap->GetGrid(X, Y)->CursorHit == true)
+			{
+				// if it is a terrain
+				if (theMap->GetGrid(X, Y)->terrainType != 0)
+				{
+					if (!theMap->GetGrid(X, Y)->GetOccupied())
+					{
+						if (tower = FetchTower())
+						{
+							//tower->type = static_cast<Tower::TOWER_TYPE>(selection);
+							tower->SetAtt(towerClone[selection - 1]->GetFireRate(), towerClone[selection - 1]->GetCost(),
+								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
+							if (player->GetGold() >= tower->GetCost())
+							{
+								lane[Y] += 1;
+								tower->SetActive(true);
+								tower->SetLevel(1);
+								tower->SetPos(Vector3(theMap->GetGrid(X, Y)->GetCenterPoint().x, theMap->GetGrid(X, Y)->GetCenterPoint().y, 0));
+								theMap->GetGrid(X, Y)->SetOccupied(true);
+								player->SetGold(player->GetGold() - tower->GetCost()); 
+								towerList.push_back(tower);
+							}
+							else
+							{
+								tower->SetActive(false);
+								delete tower;
+								tower = NULL;
+								free(tower);
+							}
+						}
+						/*delete tower;
+						tower = NULL;
+						free(tower);*/
+					}
+				}
+			}
+			if (Power_Shield->GetIsHover())
+			{
+				if (Shield->GetReady())
+				{
+					Shield->SetActive(true);
+					player->SetMaxShield(player->GetShield() + 50);
+					player->SetShield(player->GetShield() + 50);
+				}
+			}
+			else if (Power_BaseHealth->GetIsHover())
+			{
+				if (BaseHealth->GetReady())
+				{
+					if (player->GetHealth() < player->GetMaxHealth())
+					{
+						BaseHealth->SetActive(true);
+						player->SetHealth(player->GetHealth() + 50);
+						if (player->GetHealth() >= 100)
+							player->SetHealth(100);
+					}
+				}
+			}
+			else if (Power_Firerate->GetIsHover())
+			{
+				Firerate->SetActive(true);
+			}
+			else if (Power_Damage->GetIsHover())
+			{
+				Damage->SetActive(true);
+			}
+			else if (Power_BackupTank->GetIsHover())
+			{
+				if (Backup_Tank->GetReady())
+				{
+					Backup_Tank->SetActive(true);
+				}
+			}
+			else if (Unit_Infantry->GetIsHover())
+			{
+				selection = 1;
+			}
+			else if (Unit_Tank->GetIsHover())
+			{
+				selection = 2;
+			}
+			else if (Unit_Heavy->GetIsHover())
+			{
+				selection = 3;
+			}
+			else if (Unit_Sniper->GetIsHover())
+			{
+				selection = 4;
+			}
+			else if (Unit_Mine->GetIsHover())
+			{
+				selection = 5;
+			}
+			else if (Unit_Barricade->GetIsHover())
+			{
+				selection = 6;
+			}
+		}
+	}
+	
+	if (winscreen == true)
+	{ // End-of-round bonus selection menu - Allow clicks to register
+
+		// Placeholder Bonuses
+
+		// Bonus 1: Alpha Damage +10%
+		if (Bonus_Attack->GetIsHover())
+		{
+			Bonus_MultAttack *= 1.1f;
+			if (player->GetBonus()-10 > 0)
+			player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+		}
+
+
+		// Bonus 2: Durability +10%
+		if (Bonus_Armour->GetIsHover())
+		{
+			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+		}
+
+		// Bonus 3: Loot Drop +10%
+		if (Bonus_Dollar->GetIsHover())
+		{
+			Bonus_MultDollar *= 1.1f;
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
+			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+		}
+	}
+
+	//For Win Lose Screen
+	if (WinLose_MainMenu->GetIsHover())
+	{
+		cout << " Back To Main Menu!" << endl;
+		winscreen = false;
+		losescreen = false;
+		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+	}
+
+	if (WinLose_NextLevel->GetIsHover())
+	{
+		cout << " Loading Next Level!" << endl;
+		progress = 2;
+		winscreen = false;
+		losescreen = false;
+	}
+
+	if (WinLose_RestartLevel->GetIsHover())
+	{
+		cout << " Restart Level!" << endl;
+		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+		winscreen = false;
+		losescreen = false;
+	}
+
+/*	if (WinLose_Shop->GetIsHover())
+	{
+		cout << "Initialise the Shop!" << endl;
+	} */
+
+	if (WinLose_MiniGame->GetIsHover())
+	{
+		cout << "Launching Mini Game!" << endl;
 	}
 }
 
 void CPlayState::Update(float dt)
 {
-	// Check if in range
-	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
+	if (player->GetHealth() <= 0)
 	{
-		Tower *tower = *it;
-		tower->SetFire(false);
-		if (tower->GetActive() == true)
-		{
-			for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
-			{
-				Enemy *creep = *it;
-				if (creep->GetActive() == true)
-				{
-					if (tower->GetPos().y == creep->GetPos().y && creep->GetPos().x - tower->GetPos().x < tower->GetRange() && creep->GetPos().x > tower->GetPos().x)
-					{
-						if (tower->GetFireCounter() > 0)
-						{
-							tower->SetFireCounter(tower->GetFireCounter() - dt);
-							break;
-						}
-						else if (tower->GetFireCounter() <= 0)
-						{
-							tower->SetFire(true);
-							tower->SetFireCounter(tower->GetFireRate());
-							break;
-						}
-					}
-				}
-			}
-		}
+		player->SetHealth(0);
+		losescreen = true;
 	}
 
-		// Check if creep in range
-	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
-	{
-		Enemy *creep = *it2;
-		creep->SetFire(false);
-
-		if (creep->GetActive() == true)
-		{
-			for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
-			{
-				Tower *tower = *it;
-				if (tower->GetActive() == true)
-				{
-					if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
-					{
-						
-							if (creep->GetFireCounter() > 0)
-							{
-								creep->SetFireCounter(creep->GetFireCounter() - dt);
-								break;
-							}
-							else if (creep->GetFireCounter() <= 0)
-							{
-								creep->SetFire(true);
-								creep->SetFireCounter(creep->GetFireRate());
-								if (tower->GetHealth() <= 0)
-								{
-									se->play2D("bin/sounds/towerDeath.mp3", false);
-									se->setSoundVolume(0.25);
-									creep->SetFire(false);
-								}
-								break;
-							}
-						
-					}
-				}
-			}
-		}
-		else
-		{
-			delete creep;
-			enemyList.erase(it2);
-			creep = NULL;
-			break;
-		}
-	}
-
-	// Fire bullets
-	for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
-	{
-		Tower *tower = *it;
-		if (tower->GetActive() == true && tower->GetFire() == true)
-		{
-			Bullet *bullet;
-			if (bullet = FetchBullet())
-			{
-				bullet->SetActive(true);
-				//bullet->type = static_cast<Bullet::BULLET_TYPE>(tower->type);
-				if (tower->type == Tower::TOWER_NORMAL)
-				{
-					bullet->type = Bullet::GO_NORMALBULLET;
-				}
-				else if (tower->type == Tower::TOWER_CANNON)
-				{
-					bullet->type = Bullet::GO_CANNONBULLET;
-				}
-				else if (tower->type == Tower::TOWER_SLOW)
-				{
-					bullet->type = Bullet::GO_SLOWBULLET;
-				}
-				else if (tower->type == Tower::TOWER_SHOCK)
-				{
-					bullet->type = Bullet::GO_SHOCKBULLET;
-					bullet->SetHealth(3);
-				}
-				bullet->SetDamage(tower->GetDamage());
-				bullet->SetVel(Vector3(200, 0, 0));
-				bullet->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, 0));
-			}
-		}
-	}
-
-	for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
-	{
-		Enemy *creep = *it;
-		if (creep->GetActive() == true && creep->GetFire() == true)
-		{
-			Bullet *bullet;
-			if (bullet = FetchBullet())
-			{
-				bullet->SetActive(true);
-				if (creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4)
-				{
-					bullet->type = Bullet::GO_SNIPERBULLET;
-				}
-				else if (creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_2)
-				{
-					bullet->type = Bullet::GO_CLOSEBULLET;
-				}
-				bullet->SetDamage(creep->GetDamage());
-				bullet->SetVel(Vector3(-200, 0, 0));
-				bullet->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y, 0));
-			}
-		}
-	}
-
-	//update bullet position
-	for (unsigned int i = 0; i < bulletList.size(); ++i)
-	{
-		if (bulletList[i]->GetActive() && bulletList[i]->type != Bullet::GO_BOMBBULLET)
-		{
-			bulletList[i]->SetPos(Vector3(bulletList[i]->GetPos().x + bulletList[i]->GetVel().x * dt, bulletList[i]->GetPos().y, 0));
-		}
-	}
-
-	// Bomb radius
-	for (std::vector<Bullet *>::iterator itp = bulletList.begin(); itp != bulletList.end(); ++itp)
-	{
-		Bullet *go2 = *itp;
-		if (go2->GetActive())
-		{
-			if (go2->type == Bullet::GO_BOMBBULLET)
-			{
-				//go2->scale.Set(10, 10, 0);
-				for (std::vector<Enemy *>::iterator itp = enemyList.begin(); itp != enemyList.end(); ++itp)
-				{
-					Enemy *creepz = *itp;
-					if (creepz->GetActive())
-					{
-						Vector3 temp3;
-						temp3.x = creepz->GetPos().x;
-						temp3.y = creepz->GetPos().y;
-						if (abs((temp3 - go2->GetPos()).Length()) < 100)
-						{
-							creepz->SetHealth(creepz->GetHealth() - go2->GetDamage());
-							go2->SetActive(false);
-
-							if (creepz->GetHealth() <= 0)
-							{
-								creepz->SetActive(false);
-								player->SetGold(player->GetGold() + ((rand() % 10 + 1) * creepz->GetLevel()));
-								tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-								enemycounter--;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			delete go2;
-			bulletList.erase(itp);
-			go2 = NULL;
-			break;
-		}
-	}
-
-	// Despawn creep/ tower if bullet collides
+	// Despawn creep if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
 		Bullet *bullet = *it3;
 		if (bullet->GetActive())
 		{
-			for (std::vector<Tower *>::iterator it2 = towerList.begin(); it2 != towerList.end(); ++it2)
-			{
-				Tower *tower = *it2;
-				if (tower->GetActive() && (bullet->type == Bullet::GO_SNIPERBULLET || bullet->type == Bullet::GO_CLOSEBULLET) && tower->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(tower->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
-				{
-					if (bullet->GetHealth() > 0)
-					{
-						bullet->SetHealth(bullet->GetHealth() - 1);
-						bullet->SetPos(bullet->GetPos() + 20);
-					}
-					else if (bullet->GetHealth() <= 0)
-					{
-						bullet->SetActive(false);
-					}
-
-					tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
-
-					if (tower->GetHealth() <= 0)
-					{
-						int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
-						int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-						theMap->GetGrid(x, y)->SetOccupied(false);
-						tower->SetActive(false);
-						break;
-					}
-				}
-			}
-
 			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 			{
 				Enemy *creep = *it2;
-				if (creep->GetActive() && bullet->type != Bullet::GO_CANNONBULLET && bullet->type != Bullet::GO_CLOSEBULLET && bullet->type != Bullet::GO_SNIPERBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if (creep->GetActive() && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
 				{
 					if (bullet->GetHealth() > 0)
 					{
@@ -1070,13 +1366,29 @@ void CPlayState::Update(float dt)
 						}
 					}
 
-					creep->SetHealth(creep->GetHealth() - bullet->GetDamage());
+					creep->SetHealth(creep->GetHealth() - (bullet->GetDamage())*Bonus_MultAttack); // Damage the creep
 
-					if (creep->GetHealth() <= 0)
+					if (creep->GetHealth() <= 0) // kill the creep
 					{
 						soundTypes(creep->type, true);
 						creep->SetActive(false);
-						player->SetGold(player->GetGold() + 50);
+
+						switch (creep->type)
+						{
+						case Enemy::ENEMY_1:
+							player->SetGold(player->GetGold() + (Enemy::NME_Y1)*Bonus_MultDollar);
+							break;
+
+						case Enemy::ENEMY_2:
+							player->SetGold(player->GetGold() + (Enemy::NME_Y2)*Bonus_MultDollar);
+							break;
+
+						case Enemy::ENEMY_3:
+							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
+							player->SetBonus(player->GetBonus() + 1);
+							break;
+						}
+
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 						enemycounter--;
 						break;
@@ -1094,7 +1406,7 @@ void CPlayState::Update(float dt)
 	}
 
 	// Spawn bomb for cannon (radius)
-	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
+	/*for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
 		Bullet *bullet = *it3;
 		if (bullet->GetActive() && bullet->type == Bullet::GO_CANNONBULLET)
@@ -1132,10 +1444,63 @@ void CPlayState::Update(float dt)
 				}
 			}
 		}
+	}*/
+
+	// Check if creep in range
+	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
+	{
+		Enemy *creep = *it2;
+		if (creep->GetActive() == true)
+		{
+			creep->SetFire(false);
+			for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
+			{
+				Tower *tower = *it;
+				if (tower->GetActive() == true)
+				{
+					if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+					{
+						creep->SetFire(true);
+						if (creep->GetActive() == true && creep->GetFire() == true)
+						{
+							if (creep->GetFireCounter() > 0)
+							{
+								creep->SetFireCounter(creep->GetFireCounter() - dt);
+								break;
+							}
+							else if (creep->GetFireCounter() <= 0)
+							{
+								creep->SetFire(true);
+								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())*Bonus_MultArmour);
+								creep->SetFireCounter(creep->GetFireRate());
+								if (tower->GetHealth() <= 0)
+								{
+									se->play2D("bin/sounds/towerDeath.mp3", false);
+									se->setSoundVolume(0.25);
+									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+									theMap->GetGrid(x, y)->SetOccupied(false);
+									tower->SetActive(false);
+									creep->SetFire(false);
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			delete creep;
+			enemyList.erase(it2);
+			creep = NULL;
+			break;
+		}
 	}
 }
 
-Bullet* CPlayState::FetchBullet()
+Bullet* CPlayState::FetchBullet(Tower *tower)
 {
 	Bullet* tempbullet = NULL;
 	if (tempbullet != NULL)
@@ -1145,7 +1510,7 @@ Bullet* CPlayState::FetchBullet()
 		free(tempbullet);
 	}
 
-	for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
+	/*for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
 	{
 		tempbullet = *it;
 		if (!tempbullet->GetActive())
@@ -1153,9 +1518,12 @@ Bullet* CPlayState::FetchBullet()
 			tempbullet->SetActive(true);
 			return tempbullet;
 		}
-	}
-	tempbullet = new Bullet(Bullet::GO_NORMALBULLET);
+	}*/
+	tempbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(tower->type));
 	tempbullet->SetActive(true);
+	tempbullet->SetDamage(tower->GetDamage());
+	tempbullet->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, 0));
+	tempbullet->SetSpeed(200);
 	bulletList.push_back(tempbullet);
 	return tempbullet;
 }
@@ -1205,7 +1573,7 @@ Tower *CPlayState::FetchTower()
 			return temptower;
 		}
 	}
-	temptower = new Tower();
+	temptower = new Tower(static_cast<Tower::TOWER_TYPE>(selection));
 	//temptower->SetActive(true);
 	//towerList.push_back(temptower);
 	return temptower;
@@ -1221,141 +1589,6 @@ Spawn* CPlayState::FetchSpawn()
 	Spawn *tempspawn = new Spawn();
 	spawnList.push_back(tempspawn);
 	return tempspawn;
-}
-
-Powerup* CPlayState::FetchPower()
-{
-	/*for (std::vector<Powerup *>::iterator it = powerList.begin(); it != powerList.end(); ++it)
-	{
-		Powerup *power = *it;
-		if (!power->GetActive())
-		{
-			power->SetActive(true);;
-			return power;
-		}
-	}
-	Powerup *power = new Powerup(Powerup::POWER_DOWN);
-	power->SetActive(true);
-	powerList.push_back(power);*/
-	return NULL;
-
-}
-
-void CPlayState::DrawBullet(Bullet *bullet)
-{
-	switch (bullet->type)
-	{
-	case Bullet::GO_NORMALBULLET:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, BulletTexture[0].texID);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-12, -12);
-		glTexCoord2f(0, 1); glVertex2f(-12, 12);
-		glTexCoord2f(1, 1); glVertex2f(12, 12);
-		glTexCoord2f(1, 0); glVertex2f(12, -12);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Bullet::GO_CANNONBULLET:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, BulletTexture[1].texID);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-12, -12);
-		glTexCoord2f(0, 1); glVertex2f(-12, 12);
-		glTexCoord2f(1, 1); glVertex2f(12, 12);
-		glTexCoord2f(1, 0); glVertex2f(12, -12);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Bullet::GO_SLOWBULLET:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, BulletTexture[2].texID);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-12, -12);
-		glTexCoord2f(0, 1); glVertex2f(-12, 12);
-		glTexCoord2f(1, 1); glVertex2f(12, 12);
-		glTexCoord2f(1, 0); glVertex2f(12, -12);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Bullet::GO_SHOCKBULLET:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, BulletTexture[3].texID);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-12, -12);
-		glTexCoord2f(0, 1); glVertex2f(-12, 12);
-		glTexCoord2f(1, 1); glVertex2f(12, 12);
-		glTexCoord2f(1, 0); glVertex2f(12, -12);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Bullet::GO_BOMBBULLET:
-		glPushMatrix();
-		glColor3f(1.0f, 0.0f, 1.0f);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-75, -75);
-		glTexCoord2f(0, 1); glVertex2f(-75, 75);
-		glTexCoord2f(1, 1); glVertex2f(75, 75);
-		glTexCoord2f(1, 0); glVertex2f(75, -75);
-		glEnd();
-		glPopMatrix();
-		break;
-	case Bullet::GO_SNIPERBULLET:
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, BulletTexture[5].texID);
-		glTranslatef(bullet->GetPos().x, bullet->GetPos().y, bullet->GetPos().z);
-		//glScalef(go->scale.x, go->scale.y, go->scale.z);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-12, -12);
-		glTexCoord2f(0, 1); glVertex2f(-12, 12);
-		glTexCoord2f(1, 1); glVertex2f(12, 12);
-		glTexCoord2f(1, 0); glVertex2f(12, -12);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Bullet::GO_CLOSEBULLET:
-		break;
-	}
 }
 
 void CPlayState::DrawEnemy(Enemy *creep)
@@ -1472,14 +1705,12 @@ void CPlayState::RenderStringOnScreen(float x, float y, const char* quote)
 
 void CPlayState::RenderBackground(void)
 {
+	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	// Draw Background image
-
-	glPushMatrix();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, BackgroundTexture[0].texID);
-	glPushMatrix();
 	glBegin(GL_QUADS);
 	//int height = SCREEN_HEIGHT * 1.333 / 1.5;
 	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
@@ -1487,10 +1718,9 @@ void CPlayState::RenderBackground(void)
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
 	glTexCoord2f(0, 1); glVertex2f(0, 0);
 	glEnd();
-	glPopMatrix();
 	glDisable(GL_BLEND);
-	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 void CPlayState::Load()
@@ -1526,14 +1756,6 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetEnemyCounter(stoi(value));
 			}
-			else if (type == "armageddon")
-			{
-				ClearMapCounter = stoi(value);
-			}
-			else if (type == "lasercannon")
-			{
-				ClearLaneCounter = stoi(value);
-			}
 		}
 	}
 	inData.close();
@@ -1544,9 +1766,9 @@ void CPlayState::Load()
 		{
 			if (type == "tower")
 			{
-				Tower *tower = new Tower();
+				//Tower *tower = new Tower();
 				getline(inData, value, ',');
-				tower->type = static_cast<Tower::TOWER_TYPE>(stoi(value));
+				Tower *tower = new Tower(static_cast<Tower::TOWER_TYPE>(stoi(value)));
 				getline(inData, value, ',');
 				tower->SetActive(stoi(value));
 				getline(inData, value, ',');
@@ -1672,8 +1894,6 @@ void CPlayState::Save()
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
-		file << "armageddon, " << ClearMapCounter << "\n";
-		file << "lasercannon, " << ClearLaneCounter << "\n";
 		file.close();
 	}
 	else
@@ -1684,7 +1904,7 @@ void CPlayState::Save()
 	ofstream file2("save/progress.txt");
 	if (file2.is_open())
 	{
-		Tower *tower = FetchTower();
+		//Tower *tower = FetchTower();
 		for (unsigned int i = 0; i < towerList.size(); ++i)
 		{
 			if (towerList[i]->GetActive())
@@ -1698,7 +1918,7 @@ void CPlayState::Save()
 				}
 			}
 		}
-		Enemy *creep = FetchEnemy();
+		//Enemy *creep = FetchEnemy();
 		for (unsigned int j = 0; j < enemyList.size(); ++j)
 		{
 			if (enemyList[j]->GetActive())
@@ -1712,7 +1932,7 @@ void CPlayState::Save()
 				}
 			}
 		}
-		Bullet *bullet = FetchBullet();
+		//Bullet *bullet = FetchBullet();
 		for (unsigned int k = 0; k < bulletList.size(); ++k)
 		{
 			if (bulletList[k]->GetActive())
@@ -1728,7 +1948,7 @@ void CPlayState::Save()
 			}
 		}
 
-		Spawn *spawn = FetchSpawn();
+		//Spawn *spawn = FetchSpawn();
 		for (unsigned int x = 0; x < spawnList.size(); ++x)
 		{
 			if (spawnList[x]->GetTime() >= spawntimer)
@@ -1736,8 +1956,8 @@ void CPlayState::Save()
 				file2 << "spawnlist, " << spawnList[x]->GetType() << ", " << spawnList[x]->GetTime() << "\n";
 			}
 		}
-		delete spawn;
-		spawn = NULL;
+		/*delete spawn;
+		spawn = NULL;*/
 		file2.close();
 	}
 	else
@@ -1841,10 +2061,10 @@ void CPlayState::LoadAtt()
 	inData.open("save/tower.txt");
 	while (!inData.eof())
 	{
-		Tower *tower = new Tower();
+		//Tower *tower = new Tower();
 
 		getline(inData, index, ',');
-		tower->type = static_cast<Tower::TOWER_TYPE>(stoi(index));
+		Tower *tower = new Tower(static_cast<Tower::TOWER_TYPE>(stoi(index)));
 		getline(inData, value, ',');
 		tower->SetFireRate(stof(value));
 		getline(inData, value, ',');
@@ -1881,15 +2101,30 @@ void CPlayState::LoadAtt()
 	inData.close();
 }
 
-void CPlayState::playSound(void)
+void CPlayState::playSound(int a)
 {
 	if (soundon == true)
 	{
-		sound.setFileName("bin/sounds/gameTheme_3.mp3");
-		//sound.setVolume(50);
-		sound.playSoundThreaded();
+		if (a == 1)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/BGM.mp3");
+			//sound.setVolume(25);
+			sound.playSoundThreaded();
+		}
+		else if (a == 2)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/tempBGM.mp3");
+			sound.playSoundThreaded();
+		}
+		else if (a == 3)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/Snake_Eater.mp3");
+			sound.playSoundThreaded();
+		}
 	}
-
 }
 
 void CPlayState::shooting(bool firing)
@@ -1931,39 +2166,91 @@ void CPlayState::soundTypes(int type, bool death)
 		se->setSoundVolume(0.25);
 		death = false;
 	}
+	else if (type == 6)
+	{
+		se->play2D("bin/sounds/sniper.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 7)
+	{
+		se->play2D("bin/sounds/Soldier.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 8)
+	{
+		se->play2D("bin/sounds/shells.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 9)
+	{
+		se->play2D("bin/sounds/Missile.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 10)
+	{
+		se->play2D("bin/sounds/TankFire.wav", false);
+		se->setSoundVolume(0.25);
+		death = false;
+	}
+	else if (type == 11)
+	{
+		int random = RNGesus();
+		switch (random)
+		{
+		case 1:
+			se->play2D("bin/sounds/Hit_1.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 2:
+			se->play2D("bin/sounds/Hit_2.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		case 3:
+			se->play2D("bin/sounds/Hit_3.wav", false);
+			se->setSoundVolume(0.25);
+			death = false;
+			break;
+		}
+	}
 }
 
 void CPlayState::loadlevel()
 {
-	/*if (progress == 1)
+	if (progress == 1)
 	{
-		theMap->LoadMap("bin/maps/MapDesign.csv");
+		theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 2)
 	{
-		theMap->LoadMap("bin/maps/MapDesign2.csv");
+		theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 3)
 	{
-		theMap->LoadMap("bin/maps/MapDesign3.csv");
+		theMap->LoadMap("bin/maps/MapDesign3.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 4)
 	{
-		theMap->LoadMap("bin/maps/MapDesign4.csv");
+		theMap->LoadMap("bin/maps/MapDesign4.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 5)
 	{
-		theMap->LoadMap("bin/maps/MapDesign5.csv");
+		theMap->LoadMap("bin/maps/MapDesign5.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 6)
 	{
-		theMap->LoadMap("bin/maps/MapDesign6.csv");
-	}*/
+		theMap->LoadMap("bin/maps/MapDesign6.csv", 0, 0, TILE_SIZE, TILE_SIZE);
+	}
 }
 
 void CPlayState::clearmap()
@@ -1992,234 +2279,6 @@ void CPlayState::clearmap()
 			bullet->SetActive(false);
 		}
 	}
-}
-
-void CPlayState::tower1()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[0].texID);
-
-	glTranslatef((w * 0.35f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower2()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[1].texID);
-
-	glTranslatef((w * 0.45f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower3()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[2].texID);
-
-	glTranslatef((w * 0.55f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::tower4()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Icon[3].texID);
-
-	glTranslatef((w * 0.65f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void CPlayState::power1()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	int w = glutGet(GLUT_WINDOW_WIDTH);
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Power[0].texID);
-
-	glTranslatef((w * 0.85f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-	glPopMatrix();
-}
-
-void CPlayState::power2()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	int w = glutGet(GLUT_WINDOW_WIDTH);
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Power[1].texID);
-
-	glTranslatef((w * 0.95f), (h * 0.926f), 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-w / 20, h / 14, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(w / 20, -h / 14, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(w / 20, h / 14, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-	glPopMatrix();
 }
 
 void CPlayState::RenderUpgrade(int x, int y)
@@ -2269,12 +2328,12 @@ void CPlayState::RenderInfo(int x, int y)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPushMatrix();
 	glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
-	glTranslatef((float)x / w * SCREEN_WIDTH, (float)y / h * SCREEN_HEIGHT, 1);
+	glTranslatef(x, y, 1);
 	glBegin(GL_QUADS);
-	glVertex2f(-10, 100);
-	glVertex2f(-10, -20);
-	glVertex2f(150, -20);
-	glVertex2f(150, 100);
+	glVertex2f(0, 0);
+	glVertex2f(0, -120);
+	glVertex2f(160, -120);
+	glVertex2f(160, 0);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
@@ -2282,7 +2341,7 @@ void CPlayState::RenderInfo(int x, int y)
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	char temp[256];
-	if (info > 0)
+	if (info > 0) // Unit Info
 	{
 		if (info == 1)
 		{
@@ -2300,137 +2359,89 @@ void CPlayState::RenderInfo(int x, int y)
 		{
 			sprintf_s(temp, "Slow Tower");
 		}
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT, temp);
-		sprintf_s(temp, "Health: %d (x 1.5)", towerClone[info - 1]->GetHealth());
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT + 18, temp);
-		sprintf_s(temp, "Cost: %d (+ 50)", towerClone[info - 1]->GetCost());
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT + 36, temp);
-		sprintf_s(temp, "Damage: %d (x 1.5)", towerClone[info - 1]->GetDamage());
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT + 54, temp);
+		else if (info == 5)
+		{
+			sprintf_s(temp, "Mine");
+		}
+		else if (info == 6)
+		{
+			sprintf_s(temp, "Barricade");
+		}
+		RenderStringOnScreen(x + 4, y - 98, temp);
+		sprintf_s(temp, "Health: %d", towerClone[info - 1]->GetHealth());
+		RenderStringOnScreen(x + 4, y - 80, temp);
+		sprintf_s(temp, "Cost: %d", towerClone[info - 1]->GetCost());
+		RenderStringOnScreen(x + 4, y - 62, temp);
+		sprintf_s(temp, "Damage: %d", towerClone[info - 1]->GetDamage());
+		RenderStringOnScreen(x + 4, y - 44, temp);
 		sprintf_s(temp, "Firerate: %d", towerClone[info - 1]->GetFireRate());
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT + 72, temp);
+		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
-		RenderStringOnScreen((float)mouseInfo.lastX / w * SCREEN_WIDTH, (float)mouseInfo.lastY / h * SCREEN_HEIGHT + 90, temp);
+		RenderStringOnScreen(x + 4, y - 8, temp);
 	}
-}
-
-void CPlayState::powerTex(bool yay, int boo)
-{
-	if (yay == true && boo == 1)
+	else if (info < 0) // Bonus Selection Info
 	{
-		soundTypes(4, true);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		int w = glutGet(GLUT_WINDOW_WIDTH);
-		int h = glutGet(GLUT_WINDOW_HEIGHT);
-		/*glScalef(w* (w/1313), h * (h/697),0);*/
-		gluOrtho2D(0.0, w, 0.0, h);
-
-		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glPushMatrix();
-		glLoadIdentity();
-		glBindTexture(GL_TEXTURE_2D, PowerBoom[0].texID);
-
-		glTranslatef((w * 0.5f), (h * 0.5f), 0);
-		//glTranslatef((w * 0.5f), (-h * 0.5f) + transition, 0);
-		//glTranslatef((w * 0.95f), (h * 0.03f), 0);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-w * 0.5f, h * 0.5f, 0);
-
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-w * 0.5f, -h * 0.5f, 0);
-
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(w * 0.5f, -h * 0.5f, 0);
-
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(w * 0.5f, h * 0.5f, 0);
-		glEnd();
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-		glPopMatrix();
-
-		yay = false;
+		if (info == -1)
+		{
+			sprintf_s(temp, "Increase bullet damage by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -2)
+		{
+			sprintf_s(temp, "Increase damage resistance by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -3)
+		{
+			sprintf_s(temp, "Increase gold drop by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
 	}
-	else if (yay == true && boo == 2)
-	{
-		soundTypes(5, true);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		int w = glutGet(GLUT_WINDOW_WIDTH);
-		int h = glutGet(GLUT_WINDOW_HEIGHT);
-		/*glScalef(w* (w/1313), h * (h/697),0);*/
-		gluOrtho2D(0.0, w, 0.0, h);
-
-		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glPushMatrix();
-		glLoadIdentity();
-		glBindTexture(GL_TEXTURE_2D, PowerBoom[1].texID);
-
-		glTranslatef((w * 0.5f), (h - mouseInfo.lastY), 0);
-		//glTranslatef((w * 0.5f), (-h * 0.5f) + transition, 0);
-		//glTranslatef((w * 0.95f), (h * 0.03f), 0);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-w * 0.5f, h * 0.2f, 0);
-
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-w * 0.5f, -h * 0.2f, 0);
-
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(w * 0.5f, -h * 0.2f, 0);
-
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(w * 0.5f, h * 0.2f, 0);
-		glEnd();
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		yay = false;
-	}
-
 }
 
 void CPlayState::RenderHUD()
 {
 	char temp[512];
 
-	// On screen texts
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
+	glPopMatrix();
 
-	tower1();
-	tower2();
-	tower3();
-	tower4();
-	power1();
-	power2();
+	Button_Pause->Render();
+
+	Unit_Infantry->Render();
+	Unit_Tank->Render();
+	Unit_Heavy->Render();
+	Unit_Sniper->Render();
+	Unit_Mine->Render();
+	Unit_Barricade->Render();
 
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
+
+	// On screen texts
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	sprintf_s(temp, "Health: ");
 	RenderStringOnScreen(10, 30, temp);
 	sprintf_s(temp, "Shield: ");
 	RenderStringOnScreen(10, 65, temp);
+
+	sprintf_s(temp, "Health:               %d", player->GetHealth());
+	RenderStringOnScreen(10, 30, temp);
+	sprintf_s(temp, " / 100");
+	RenderStringOnScreen(170, 30, temp);
+
+	if (player->GetHealth() <= 0)
+	{
+	  
+	}
 
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);
@@ -2439,10 +2450,172 @@ void CPlayState::RenderHUD()
 	sprintf_s(temp, "Selection: %d", selection);
 	RenderStringOnScreen(120, 90, temp);
 	sprintf_s(temp, "Enemy left: %d", tEnemyProgress->GetEnemyCounter());
-	RenderStringOnScreen(500, 600, temp);
-	sprintf_s(temp, "x %d", ClearLaneCounter);
-	RenderStringOnScreen(900, 80, temp);
-	sprintf_s(temp, "x %d", ClearMapCounter);
-	RenderStringOnScreen(800, 80, temp);
+	RenderStringOnScreen(500, 32, temp);
 
+	// Mouse over tower selection for info
+	if (info != 0)
+	{
+		RenderInfo(mouseInfo.lastX, mouseInfo.lastY);
+	}
+
+	Power_Shield->Render();
+	Power_BaseHealth->Render();
+	Power_Firerate->Render();
+	Power_Damage->Render();
+	Power_BackupTank->Render();
+
+	Shield->RenderDurationBar(Power_Shield->GetPosition().x, Power_Shield->GetPosition().y);
+	BaseHealth->RenderDurationBar(Power_BaseHealth->GetPosition().x, Power_BaseHealth->GetPosition().y);
+	Firerate->RenderDurationBar(Power_Firerate->GetPosition().x, Power_Firerate->GetPosition().y);
+	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
+	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
+
+	if (pause)
+	{
+		if (!exitmenu)
+		{
+			RenderPauseMenu();
+		}
+		else
+		{
+			RenderExitMenu();
+		}
+	}
+
+	if (winscreen == true)
+	{
+		RenderWinScreen();
+
+		Shop_BG->Render();
+		Bonus_Attack->Render();
+		Bonus_Armour->Render();
+		Bonus_Dollar->Render();
+
+		char temp[16];
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+		sprintf_s(temp, "Bonus: %d", player->GetBonus());
+		RenderStringOnScreen(450, 200, temp);
+		glColor3f(1.0f, 1.0f, 1.0f);
+	}
+
+	else if (losescreen == true)
+	{
+		RenderLoseScreen();
+	}
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void CPlayState::RenderPauseMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, PauseMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	PauseMenu_Resume->Render();
+	PauseMenu_Restart->Render();
+	PauseMenu_Exit->Render();
+}
+
+void CPlayState::RenderExitMenu()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(w / 2, h / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, ExitMenu.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	ExitMenu_Yes->Render();
+	ExitMenu_No->Render();
+}
+
+void CPlayState::RenderWinScreen()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, WinScreenTexture.texID);
+	glTranslatef(0, 0, 0);
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	int height = 100 * 1.333 / 1.5;
+	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
+	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	WinLose_MainMenu->Render();
+	WinLose_NextLevel->Render();
+	WinLose_RestartLevel->Render();
+//	WinLose_Shop->Render();
+	WinLose_MiniGame->Render();
+
+}
+
+void CPlayState::RenderLoseScreen()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, LoseScreenTexture.texID);
+	glTranslatef(0, 0, 0);
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	int height = 100 * 1.333 / 1.5;
+	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
+	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	WinLose_MainMenu->Render();
+	WinLose_RestartLevel->Render();
+//	WinLose_Shop->Render();
+}
+
+std::vector<Bullet*>& CPlayState::GetBulletList(void)
+{
+	return bulletList;
 }

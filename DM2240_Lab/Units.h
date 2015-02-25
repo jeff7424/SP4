@@ -44,5 +44,7 @@ public:
 	void DrawHealthBar();
 	void DrawDeath();
 
+	//virtual void Render(void) = 0;
+	//virtual void Update(float) = 0;
 	//Particle ps[MAX_PARTICLE];
 };

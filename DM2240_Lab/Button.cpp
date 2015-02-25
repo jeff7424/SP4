@@ -1,23 +1,21 @@
 #include "Button.h"
 
+bool playsound = false;
 Button::Button()
 : isHover(false)
 , isClick(false)
 , Position(Vector3(0, 0, 0))
 , Size(Vector3(0, 0, 0))
 {
-
 }
 
-Button::Button(char* filename, char* filenamehover, const int posx, const int posy, const int sizex, const int sizey)
+Button::Button(char* filename, const int posx, const int posy, const int sizex, const int sizey)
 : isHover(false)
 , isClick(false)
 , Position(Vector3(0,0,1))
 , Size(Vector3(0,0,1))
 {
 	if (!LoadTGA(&Image, filename))
-		return;
-	if (!LoadTGA(&Image_Hover, filenamehover))
 		return;
 
 	this->Position.x = posx;
@@ -55,13 +53,20 @@ Vector3 Button::GetSize()
 
 void Button::SetIsHover(int x, int y)
 {
-	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&
+	if (x > (Position.x - (Size.x)) && x < (Position.x + (Size.x)) &&                                                                                      
 		y > (Position.y - (Size.y)) && y < (Position.y + (Size.y)))
 	{
+		playsound = true;
+		if (playsound == true)
+		{
+			playsound = false;
+		}
 		isHover = true;
 	}
 	else
 	{
+		playsound = false;
+		//hovering = 0;
 		isHover = false;
 	}
 }
@@ -203,6 +208,7 @@ void Button::Render()
 	glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f, 1.0f);
 
 	glEnd();
+	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }

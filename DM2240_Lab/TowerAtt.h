@@ -1,12 +1,17 @@
 #pragma once
 
+#include "PlayState.h"
 #include "Units.h"
+#include "EnemyAtt.h"
 #include "TextureImage.h"
+#include "Bullet.h"
+#include "Powerup.h"
 
-class Tower : public Units{
+class Tower : public Units {
 private:
 	int cost;
-
+	Enemy *Target;
+	
 public:
 	enum TOWER_TYPE
 	{
@@ -15,18 +20,29 @@ public:
 		TOWER_CANNON,
 		TOWER_SHOCK,
 		TOWER_SLOW,
+		TOWER_MINE,
+		TOWER_BARRICADE,
 		TOWER_TOTAL,
 	};
 
+	enum State {
+		STATE_IDLE,
+		STATE_LOADING,
+		STATE_ATTACK
+	};
+
 	TOWER_TYPE type;
+	State state;
 
 	Tower(TOWER_TYPE type = TOWER_NORMAL);
 	~Tower();
 
-	TextureImage TowerTexture[5];
-	void Init();
+	TextureImage TowerTexture;
 	bool LoadTGA(TextureImage *texture, char *filename);
-	void Update(float dt);
+
+	void ChangeState();
+	void Respond(float dt, Powerup *firerate, Powerup *damage);
+	void Update(float dt, Powerup *firerate, Powerup *damage);
 
 	void SetAtt(float firerate, int cost, int damage, int range, int health);
 	void SetCost(int cost);
@@ -38,4 +54,5 @@ public:
 	void Upgrade();
 	void DrawLevel();
 	void Render();
+	void GetTarget(std::vector<Enemy*>);
 };
