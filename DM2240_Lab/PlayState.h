@@ -82,22 +82,12 @@ private:
 	int WX;
 	int WY;
 	// Maps initialization
-	int pos_x, pos_y;
-	int mapOffset_x, mapOffset_y;
-	int tileOffset_x, tileOffset_y;
-	int mapFineOffset_x, mapFineOffset_y;
 	int theNumOfTiles_Height;
 	int theNumOfTiles_Width;
-	int rearWallOffset_x, rearWallOffset_y;
-	int rearWalltileOffset_x, rearWalltileOffset_y;
-	int rearWallFineOffset_x, rearWallFineOffset_y;
 	int selection; // tower selection
 	int enemycounter; // numbers of enemies left
 	// Inventory
-	int ClearMapCounter;
-	int ClearLaneCounter;
 	int heroAnimationCounter; // animation counter
-	int gamesave;
 	int progress; // level progress
 	int info; // mouse hover info
 	int level;
@@ -105,22 +95,15 @@ private:
 	float ratio;
 	float m_fps;
 	float m_speed;
-	float m_worldSizeX;
-	float m_worldSizeY;
 	bool playmusic;
-	bool Tracklist;
 	bool pause;
+	bool exitmenu;
 	bool soundon;
 	bool startgame;
 	bool upgrade;
 	bool levelselect;
-	bool next;
-	bool back;
 	bool levelloaded;
 	bool saveandload;
-	bool powerMap;
-	bool powerLane;
-	bool powerfired;
 	bool myKeys[255];
 
 	//For Win and Lose Screens
@@ -142,6 +125,11 @@ private:
 	Powerup *Backup_Tank;
 
 	Button *Button_Pause;
+	Button *PauseMenu_Resume;
+	Button *PauseMenu_Restart;
+	Button *PauseMenu_Exit;
+	Button *ExitMenu_Yes;
+	Button *ExitMenu_No;
 
 	Button *Power_Shield;
 	Button *Power_BaseHealth;
@@ -198,6 +186,8 @@ private:
 	TextureImage Upgrade[1];
 	TextureImage WinScreenTexture[1];
 	TextureImage LoseScreenTexture[1];
+	TextureImage PauseMenu;
+	TextureImage ExitMenu;
 
 	void RenderTileMap();
 	void mclicklevel1(int x, int y);
@@ -234,6 +224,8 @@ private:
 	void soundTypes(int type, bool death);
 
 	void RenderHUD();
+	void RenderPauseMenu();
+	void RenderExitMenu();
 
 	//For Win and Lose Screens
 	void RenderWinScreen(void);
