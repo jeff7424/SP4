@@ -48,7 +48,9 @@ private:
 	Button *InstructionsButton;
 	Button *CreditsButton;
 	Button *ExitButton;
-
+	ISoundEngine *se;
+	AudioPlayer bgm;
+	bool isplaying;
 	bool myKeys[255];
 	TextureImage menu[1];
 	TextureImage button[2];

@@ -335,7 +335,7 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 		if (EnemyList[i]->GetActive() && EnemyList[i]->GetHealth() > 0)
 		{
 			// if enemy in range
-			if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange())
+			if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
 			{
 				// set target to this enemy
 				Target = EnemyList[i];

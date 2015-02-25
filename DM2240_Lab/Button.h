@@ -7,7 +7,7 @@ class Button {
 private:
 	bool isHover;
 	bool isClick;
-
+	
 	Vector3 Position;
 	Vector3 Size;
 
@@ -17,10 +17,10 @@ public:
 	Button();
 	Button(char *filename, const int posx, const int posy, const int sizex, const int sizey);
 	~Button(); 
-
+	bool play;
 	void SetPosition(const int x, const int y);
 	void SetSize(const int x, const int y);
-
+	void PlaySounds();
 	Vector3 GetPosition();
 	Vector3 GetSize();
 

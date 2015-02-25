@@ -27,7 +27,6 @@ void CGameModeState::Init()
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
-
 	theCam = new Camera(Camera::LAND_CAM);
 }
 
@@ -294,7 +293,12 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 		{
 			if (CampaignButton->GetIsHover())
 			{
-				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+				se.playSound("bin/sounds/gamestart.wav");
+				if (!se.isSoundPlaying())
+				{
+					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+				}
+				
 			}
 			else if (SkirmishButton->GetIsHover())
 			{

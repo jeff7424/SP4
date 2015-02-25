@@ -14,7 +14,7 @@ extern "C" {
 #include "Mouse.h"
 #include <string>
 #include "Button.h"
-
+#include "irrKlang.h"
 class CGameModeState : public CGameState
 {
 public:
@@ -43,7 +43,7 @@ protected:
 	CGameModeState() { }
 
 private:
-
+	AudioPlayer se;
 	Button *CampaignButton;
 	Button *SkirmishButton;
 	Button *BackButton;
