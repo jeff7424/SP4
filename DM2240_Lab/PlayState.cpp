@@ -72,12 +72,15 @@ void CPlayState::Init(void)
 	// Initialization
 	theMap = new CMap();
 	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
+	//theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
 
 	/*RenderBackground();
 	RenderTileMap();
 	SpawnTowers();
 	SpawnEnemy();*/
+
+	winscreen = false;
+	losescreen = false;
 
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
 	theNumOfTiles_Width = theMap->GetXNumOfGrid();
@@ -1956,35 +1959,35 @@ void CPlayState::soundTypes(int type, bool death)
 
 void CPlayState::loadlevel()
 {
-	/*if (progress == 1)
+	if (progress == 1)
 	{
-		theMap->LoadMap("bin/maps/MapDesign.csv");
+		theMap->LoadMap("bin/maps/MapDesign.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 2)
 	{
-		theMap->LoadMap("bin/maps/MapDesign2.csv");
+		theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 3)
 	{
-		theMap->LoadMap("bin/maps/MapDesign3.csv");
+		theMap->LoadMap("bin/maps/MapDesign3.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 4)
 	{
-		theMap->LoadMap("bin/maps/MapDesign4.csv");
+		theMap->LoadMap("bin/maps/MapDesign4.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 5)
 	{
-		theMap->LoadMap("bin/maps/MapDesign5.csv");
+		theMap->LoadMap("bin/maps/MapDesign5.csv", 0, 0, TILE_SIZE, TILE_SIZE);
 	}
 
 	else if (progress == 6)
 	{
-		theMap->LoadMap("bin/maps/MapDesign6.csv");
-	}*/
+		theMap->LoadMap("bin/maps/MapDesign6.csv", 0, 0, TILE_SIZE, TILE_SIZE);
+	}
 }
 
 void CPlayState::clearmap()
@@ -2193,7 +2196,7 @@ void CPlayState::RenderHUD()
 	}
 
 	// All enemies defeated
-//	if (enemycounter < 1)
+	if (enemycounter < 1)
 	{
 		winscreen = true;
 		sprintf_s(temp, "========== Wave Defeated ==========");
