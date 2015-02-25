@@ -31,6 +31,7 @@ extern "C" {
 #include "Powerup.h"
 #include "Map.h"
 #include "Button.h"
+#include "BG.h"
 
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 672
@@ -155,6 +156,7 @@ private:
 	Button *Bonus_Attack;
 	Button *Bonus_Armour;
 	Button *Bonus_Dollar;
+	BG *Shop_BG;
 
 	float Bonus_MultAttack;
 	float Bonus_MultArmour;
