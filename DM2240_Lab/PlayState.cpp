@@ -168,6 +168,8 @@ void CPlayState::Init(void)
 	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
+	
+	Shop_BG	     = new BG("bin/ui/hud/ShopBG32.tga", 470, 290, 193, 97);
 
 	Bonus_MultAttack = 1;
 	Bonus_MultArmour = 1;
@@ -2168,9 +2170,7 @@ void CPlayState::RenderHUD()
 	// All enemies defeated
 	if (enemycounter < 1)
 	{
-		sprintf_s(temp, "========== Wave Defeated ==========");
-		RenderStringOnScreen(300, 230, temp);
-
+		Shop_BG->Render();
 		Bonus_Attack->Render();
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
