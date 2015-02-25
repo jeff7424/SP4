@@ -79,7 +79,7 @@ void CPlayState::Init(void)
 	SpawnTowers();
 	SpawnEnemy();*/
 
-	winscreen = false;
+	winscreen = true;
 	losescreen = false;
 
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
@@ -137,13 +137,13 @@ void CPlayState::Init(void)
 	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
 
 	//For Win Lose Menu
-	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 194, 108, 28);
-	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 294, 108, 28);
-	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
-	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 494, 108, 28);
+	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
+	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
+//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
+	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
 
 	//For Mini Game
-	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 594, 108, 28);
+	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
 	backupTank = new Tank();
 
@@ -702,15 +702,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 
 	RenderHUD();
 
-	if (winscreen == true)
-	{
-		RenderWinScreen();
-	}
-
-	else if (losescreen == true)
-	{
-		RenderLoseScreen();
-	}
+	
 
 	Cam->SetHUD(false);
 
@@ -888,8 +880,25 @@ void CPlayState::MouseMove(int x, int y) {
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_NextLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_MiniGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		
+		Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
+		if (Bonus_Attack->GetIsHover())
+		{
+			info = -1;
+		}
+		if (Bonus_Armour->GetIsHover())
+		{
+			info = -2;
+		}
+		if (Bonus_Dollar->GetIsHover())
+		{
+			info = -3;
+		}
 	}
 
 	else if (losescreen == true)
@@ -897,7 +906,7 @@ void CPlayState::MouseMove(int x, int y) {
 		//For Lose Screens
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+//		WinLose_Shop->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	if (!pause)
@@ -943,16 +952,6 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			info = 0;
 		}
-
-
-		if (enemycounter < 1)
-		{
-			Bonus_Attack->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-			Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-			Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-		}
-
-
 	}
 }
 
@@ -1235,7 +1234,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 		}
 	}
-	else
+	
+	if (winscreen == true)
 	{ // End-of-round bonus selection menu - Allow clicks to register
 
 		// Placeholder Bonuses
@@ -1243,9 +1243,9 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 1: Alpha Damage +10%
 		if (Bonus_Attack->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultAttack *= 1.1f;
-
+			if (player->GetBonus()-10 > 0)
+			player->SetBonus(player->GetBonus()-10);
 			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
@@ -1253,18 +1253,18 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 2: Durability +10%
 		if (Bonus_Armour->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
-
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
 			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 
 		// Bonus 3: Loot Drop +10%
 		if (Bonus_Dollar->GetIsHover())
 		{
-			// Stuff
 			Bonus_MultDollar *= 1.1f;
-
+			if (player->GetBonus()-10 > 0)
+				player->SetBonus(player->GetBonus()-10);
 			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
 		}
 	}
@@ -1294,10 +1294,10 @@ void CPlayState::mclicklevel1(int x, int y)
 		losescreen = false;
 	}
 
-	if (WinLose_Shop->GetIsHover())
+/*	if (WinLose_Shop->GetIsHover())
 	{
 		cout << "Initialise the Shop!" << endl;
-	}
+	} */
 
 	if (WinLose_MiniGame->GetIsHover())
 	{
@@ -1366,6 +1366,7 @@ void CPlayState::Update(float dt)
 
 						case Enemy::ENEMY_3:
 							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
+							player->SetBonus(player->GetBonus() + 1);
 							break;
 						}
 
@@ -2321,7 +2322,7 @@ void CPlayState::RenderInfo(int x, int y)
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	char temp[256];
-	if (info > 0)
+	if (info > 0) // Unit Info
 	{
 		if (info == 1)
 		{
@@ -2358,6 +2359,30 @@ void CPlayState::RenderInfo(int x, int y)
 		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
 		RenderStringOnScreen(x + 4, y - 8, temp);
+	}
+	else if (info < 0) // Bonus Selection Info
+	{
+		if (info == -1)
+		{
+			sprintf_s(temp, "Increase bullet damage by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -2)
+		{
+			sprintf_s(temp, "Increase damage resistance by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
+		else if (info == -3)
+		{
+			sprintf_s(temp, "Increase gold drop by 10%!");
+			RenderStringOnScreen(x + 4, y - 98, temp);
+			sprintf_s(temp, "Cost: 10 Medals");
+			RenderStringOnScreen(x + 4, y - 80, temp);
+		}
 	}
 }
 
@@ -2409,7 +2434,7 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(500, 32, temp);
 
 	// Mouse over tower selection for info
-	if (info > 0)
+	if (info != 0)
 	{
 		RenderInfo(mouseInfo.lastX, mouseInfo.lastY);
 	}
@@ -2438,16 +2463,28 @@ void CPlayState::RenderHUD()
 		}
 	}
 
-	// All enemies defeated
-	if (enemycounter < 1)
+	if (winscreen == true)
 	{
-		Shop_BG->Render();
-		//winscreen = true;
+		RenderWinScreen();
 
+		Shop_BG->Render();
 		Bonus_Attack->Render();
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
+
+		char temp[16];
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+		sprintf_s(temp, "Bonus: %d", player->GetBonus());
+		RenderStringOnScreen(450, 200, temp);
+		glColor3f(1.0f, 1.0f, 1.0f);
 	}
+
+	else if (losescreen == true)
+	{
+		RenderLoseScreen();
+	}
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
@@ -2525,7 +2562,7 @@ void CPlayState::RenderWinScreen()
 	WinLose_MainMenu->Render();
 	WinLose_NextLevel->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
+//	WinLose_Shop->Render();
 	WinLose_MiniGame->Render();
 
 }
@@ -2556,7 +2593,7 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
-	WinLose_Shop->Render();
+//	WinLose_Shop->Render();
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)

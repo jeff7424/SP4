@@ -9,6 +9,7 @@ private:
 	int shield;
 	int maxshield;
 	int gold;
+	int bonus_currency;
 	int QtyBaseHealth;
 	int QtyShield;
 	int QtyFireRate;
@@ -23,6 +24,7 @@ public:
 	void SetShield(int shield);
 	void SetMaxShield(int maxshield);
 	void SetGold(int gold);
+	void SetBonus(int bonus);
 	void SetQtyBaseHealth(int QtyBaseHealth);
 	void SetQtyShield(int QtyShield);
 	void SetQtyFireRate(int QtyFireRate);
@@ -33,6 +35,7 @@ public:
 	int GetShield();
 	int GetMaxShield();
 	int GetGold();
+	int GetBonus();
 	int GetQtyBaseHealth();
 	int GetQtyShield();
 	int GetQtyFireRate();
