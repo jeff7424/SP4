@@ -1311,7 +1311,7 @@ void CPlayState::Update(float dt)
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
-		winscreen = true;
+		losescreen = true;
 	}
 
 	// Despawn creep if bullet collides
