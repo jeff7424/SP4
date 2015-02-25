@@ -1272,7 +1272,6 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	//player->SetHealth(player->GetHealth() - 1);
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);

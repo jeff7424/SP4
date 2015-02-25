@@ -6,10 +6,6 @@ using namespace std;
 Powerup::Powerup(POWER_TYPE type)
 :type(type)
 , Cost(0)
-//, BaseHealthIncrease(0)
-//, Shield(50)
-//, FireRateMultiply(1.5f)
-//, DamageMultiply(1.5f)
 , Ready(true)
 , Value(0.0f)
 , Duration(0.0f)
@@ -21,13 +17,13 @@ Powerup::Powerup(POWER_TYPE type)
 	{
 	case POWER_TYPE::POWER_INCREASEBASEHEALTH:
 		Value = 50;
-		Duration = 1.0f;
+		Duration = 0.1f;
 		MaxDuration = Duration;
 		Cooldown = 10.0f;
 		break;
 	case POWER_TYPE::POWER_SHIELD:
 		Value = 50;
-		Duration = 1.0f;
+		Duration = 0.1f;
 		MaxDuration = Duration;
 		Cooldown = 10.0f;
 		break;
