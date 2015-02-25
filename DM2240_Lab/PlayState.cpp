@@ -2200,14 +2200,9 @@ void CPlayState::RenderHUD()
 	// All enemies defeated
 	if (enemycounter < 1)
 	{
-<<<<<<< HEAD
 		Shop_BG->Render();
-=======
-		winscreen = true;
-		sprintf_s(temp, "========== Wave Defeated ==========");
-		RenderStringOnScreen(300, 230, temp);
+		//winscreen = true;
 
->>>>>>> 3b80746e30b3dd48c53e417e2ff5cf8242f24866
 		Bonus_Attack->Render();
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
