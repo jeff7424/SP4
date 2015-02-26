@@ -16,7 +16,7 @@ lua_State *L;
 
 int a = 1;
 int lane[6] = {0};
-
+bool selection = false;
 int RNGesus(void)
 {
 	return rand() % 3 + 1;
@@ -1152,6 +1152,26 @@ void CPlayState::mclicklevel1(int x, int y)
 								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 							if (player->GetGold() >= tower->GetCost())
 							{
+								if (tower->type == Tower::TOWER_SHOCK)
+								{
+									soundTypes(20, false);
+									soundTypes(17, false);
+								}
+								else if (tower->type == Tower::TOWER_SLOW)
+								{
+									soundTypes(20, false);
+									soundTypes(18, false);
+								}
+								else if (tower->type == Tower::TOWER_BARRICADE)
+								{
+									soundTypes(20, false);
+									soundTypes(19, false);
+								}
+								else
+								{
+									soundTypes(20, false);
+									soundTypes(14, false);
+								}
 								lane[Y] += 1;
 								tower->SetActive(true);
 								tower->SetLevel(1);
@@ -1159,6 +1179,10 @@ void CPlayState::mclicklevel1(int x, int y)
 								theMap->GetGrid(X, Y)->SetOccupied(true);
 								player->SetGold(player->GetGold() - tower->GetCost()); 
 								towerList.push_back(tower);
+							}
+							else if (player->GetGold() < tower->GetCost())
+							{
+								soundTypes(15, false);
 							}
 							else
 							{
@@ -1213,26 +1237,32 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Unit_Infantry->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 1;
 			}
 			else if (Unit_Tank->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 2;
 			}
 			else if (Unit_Heavy->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 3;
 			}
 			else if (Unit_Sniper->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 4;
 			}
 			else if (Unit_Mine->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 5;
 			}
 			else if (Unit_Barricade->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 6;
 			}
 		}
@@ -2325,6 +2355,34 @@ void CPlayState::soundTypes(int type, bool death)
 	{
 		se->play2D("bin/sounds/mission_complete.mp3", false);
 	}
+	else if (type == 14)
+	{
+		se->play2D("bin/sounds/unit.mp3", false);
+	}
+	else if (type == 15)
+	{
+		se->play2D("bin/sounds/no_money.wav", false);
+	}
+	else if (type == 16)
+	{
+		se->play2D("bin/sounds/sliderMove.wav", false);
+	}
+	else if (type == 17)
+	{
+		se->play2D("bin/sounds/unit_missile.mp3", false);
+	}
+	else if (type == 18)
+	{
+		se->play2D("bin/sounds/unit_sniper.wav", false);
+	}
+	else if (type == 19)
+	{
+		se->play2D("bin/sounds/unit_barricade.wav", false);
+	}
+	else if (type == 20)
+	{
+		se->play2D("bin/sounds/placement.wav", false);
+	}
 }
 
 void CPlayState::loadlevel()
@@ -2578,7 +2636,7 @@ void CPlayState::RenderHUD()
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
 	// All enemies defeated
-	if (enemycounter < 1)
+	//if (enemycounter < 1)
 	if (pause)
 	{
 		if (!exitmenu)

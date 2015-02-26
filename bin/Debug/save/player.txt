@@ -1,7 +1,7 @@
-life, 3
-gold, 500
+health, 100
+shield, 100
+gold, 9999
+shop, 0
 time, 0
 progress, 1
 enemyleft, 0
-armageddon, 1
-lasercannon, 1
