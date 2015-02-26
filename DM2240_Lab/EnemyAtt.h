@@ -5,6 +5,7 @@
 #include "Map.h"
 #include <vector>
 #include <stdlib.h>     /* srand, rand */
+#include <stdio.h>
 #include <time.h>       /* time */
 
 class Enemy : public Units {
@@ -46,6 +47,7 @@ public:
 	int offsetX, offsetY; //current x tile, current y tile
 	int offsetY2; //current y tile + 1
 	int tilesTravelled, currentTile;
+	int dir;
 	bool called;
 
 	void Update(float dt);
