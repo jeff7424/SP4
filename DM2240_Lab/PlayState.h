@@ -30,8 +30,8 @@ extern "C" {
 #include "EnemyProgress.h"
 #include "Powerup.h"
 #include "Map.h"
-#include "Button.h"
 #include "BG.h"
+#include "Button.h"
 
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 672
