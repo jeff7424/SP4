@@ -1,7 +1,16 @@
 health, 100
+<<<<<<< HEAD
 shield, 100
 gold, 9999
 shop, 0
 time, 0
 progress, 1
 enemyleft, 0
+=======
+shield, 0
+gold, 50
+shop, 0
+time, 17.315
+progress, 1
+enemyleft, 18
+>>>>>>> fa52b6a561a99b7afcbab761eeaa81ce13b0de50

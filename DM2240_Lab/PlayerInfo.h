@@ -14,6 +14,7 @@ private:
 	int QtyShield;
 	int QtyFireRate;
 	int QtyDamage;
+	int QtyTank;
 
 public:
 	PlayerInfo();
@@ -29,6 +30,7 @@ public:
 	void SetQtyShield(int QtyShield);
 	void SetQtyFireRate(int QtyFireRate);
 	void SetQtyDamage(int QtyDamage);
+	void SetQtyTank(int QtyTank);
 
 	int GetHealth();
 	int GetMaxHealth();
@@ -40,6 +42,7 @@ public:
 	int GetQtyShield();
 	int GetQtyFireRate();
 	int GetQtyDamage();
+	int GetQtyTank();
 
 	void RenderHealthBar(const int x, const int y);
 	void RenderShield(const int x, const int y);

@@ -1,0 +1,177 @@
+﻿Build started 2/26/2015 12:17:45 PM.
+     1>Project "C:\Users\307\Desktop\SP4\DM2240_Lab\DM2240_Lab.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "C:\Users\307\Desktop\SP4\obj\DM2240_Lab.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\Users\307\Desktop\SP4\include /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\307\Desktop\SP4\obj\\" /Fd"C:\Users\307\Desktop\SP4\obj\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt PlayState.cpp PlayerInfo.cpp
+         PlayerInfo.cpp
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(143): warning C4244: 'argument' : conversion from 'const int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(143): warning C4244: 'argument' : conversion from 'const int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(147): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(148): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(154): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(155): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(162): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(163): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(176): warning C4244: 'argument' : conversion from 'const int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(176): warning C4244: 'argument' : conversion from 'const int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(179): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(180): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(186): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(187): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(194): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playerinfo.cpp(195): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+         PlayState.cpp
+     1>c:\users\307\desktop\sp4\dm2240_lab\enemyatt.h(4): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(27): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(483): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(493): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1100): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1101): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1420): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1430): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1434): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1438): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1525): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1671): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1672): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1673): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1674): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1700): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1701): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1702): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1703): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1730): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1732): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1734): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1736): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1835): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1841): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1843): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1845): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1847): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1849): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1851): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1859): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1874): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1880): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1882): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1884): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1886): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1888): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1890): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1896): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1905): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1907): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1909): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1911): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1913): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1915): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1917): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1919): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1921): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1923): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1944): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1946): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1957): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1959): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1970): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1972): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1983): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1985): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1996): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(1998): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2007): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2011): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2013): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2015): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2020): warning C4244: '=' : conversion from 'std::streamoff' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2297): warning C4305: 'argument' : truncation from 'double' to 'irrklang::ik_f32'
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2476): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2476): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2505): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2505): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2544): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2544): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2546): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2546): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2548): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2548): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2550): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2550): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2552): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2552): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2554): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2554): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2561): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2561): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2563): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2563): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2568): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2568): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2570): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2570): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2575): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2575): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2577): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2577): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2641): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2641): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2642): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2642): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2643): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2643): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2644): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2644): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2645): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2645): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2736): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2736): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2760): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2760): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2788): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\307\desktop\sp4\dm2240_lab\playstate.cpp(2819): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+         Generating Code...
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\307\Desktop\SP4\bin\Debug\DM2240_Lab.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\307\Desktop\SP4\lib freeglut.lib winmm.lib irrklang.lib lua5.1.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"C:\Users\307\Desktop\SP4\obj\DM2240_Lab.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\307\Desktop\SP4\bin\Debug\DM2240_Lab.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\307\Desktop\SP4\bin\Debug\DM2240_Lab.lib" /MACHINE:X86 C:\Users\307\Desktop\SP4\obj\DM2240_Lab.exe.embed.manifest.res
+         C:\Users\307\Desktop\SP4\obj\AudioPlayer.obj
+         C:\Users\307\Desktop\SP4\obj\BG.obj
+         C:\Users\307\Desktop\SP4\obj\Bullet.obj
+         C:\Users\307\Desktop\SP4\obj\Button.obj
+         C:\Users\307\Desktop\SP4\obj\Camera.obj
+         C:\Users\307\Desktop\SP4\obj\Cursor.obj
+         C:\Users\307\Desktop\SP4\obj\EnemyAtt.obj
+         C:\Users\307\Desktop\SP4\obj\EnemyProgress.obj
+         C:\Users\307\Desktop\SP4\obj\Entity.obj
+         C:\Users\307\Desktop\SP4\obj\GameModeState.obj
+         C:\Users\307\Desktop\SP4\obj\GameStateManager.obj
+         C:\Users\307\Desktop\SP4\obj\Grid.obj
+         C:\Users\307\Desktop\SP4\obj\IntroState.obj
+         C:\Users\307\Desktop\SP4\obj\LevelSelectState.obj
+         C:\Users\307\Desktop\SP4\obj\main.obj
+         C:\Users\307\Desktop\SP4\obj\Map.obj
+         C:\Users\307\Desktop\SP4\obj\MenuState.obj
+         C:\Users\307\Desktop\SP4\obj\PlayerInfo.obj
+         C:\Users\307\Desktop\SP4\obj\PlayState.obj
+         C:\Users\307\Desktop\SP4\obj\Powerup.obj
+         C:\Users\307\Desktop\SP4\obj\Spawn.obj
+         C:\Users\307\Desktop\SP4\obj\Tank.obj
+         C:\Users\307\Desktop\SP4\obj\TowerAtt.obj
+         C:\Users\307\Desktop\SP4\obj\Units.obj
+         C:\Users\307\Desktop\SP4\obj\Vector3.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"C:\Users\307\Desktop\SP4\obj\DM2240_Lab.exe.embed.manifest" /manifest C:\Users\307\Desktop\SP4\obj\DM2240_Lab.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         DM2240_Lab.vcxproj -> C:\Users\307\Desktop\SP4\bin\Debug\DM2240_Lab.exe
+       FinalizeBuildStatus:
+         Deleting file "C:\Users\307\Desktop\SP4\obj\DM2240_Lab.unsuccessfulbuild".
+         Touching "C:\Users\307\Desktop\SP4\obj\DM2240_Lab.lastbuildstate".
+     1>Done Building Project "C:\Users\307\Desktop\SP4\DM2240_Lab\DM2240_Lab.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.51
