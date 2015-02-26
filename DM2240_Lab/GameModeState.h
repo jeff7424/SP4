@@ -48,12 +48,16 @@ private:
 	Button *CampaignButton;
 	Button *SkirmishButton;
 	Button *BackButton;
+	Button *NewGame;
+	Button *ContinueGame;
 	bool isplaying;
 	bool myKeys[255];
+	bool Selection;
 	TextureImage menu[1];
-	TextureImage button[3];
+	TextureImage button[5];
+	TextureImage PopUp;
 
-	char* textures[5];
+	char* textures[8];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
@@ -64,7 +68,7 @@ private:
 	void *font_style;
 	//  Draws a string at the specified coordinates.
 	void printw(float x, float y, float z, char* format, ...);
-
+	void RenderPopUp();
 	void RenderBackground(void);
 	int LuaInit();
 };

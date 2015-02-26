@@ -31,22 +31,18 @@ void CPlayState::Init(void)
 	WX = w;
 	WY = h;
 	selection = 1;
-	enemycounter = 0;
 	heroAnimationCounter = 0;
-	//progress = 1;
 	info = 0;
 	spawntimer = 0.0f;
 	ratio = 0;
 	m_fps = 60.0f;
 	m_speed = 1.0f;
-	saveandload = false;
 	playmusic = true;
 	pause = false;
 	exitmenu = false;
 	soundon = true;
 	upgrade = false;
 	level = 1;
-	levelloaded = true;
 	winscreen = false;
 	losescreen = false;
 
@@ -70,7 +66,6 @@ void CPlayState::Init(void)
 	soundTypes(12, false);
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
-	tEnemyProgress->initEnemyCounter();
 	tEnemyProgress->SetPosX(0);
 	tEnemyProgress->SetPosY(0);
 
@@ -145,9 +140,15 @@ void CPlayState::Init(void)
 
 	// Load the attributes through text file
 	LoadAtt();
-	loadlevel();
-	Load();
-	//LoadSpawn();
+	if (!load)
+	{	
+		loadlevel();
+		LoadSpawn();
+	}
+	else
+	{
+		Load();
+	}
 }
 
 void CPlayState::Cleanup()
@@ -582,7 +583,6 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				creep->SetActive(false);
 				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 				player->SetHealth(player->GetHealth() - creep->GetDamage());
-				enemycounter--;
 				delete creep;
 				enemyList.erase(it);
 				creep = NULL;
@@ -1374,7 +1374,6 @@ void CPlayState::Update(float dt)
 						}
 
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-						enemycounter--;
 						break;
 					}
 				}
@@ -1748,6 +1747,10 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetEnemyCounter(stoi(value));
 			}
+			else if (type == "maxenemyleft")
+			{
+				tEnemyProgress->SetMaxEnemyCounter(stoi(value));
+			}
 		}
 	}
 	inData.close();
@@ -1972,6 +1975,7 @@ void CPlayState::Save()
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
+		file << "maxenemyleft, " << tEnemyProgress->GetMaxEnemyCounter() << "\n";
 		file.close();
 	}
 	else
@@ -2136,7 +2140,7 @@ void CPlayState::LoadSpawn()
 		spawn->SetType(stoi(index));
 		spawn->SetTime(stof(time));
 		tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() + 1);
-		enemycounter++;
+		tEnemyProgress->SetMaxEnemyCounter(tEnemyProgress->GetEnemyCounter());
 		spawnList.push_back(spawn);
 	}
 	inData.close();
@@ -2577,8 +2581,6 @@ void CPlayState::RenderHUD()
 	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
-	// All enemies defeated
-	if (enemycounter < 1)
 	if (pause)
 	{
 		if (!exitmenu)
@@ -2592,7 +2594,6 @@ void CPlayState::RenderHUD()
 	}
 
 	if (winscreen == true)
-//>>>>>>> 384bf701f56b8ab73a29280394d534f201892b85
 	{
 		RenderWinScreen();
 
@@ -2733,4 +2734,9 @@ std::vector<Bullet*>& CPlayState::GetBulletList(void)
 void CPlayState::SetLevel(int level)
 {
 	this->progress = level;
+}
+
+void CPlayState::LoadFromFile(bool load)
+{
+	this->load = load;
 }

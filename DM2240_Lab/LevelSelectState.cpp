@@ -298,33 +298,39 @@ void CLevelSelectState::MouseClick(int button, int state, int x, int y)
 			else if (Button_Level1->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(1);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level2->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(2);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level3->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(3);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				
 			}
 			else if (Button_Level4->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(4);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				
 			}
 			else if (Button_Level5->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(5);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level6->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(6);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 		}

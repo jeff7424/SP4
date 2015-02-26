@@ -68,6 +68,7 @@ public:
 
 	std::vector<Bullet*> &GetBulletList(void);
 	void SetLevel(int level);
+	void LoadFromFile(bool load);
 
 protected:
 	CPlayState(){}
@@ -86,7 +87,6 @@ private:
 	int theNumOfTiles_Height;
 	int theNumOfTiles_Width;
 	int selection; // tower selection
-	int enemycounter; // numbers of enemies left
 	// Inventory
 	int heroAnimationCounter; // animation counter
 	int progress; // level progress
@@ -100,11 +100,8 @@ private:
 	bool pause;
 	bool exitmenu;
 	bool soundon;
-	bool startgame;
 	bool upgrade;
-	bool levelselect;
-	bool levelloaded;
-	bool saveandload;
+	bool load;
 	bool myKeys[255];
 
 	//For Win and Lose Screens

@@ -10,7 +10,7 @@ private:
 	int minlength;
 	bool active;
 	int enemycounter;
-	//int progress;
+	int maxenemycounter;
 
 public:
 	CEnemyProgress();
@@ -20,17 +20,18 @@ public:
 	void SetPosY(int y);
 	void SetMinLength(int l);
 	void SetEnemyCounter(int e);
+	void SetMaxEnemyCounter(int e);
 
 	void Active(bool);
 	int GetPosX();
 	int GetPosY();
 	int GetMinLength();
 	int GetEnemyCounter();
+	int GetMaxEnemyCounter();
 
-	void initEnemyCounter();
+	void initEnemyCounter(int counter);
 
 	bool Active();
 	void DrawEnemyCounter(int x, int y);
-
 };
 

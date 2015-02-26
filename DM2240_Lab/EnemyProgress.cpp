@@ -5,6 +5,7 @@ CEnemyProgress::CEnemyProgress()
 , minlength(0)
 , active(false)
 , enemycounter(0)
+, maxenemycounter(0)
 {
 
 }
@@ -33,6 +34,11 @@ void CEnemyProgress::SetEnemyCounter(int e)
 	enemycounter = e;
 }
 
+void CEnemyProgress::SetMaxEnemyCounter(int e)
+{
+	maxenemycounter = e;
+}
+
 void CEnemyProgress::Active(bool a)
 {
 	active = a;
@@ -58,15 +64,21 @@ int CEnemyProgress::GetEnemyCounter()
 	return enemycounter;
 }
 
+int CEnemyProgress::GetMaxEnemyCounter()
+{
+	return maxenemycounter;
+}
+
 bool CEnemyProgress::Active()
 {
 	return active;
 }
 
-void CEnemyProgress::initEnemyCounter()
+void CEnemyProgress::initEnemyCounter(int counter)
 {
 	minlength = 0;
-	enemycounter = 0;
+	enemycounter = counter;
+	maxenemycounter = enemycounter;
 }
 
 void CEnemyProgress::DrawEnemyCounter(int x, int y)
@@ -90,7 +102,6 @@ void CEnemyProgress::DrawEnemyCounter(int x, int y)
 	glVertex2f(0, 18);
 	glVertex2f(enemycounter * 5, 18);
 	glVertex2f(enemycounter * 5, -4);
-
 	glEnd();
 	glPopMatrix();
 }

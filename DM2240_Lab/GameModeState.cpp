@@ -22,6 +22,8 @@ void CGameModeState::Init()
 	return;
 	if (!LoadTGA(&button[1], textures[2]))
 	return;*/
+	if (!LoadTGA(&PopUp, textures[7]))
+		return;
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
 	buttons = createIrrKlangDevice();
@@ -113,6 +115,11 @@ void CGameModeState::Draw(CGameStateManager* theGSM)
 	CampaignButton->Render();
 	SkirmishButton->Render();
 	BackButton->Render();
+
+	if (Selection)
+	{
+		RenderPopUp();
+	}
 
 	theCam->SetHUD(false);
 	// Flush off any entity which is not drawn yet, so that we maintain the frame rate.
@@ -277,36 +284,57 @@ void CGameModeState::MouseMove(int x, int y)
 	CampaignButton->SetIsHover(x, y);
 	SkirmishButton->SetIsHover(x, y);
 	BackButton->SetIsHover(x, y);
-	if (CampaignButton->GetIsHover())
+	NewGame->SetIsHover(x, y);
+	ContinueGame->SetIsHover(x, y);
+	if (Selection)
 	{
-		if (isplaying == true)
+		if (NewGame->GetIsHover() || ContinueGame->GetIsHover())
 		{
-			buttons = createIrrKlangDevice();
-			buttons->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				buttons = createIrrKlangDevice();
+				buttons->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else if (SkirmishButton->GetIsHover())
-	{
-		if (isplaying == true)
+		else
 		{
-			buttons = createIrrKlangDevice();
-			buttons->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
-		}
-	}
-	else if (BackButton->GetIsHover())
-	{
-		if (isplaying == true)
-		{
-			buttons = createIrrKlangDevice();
-			buttons->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			isplaying = true;
 		}
 	}
 	else
 	{
-		isplaying = true;
+		if (CampaignButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				buttons = createIrrKlangDevice();
+				buttons->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else if (SkirmishButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				buttons = createIrrKlangDevice();
+				buttons->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else if (BackButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				buttons = createIrrKlangDevice();
+				buttons->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else
+		{
+			isplaying = true;
+		}
 	}
 }
 
@@ -323,28 +351,47 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
-			if (CampaignButton->GetIsHover())
+			if (Selection)
 			{
-//<<<<<<< HEAD
-				se.playSound("bin/sounds/gamestart.wav");
-				if (!se.isSoundPlaying())
+				if (NewGame->GetIsHover())
 				{
-					CPlayState::Instance()->SetLevel(1);
-					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					se.playSound("bin/sounds/gamestart.wav");
+					if (!se.isSoundPlaying())
+					{
+						CPlayState::Instance()->SetLevel(1);
+						CPlayState::Instance()->LoadFromFile(false);
+						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					}
 				}
-				
-//=======
-				
-				//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-//>>>>>>> 5f82f4283f50ea8d7da56c59a6c1029f37258e79
+				else if (ContinueGame->GetIsHover())
+				{
+					se.playSound("bin/sounds/gamestart.wav");
+					if (!se.isSoundPlaying())
+					{
+						CPlayState::Instance()->SetLevel(1);
+						CPlayState::Instance()->LoadFromFile(true);
+						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					}
+				}
+				else
+				{
+					Selection = false;
+				}
 			}
-			else if (SkirmishButton->GetIsHover())
+			else
 			{
-				CGameStateManager::getInstance()->ChangeState(CLevelSelectState::Instance());
-			}
-			else if (BackButton->GetIsHover())
-			{
-				CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+				if (CampaignButton->GetIsHover())
+				{
+					Selection = true;
+				}
+				else if (SkirmishButton->GetIsHover())
+				{
+					CGameStateManager::getInstance()->ChangeState(CLevelSelectState::Instance());
+				}
+				else if (BackButton->GetIsHover())
+				{
+					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+				}
 			}
 		}
 
@@ -373,17 +420,44 @@ void CGameModeState::RenderBackground(void)
 	glPopMatrix();
 }
 
+void CGameModeState::RenderPopUp()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
+	glBindTexture(GL_TEXTURE_2D, PopUp.texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
+	glTexCoord2f(1, 1);	glVertex2f(160, -224);
+	glTexCoord2f(1, 0);	glVertex2f(160, 224);
+	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+
+	NewGame->Render();
+	ContinueGame->Render();
+}
+
 int CGameModeState::LuaInit()
 {
 	cout << "\nGAMEMODE INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[17] = {
+	const char *values[28] = {
 		"TEXTURE_BACKGROUND",
 		"TEXTURE_TITLE",
 		"TEXTURE_CAMPAIGN",
 		"TEXTURE_SKIRMISH",
 		"TEXTURE_BACK",
+		"TEXTURE_YES",
+		"TEXTURE_NO",
+		"TEXTURE_POPUP",
 		"CAMPAIGNBUTTON_POS_X",
 		"CAMPAIGNBUTTON_POS_Y",
 		"CAMPAIGNBUTTON_SIZE_X",
@@ -396,11 +470,19 @@ int CGameModeState::LuaInit()
 		"BACKBUTTON_POS_Y",
 		"BACKBUTTON_SIZE_X",
 		"BACKBUTTON_SIZE_Y",
+		"NEWBUTTON_POS_X",
+		"NEWBUTTON_POS_Y",
+		"NEWBUTTON_SIZE_X",
+		"NEWBUTTON_SIZE_Y",
+		"CONTINUEBUTTON_POS_X",
+		"CONTINUEBUTTON_POS_Y",
+		"CONTINUEBUTTON_SIZE_X",
+		"CONTINUEBUTTON_SIZE_Y"
 	};
 
-	int data[12];
+	int data[20];
 
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		data[i] = 0;
 	}
@@ -411,7 +493,7 @@ int CGameModeState::LuaInit()
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 5; k++)
+	for (int k = 0; k < 8; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -426,21 +508,23 @@ int CGameModeState::LuaInit()
 		cout << values[k] << ": " << textures[k] << endl;
 	}
 
-	for (int j = 0; j < 12; j++)
+	for (int j = 0; j < 20; j++)
 	{
-		lua_getglobal(L, values[j + 5]);
+		lua_getglobal(L, values[j + 8]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 5] << ": " << data[j] << endl;
+		cout << values[j + 8] << ": " << data[j] << endl;
 	}
 
 	CampaignButton = new Button(textures[2], data[0], data[1], data[2], data[3]);
 	SkirmishButton = new Button(textures[3], data[4], data[5], data[6], data[7]);
 	BackButton = new Button(textures[4], data[8], data[9], data[10], data[11]);
+	NewGame = new Button(textures[5], data[12], data[13], data[14], data[15]);
+	ContinueGame = new Button(textures[6], data[16], data[17], data[18], data[19]);
 
 	return 0;
 }
