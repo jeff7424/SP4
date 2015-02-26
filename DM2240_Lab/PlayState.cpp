@@ -47,6 +47,8 @@ void CPlayState::Init(void)
 	upgrade = false;
 	level = 1;
 	levelloaded = true;
+	winscreen = false;
+	losescreen = false;
 
 	for (int i = 0; i < 255; i++)
 	{
@@ -74,33 +76,20 @@ void CPlayState::Init(void)
 
 	// Initialization
 	theMap = new CMap();
-	//theMap->Init(SCREEN_HEIGHT, SCREEN_WIDTH * 2, SCREEN_HEIGHT, SCREEN_WIDTH * 2, TILE_SIZE);
-	//theMap->LoadMap("bin/maps/MapDesign2.csv", 0, 0, 96, 96);
 
-	/*RenderBackground();
-	RenderTileMap();
-	SpawnTowers();
-	SpawnEnemy();*/
+	backupTank = new Tank();
 
-	winscreen = false;
-	losescreen = false;
+	Shield = new Powerup(Powerup::POWER_SHIELD);
+	BaseHealth = new Powerup(Powerup::POWER_INCREASEBASEHEALTH);
+	Firerate = new Powerup(Powerup::POWER_FIRERATEMULTIPLY);
+	Damage = new Powerup(Powerup::POWER_DAMAGEMULTIPLY);
+	Backup_Tank = new Powerup(Powerup::POWER_TANKBACKUP);
 
 	theNumOfTiles_Height = theMap->GetYNumOfGrid();
 	theNumOfTiles_Width = theMap->GetXNumOfGrid();
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
-
-
-	/*LoadTGA(&Icon[0], "bin/tower/Heavy.tga");
-	LoadTGA(&Icon[1], "bin/tower/tower2.tga");
-	LoadTGA(&Icon[2], "bin/tower/Heavy.tga");
-	LoadTGA(&Icon[3], "bin/tower/Soldier.tga");
-	LoadTGA(&Icon[4], "bin/tower/mine.tga");
-	LoadTGA(&Icon[5], "bin/tower/barricade.tga");*/
-	//LoadTGA(&Quit[0], "bin/exit/Savegame.TGA");
-	//LoadTGA(&Quit[1], "bin/exit/Savegameyes.TGA");
-	//LoadTGA(&Quit[2], "bin/exit/Savegameno.TGA");
 
 	LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
@@ -113,17 +102,6 @@ void CPlayState::Init(void)
 	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
 	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
-	// Load the attributes through text file
-	LoadAtt();
-	loadlevel();
-	LoadSpawn();
-
-	Shield = new Powerup(Powerup::POWER_SHIELD);
-	BaseHealth = new Powerup(Powerup::POWER_INCREASEBASEHEALTH);
-	Firerate = new Powerup(Powerup::POWER_FIRERATEMULTIPLY);
-	Damage = new Powerup(Powerup::POWER_DAMAGEMULTIPLY);
-	Backup_Tank = new Powerup(Powerup::POWER_TANKBACKUP);
-	
 	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
 
 	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
@@ -148,8 +126,6 @@ void CPlayState::Init(void)
 	//For Mini Game
 	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
-	backupTank = new Tank();
-
 	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
@@ -166,6 +142,12 @@ void CPlayState::Init(void)
 	PauseMenu_Exit = new Button("bin/ui/pausemenu/button_quit.tga", 480, 450, 128, 32);
 	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
 	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
+
+	// Load the attributes through text file
+	LoadAtt();
+	loadlevel();
+	Load();
+	//LoadSpawn();
 }
 
 void CPlayState::Cleanup()
@@ -1102,7 +1084,7 @@ void CPlayState::RenderTileMap(void)
 
 void CPlayState::mclicklevel1(int x, int y)
 {
-	if (enemycounter > 0)
+	if (tEnemyProgress->GetEnemyCounter() > 0)
 	{
 		int X = (float)x / w * theMap->GetXNumOfGrid();
 		int Y = (float)y / h * theMap->GetYNumOfGrid();
@@ -1144,6 +1126,9 @@ void CPlayState::mclicklevel1(int x, int y)
 				if (ExitMenu_Yes->GetIsHover())
 				{
 					sound.stop();
+					Save();
+					pause = false;
+					exitmenu = false;
 					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 				}
 				else if (ExitMenu_No->GetIsHover())
@@ -1740,9 +1725,17 @@ void CPlayState::Load()
 			{
 				player->SetHealth(stoi(value));
 			}
+			else if (type == "shield")
+			{
+				player->SetShield(stoi(value));
+			}
 			else if (type == "gold")
 			{
 				player->SetGold(stoi(value));
+			}
+			else if (type == "shop")
+			{
+				player->SetBonus(stoi(value));
 			}
 			else if (type == "time")
 			{
@@ -1761,6 +1754,7 @@ void CPlayState::Load()
 	inData.close();
 
 	inData.open("save/progress.txt");
+	loadlevel();
 	while (!inData.eof()) {
 		getline(inData, type, ',');
 		{
@@ -1769,6 +1763,8 @@ void CPlayState::Load()
 				//Tower *tower = new Tower();
 				getline(inData, value, ',');
 				Tower *tower = new Tower(static_cast<Tower::TOWER_TYPE>(stoi(value)));
+				getline(inData, value, ',');
+				tower->state = static_cast<Tower::State>(stoi(value));
 				getline(inData, value, ',');
 				tower->SetActive(stoi(value));
 				getline(inData, value, ',');
@@ -1796,8 +1792,8 @@ void CPlayState::Load()
 				getline(inData, value, '\n');
 				tower->SetFire(stoi(value));
 				towerList.push_back(tower);
-				int x = (int)((tower->GetPos().x * 10 / WX) - 0.5f);
-				int y = (int)((tower->GetPos().y * 7 / WY) - 0.5f);
+				int x = (int)((tower->GetPos().x * 10 / WX));
+				int y = (int)((tower->GetPos().y * 7 / WY));
 				theMap->GetGrid(x, y)->SetOccupied(true);
 
 			}
@@ -1806,6 +1802,8 @@ void CPlayState::Load()
 				Enemy *enemy = new Enemy();
 				getline(inData, value, ',');
 				enemy->type = static_cast<Enemy::ENEMY_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				enemy->state = static_cast<Enemy::ENEMY_STATE>(stoi(value));
 				getline(inData, value, ',');
 				enemy->SetActive(stoi(value));
 				getline(inData, value, ',');
@@ -1872,14 +1870,93 @@ void CPlayState::Load()
 				spawn->SetTime(stof(value));
 				spawnList.push_back(spawn);
 			}
+			else if (type == "power_health")
+			{
+				getline(inData, value, ',');
+				BaseHealth->type = static_cast<Powerup::POWER_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				BaseHealth->SetActive(stoi(value));
+				getline(inData, value, ',');
+				BaseHealth->SetReady(stoi(value));
+				getline(inData, value, ',');
+				BaseHealth->SetValue(stof(value));
+				getline(inData, value, ',');
+				BaseHealth->SetDuration(stof(value));
+			}
+			else if (type == "power_shield")
+			{
+				getline(inData, value, ',');
+				Shield->type = static_cast<Powerup::POWER_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				Shield->SetActive(stoi(value));
+				getline(inData, value, ',');
+				Shield->SetReady(stoi(value));
+				getline(inData, value, ',');
+				Shield->SetValue(stof(value));
+				getline(inData, value, ',');
+				Shield->SetDuration(stof(value));
+			}
+			else if (type == "power_firerate")
+			{
+				getline(inData, value, ',');
+				Firerate->type = static_cast<Powerup::POWER_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				Firerate->SetActive(stoi(value));
+				getline(inData, value, ',');
+				Firerate->SetReady(stoi(value));
+				getline(inData, value, ',');
+				Firerate->SetValue(stof(value));
+				getline(inData, value, ',');
+				Firerate->SetDuration(stof(value));
+			}
+			else if (type == "power_damage")
+			{
+				getline(inData, value, ',');
+				Damage->type = static_cast<Powerup::POWER_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				Damage->SetActive(stoi(value));
+				getline(inData, value, ',');
+				Damage->SetReady(stoi(value));
+				getline(inData, value, ',');
+				Damage->SetValue(stof(value));
+				getline(inData, value, ',');
+				Damage->SetDuration(stof(value));
+			}
+			else if (type == "power_tank")
+			{
+				getline(inData, value, ',');
+				Backup_Tank->type = static_cast<Powerup::POWER_TYPE>(stoi(value));
+				getline(inData, value, ',');
+				Backup_Tank->SetActive(stoi(value));
+				getline(inData, value, ',');
+				Backup_Tank->SetReady(stoi(value));
+				getline(inData, value, ',');
+				Backup_Tank->SetValue(stof(value));
+				getline(inData, value, ',');
+				Backup_Tank->SetDuration(stof(value));
+			}
+			else if (type == "tank")
+			{
+				getline(inData, value, ',');
+				backupTank->SetActive(stoi(value));
+				getline(inData, value, ',');
+				backupTank->state = static_cast<Tank::State>(stoi(value));
+				getline(inData, value, ',');
+				backupTank->SetInPosition(stoi(value));
+				getline(inData, value, ',');
+				backupTank->SetPos(Vector3(stoi(value), 0, 0));
+				getline(inData, value, ',');
+				backupTank->SetPos(Vector3(backupTank->GetPos().x, stoi(value), 0));
+			}
 		}
 	}
-	inData.seekg(0, ios::binary);
+	inData.seekg(0, ios::end); // put the cursor to the end of the file
 	length = inData.tellg();
-	if (length == 0)
+	if (length == -1) // check if the file is empty
 	{
 		progress = 1;
 		LoadSpawn();
+		loadlevel();
 	}
 	inData.close();
 }
@@ -1890,7 +1967,9 @@ void CPlayState::Save()
 	if (file.is_open())
 	{
 		file << "health, " << player->GetHealth() << "\n";
+		file << "shield, " << player->GetShield() << "\n";
 		file << "gold, " << player->GetGold() << "\n";
+		file << "shop, " << player->GetBonus() << "\n";
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
@@ -1904,35 +1983,32 @@ void CPlayState::Save()
 	ofstream file2("save/progress.txt");
 	if (file2.is_open())
 	{
-		//Tower *tower = FetchTower();
 		for (unsigned int i = 0; i < towerList.size(); ++i)
 		{
 			if (towerList[i]->GetActive())
 			{
 				if (towerList[i]->GetPos().x != 0)
 				{
-					file2 << "tower, " << towerList[i]->type << ", " << towerList[i]->GetActive() << ", " << towerList[i]->GetRange() << ", " << towerList[i]->GetDamage() << ", "
+					file2 << "tower, " << towerList[i]->type << ", " << towerList[i]->state << ", " << towerList[i]->GetActive() << ", " << towerList[i]->GetRange() << ", " << towerList[i]->GetDamage() << ", "
 						<< towerList[i]->GetVel().x << ", " << towerList[i]->GetVel().y << ", " << towerList[i]->GetVel().z << ", "
 						<< towerList[i]->GetPos().x << ", " << towerList[i]->GetPos().y << ", " << towerList[i]->GetPos().z << ", "
 						<< towerList[i]->GetHealth() << ", " << towerList[i]->GetFireRate() << ", " << towerList[i]->GetFireCounter() << ", " << towerList[i]->GetFire() << "\n";
 				}
 			}
 		}
-		//Enemy *creep = FetchEnemy();
 		for (unsigned int j = 0; j < enemyList.size(); ++j)
 		{
 			if (enemyList[j]->GetActive())
 			{
 				if (enemyList[j]->GetPos().x != 0)
 				{
-					file2 << "enemy, " << enemyList[j]->type << ", " << enemyList[j]->GetActive() << ", " << enemyList[j]->GetRange() << ", " << enemyList[j]->GetDamage() << ", "
+					file2 << "enemy, " << enemyList[j]->type << ", " << enemyList[j]->state << ", " << enemyList[j]->GetActive() << ", " << enemyList[j]->GetRange() << ", " << enemyList[j]->GetDamage() << ", "
 						<< enemyList[j]->GetVel().x << ", " << enemyList[j]->GetVel().y << ", " << enemyList[j]->GetVel().z << ", "
 						<< enemyList[j]->GetPos().x << ", " << enemyList[j]->GetPos().y << ", " << enemyList[j]->GetPos().z << ", "
 						<< enemyList[j]->GetHealth() << ", " << enemyList[j]->GetFireRate() << ", " << enemyList[j]->GetFireCounter() << ", " << enemyList[j]->GetFire() << "\n";
 				}
 			}
 		}
-		//Bullet *bullet = FetchBullet();
 		for (unsigned int k = 0; k < bulletList.size(); ++k)
 		{
 			if (bulletList[k]->GetActive())
@@ -1958,6 +2034,22 @@ void CPlayState::Save()
 		}
 		/*delete spawn;
 		spawn = NULL;*/
+
+		// For power ups
+		file2 << "power, " << BaseHealth->type << ", " << BaseHealth->GetActive() << ", " << BaseHealth->GetReady() << ", " << BaseHealth->GetValue() << ", "
+			<< BaseHealth->GetDuration() << "\n";
+		file2 << "power, " << Shield->type << ", " << Shield->GetActive() << ", " << Shield->GetReady() << ", " << Shield->GetValue() << ", "
+			<< Shield->GetDuration() << "\n";
+		file2 << "power, " << Firerate->type << ", " << Firerate->GetActive() << ", " << Firerate->GetReady() << ", " << Firerate->GetValue() << ", "
+			<< Firerate->GetDuration() << "\n";
+		file2 << "power, " << Damage->type << ", " << Damage->GetActive() << ", " << Damage->GetReady() << ", " << Damage->GetValue() << ", "
+			<< Damage->GetDuration() << "\n";
+		file2 << "power, " << Backup_Tank->type << ", " << Backup_Tank->GetActive() << ", " << Backup_Tank->GetReady() << ", " << Backup_Tank->GetValue() << ", "
+			<< Backup_Tank->GetDuration() << "\n";
+
+		file2 << "tank, " << backupTank->GetActive() << ", "  << backupTank->state << ", " << backupTank->GetInPosition() << ", " 
+			<< backupTank->GetPos().x << ", " << backupTank->GetPos().y << "\n";
+
 		file2.close();
 	}
 	else

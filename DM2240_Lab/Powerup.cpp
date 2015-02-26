@@ -56,34 +56,19 @@ int Powerup::GetCost()
 	return Cost;
 }
 
-//int Powerup::GetBaseHealthIncrease()
-//{
-//	return BaseHealthIncrease;
-//}
-//
-//int Powerup::GetShield()
-//{
-//	return Shield;
-//}
-//
-//float Powerup::GetFireRateMultiply()
-//{
-//	return FireRateMultiply;
-//}
-//
-//float Powerup::GetDamageMultiply()
-//{
-//	return DamageMultiply;
-//}
+bool Powerup::GetReady()
+{
+	return Ready;
+}
 
 float Powerup::GetValue()
 {
 	return Value;
 }
 
-bool Powerup::GetReady()
+float Powerup::GetDuration()
 {
-	return Ready;
+	return Duration;
 }
 
 void Powerup::SetCost(int Cost)
@@ -91,34 +76,19 @@ void Powerup::SetCost(int Cost)
 	this->Cost = Cost;
 }
 
-//void Powerup::SetBaseHealthIncrease(int BaseHealthIncrease)
-//{
-//	this->BaseHealthIncrease = BaseHealthIncrease;
-//}
-//
-//void Powerup::SetShield(int Shield)
-//{
-//	this->Shield = Shield;
-//}
-//
-//void Powerup::SetFireRateMultiply(float FireRateMultiply)
-//{
-//	this->FireRateMultiply = FireRateMultiply;
-//}
-//
-//void Powerup::SetDamageMultiply(float DamageMultiply)
-//{
-//	this->DamageMultiply = DamageMultiply;
-//}
+void Powerup::SetReady(bool Ready)
+{
+	this->Ready = Ready;
+}
 
 void Powerup::SetValue(float Value)
 {
 	this->Value = Value;
 }
 
-float Powerup::GetDuration()
+void Powerup::SetDuration(float Duration)
 {
-	return Duration;
+	this->Duration = Duration;
 }
 
 void Powerup::Update(float dt)

@@ -32,7 +32,8 @@ public:
 	~Tank();
 
 	bool LoadTGA(TextureImage *texture, char *filename);
-
+	void SetInPosition(bool inPosition);
+	bool GetInPosition();
 	void ChangeState();
 	void Respond(float dt);
 	void Update(float dt);

@@ -30,14 +30,16 @@ public:
 	~Powerup();
 
 	int GetCost();
-	float GetValue();
 	bool GetReady();
+	float GetValue();
+	float GetDuration();
 
 	void SetCost(int Cost);
+	void SetReady(bool Ready);
 	void SetValue(float Value);
+	void SetDuration(float Duration);
 
 	void Update(float dt);
-	float GetDuration();
 
 	void RenderDurationBar(int x, int y);
 };

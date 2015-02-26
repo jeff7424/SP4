@@ -293,3 +293,13 @@ void Tank::GetTarget(Enemy* enemy)
 		}
 	}
 }
+
+void Tank::SetInPosition(bool inPosition)
+{
+	this->inPosition = inPosition;
+}
+
+bool Tank::GetInPosition()
+{
+	return inPosition;
+}
