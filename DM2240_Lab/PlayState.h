@@ -154,6 +154,13 @@ private:
 	Button *Bonus_Attack;
 	Button *Bonus_Armour;
 	Button *Bonus_Dollar;
+
+	Button *Bonus_PShd;
+	Button *Bonus_PHealth;
+	Button *Bonus_PFirerate;
+	Button *Bonus_PDamage;
+	Button *Bonus_PTank;
+
 	BG *Shop_BG;
 
 	float Bonus_MultAttack;

@@ -7,7 +7,7 @@ Enemy::Enemy(ENEMY_TYPE type)
 , state(ENEMY_LANE)
 , speed(0)
 , offsetX(0)
-, offsetY(0)
+, offsetY(2)
 , offsetY2(0)
 , tilesTravelled(0)
 , called (false)
@@ -51,52 +51,77 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 				if(creep->state == ENEMY_STATE::ENEMY_ADVANCE)
 				{
 					creep->SetPos(Vector3(creep->GetPos().x + creep->GetVel().x*dt, creep->GetPos().y, 0));
-					creep->SetPos(Vector3(creep->GetPos().x, ((creep->offsetY* TILE_SIZE) + (TILE_SIZE/2)), 0));
 				}
 
 				//Enemy change lane
 				if(creep->state == ENEMY_STATE::ENEMY_LANE)
 				{
-					if(creep->type == Enemy::ENEMY_1)	//after 2 tiles move up/ down
+					if(creep->type == Enemy::ENEMY_2)	//after 2 tiles move up/ down
 					{	
 						if(!creep->called)
 						{
 							if(creep->offsetY > 1 && creep->offsetY < 5)
 							{
 								if(random == 1)
-								creep->offsetY2 = creep->offsetY - 1;
-
+								{
+									creep->offsetY2 = creep->offsetY - 1;
+									creep->dir = 0;
+								}
 								else
-								creep->offsetY2 = creep->offsetY + 1;
+								{
+									creep->offsetY2 = creep->offsetY + 1;
+									creep->dir = 1;
+								}
 							}
 							else if(creep->offsetY == 5)
-							{creep->offsetY2 = creep->offsetY - 1;}
+							{creep->offsetY2 = creep->offsetY - 1;
+							 creep->dir = 0;}
 							else if(creep->offsetY == 1)
-							{creep->offsetY2 = creep->offsetY + 1;}
+							{creep->offsetY2 = creep->offsetY + 1;
+							creep-> dir = 1;}
 
 							creep->called = true;
 						}
 
-						if(creep->offsetY2 <= creep->offsetY)	//current y tile - 1 (move up)
+						if(creep->offsetY < creep->offsetY2 && creep->dir == 1)	//move down
 						{
-							creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y + creep->GetVel().x*dt, 0));
+							creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y - creep->GetVel().x*dt, 0));
 						}
-
-						else
+						
+						else if(creep->offsetY >= creep->offsetY2 && creep->dir == 0)	//move up
 						{
+							creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y + (creep->GetVel().x*dt), 0));
+						}
+						else
+						{	
 							creep->SetPos(Vector3(creep->GetPos().x, (creep->offsetY2* TILE_SIZE + (TILE_SIZE/2)), 0));	//pop to middle of tile		1.set postion values to TILE_SIZE
 							creep->currentTile -= 2;
 							creep->called = false;
 						}
 					}
 
-					if(creep->type == Enemy::ENEMY_2)
+					if(creep->type == Enemy::ENEMY_1)
 					{
-						if(laneSwap < creep->offsetY ) //move up
-						creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y + creep->GetVel().x*dt, 0));
+						
+						if(creep->offsetY > laneSwap) //move up (decrease y)
+							creep->dir = 0;
 
-						if(laneSwap > creep->offsetY ) //move down
-						creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y - creep->GetVel().x*dt, 0));
+						if(creep->offsetY < laneSwap) //move down (increase y)
+							creep->dir = 1;
+						//creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y - creep->GetVel().x*dt, 0));
+						//if(creep->offsetY != laneSwap)
+						//{
+							
+							if(creep->dir == 1 && creep->offsetY < laneSwap)
+							creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y - creep->GetVel().x*dt, 0));
+							else if(creep->dir == 0 && creep->offsetY > laneSwap)
+							creep->SetPos(Vector3(creep->GetPos().x, creep->GetPos().y + creep->GetVel().x*dt, 0));
+							else
+							{
+								creep->SetPos(Vector3(creep->GetPos().x, ((creep->offsetY* TILE_SIZE) + (TILE_SIZE/2)), 0));
+							}
+						
+							cout << creep->offsetY << endl;
 					}
 				}
 
@@ -111,14 +136,14 @@ void Enemy::SetMovement(std::vector<Enemy *> eList, int TILE_SIZE, float dt, int
 					creep->state = ENEMY_STATE::ENEMY_ADVANCE;
 					break;*/
 
-				case Enemy::ENEMY_1:
+				case Enemy::ENEMY_2:
 					if(creep->currentTile == creep->tilesTravelled)
 						creep->state = ENEMY_STATE::ENEMY_LANE;
 					else
 						creep->state = ENEMY_STATE::ENEMY_ADVANCE;
 					break;
 
-				case Enemy::ENEMY_2:
+				case Enemy::ENEMY_1:
 					if(creep->offsetY != laneSwap)
 						creep->state = ENEMY_STATE::ENEMY_LANE;
 					else 

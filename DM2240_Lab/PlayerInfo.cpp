@@ -11,6 +11,11 @@ PlayerInfo::PlayerInfo()
 , maxshield(shield)
 , gold(700)
 , bonus_currency(0)
+, QtyBaseHealth(0)
+, QtyShield(0)
+, QtyFireRate(0)
+, QtyDamage(0)
+, QtyTank(0)
 {
 
 }
@@ -118,6 +123,16 @@ int PlayerInfo::GetQtyFireRate()
 int PlayerInfo::GetQtyDamage()
 {
 	return QtyDamage;
+}
+
+int PlayerInfo::GetQtyTank()
+{
+	return QtyTank;
+}
+
+void PlayerInfo::SetQtyTank(int QtyTank)
+{
+	this->QtyTank = QtyTank;
 }
 
 void PlayerInfo::RenderHealthBar(const int x, const int y)

@@ -16,7 +16,7 @@ lua_State *L;
 
 int a = 1;
 int lane[6] = {0};
-
+bool selection = false;
 int RNGesus(void)
 {
 	return rand() % 3 + 1;
@@ -125,6 +125,12 @@ void CPlayState::Init(void)
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
 	
+	Bonus_PShd = new Button("bin/ui/hud/button_powershield.tga", 270, 400, 48, 48);
+	Bonus_PHealth = new Button("bin/ui/hud/button_powerhealth.tga", 370, 400, 48, 48);
+	Bonus_PFirerate = new Button("bin/ui/hud/button_powerspeed.tga", 470, 400, 48, 48);
+	Bonus_PDamage = new Button("bin/ui/hud/button_powerdmg.tga", 570, 400, 48, 48);
+	Bonus_PTank = new Button("bin/ui/hud/button_powertank.tga", 670, 400, 48, 48);
+
 	Shop_BG	     = new BG("bin/ui/hud/ShopBG32.tga", 470, 290, 193, 97);
 
 	Bonus_MultAttack = 1;
@@ -545,7 +551,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			Enemy *creep = *it;
 			if (creep->GetPos().x <= 0)	// Creep leaves the left side of the screen and inflicts DAMAGE ON BASE!
 			{
-				/*switch (creep->type)
+				switch (creep->type)
 				{
 				case Enemy::ENEMY_1:
 					if (player->GetShield() > 0)
@@ -579,7 +585,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 					else
 						player->SetHealth((player->GetHealth())-30);
 					break;
-				}*/
+				}
 				creep->SetActive(false);
 				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 				player->SetHealth(player->GetHealth() - creep->GetDamage());
@@ -886,6 +892,12 @@ void CPlayState::MouseMove(int x, int y) {
 		Bonus_Armour->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_Dollar->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
+		Bonus_PShd->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_PHealth->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_PFirerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_PDamage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		Bonus_PTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+
 		if (Bonus_Attack->GetIsHover())
 		{
 			info = -1;
@@ -1152,6 +1164,26 @@ void CPlayState::mclicklevel1(int x, int y)
 								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 							if (player->GetGold() >= tower->GetCost())
 							{
+								if (tower->type == Tower::TOWER_SHOCK)
+								{
+									soundTypes(20, false);
+									soundTypes(17, false);
+								}
+								else if (tower->type == Tower::TOWER_SLOW)
+								{
+									soundTypes(20, false);
+									soundTypes(18, false);
+								}
+								else if (tower->type == Tower::TOWER_BARRICADE)
+								{
+									soundTypes(20, false);
+									soundTypes(19, false);
+								}
+								else
+								{
+									soundTypes(20, false);
+									soundTypes(14, false);
+								}
 								lane[Y] += 1;
 								tower->SetActive(true);
 								tower->SetLevel(1);
@@ -1159,6 +1191,10 @@ void CPlayState::mclicklevel1(int x, int y)
 								theMap->GetGrid(X, Y)->SetOccupied(true);
 								player->SetGold(player->GetGold() - tower->GetCost()); 
 								towerList.push_back(tower);
+							}
+							else if (player->GetGold() < tower->GetCost())
+							{
+								soundTypes(15, false);
 							}
 							else
 							{
@@ -1176,15 +1212,17 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			if (Power_Shield->GetIsHover())
 			{
-				if (Shield->GetReady())
-				{
-					Shield->SetActive(true);
-					player->SetMaxShield(player->GetShield() + 50);
-					player->SetShield(player->GetShield() + 50);
-				}
+				if (player->GetQtyShield() > 0)
+					if (Shield->GetReady())
+					{
+						Shield->SetActive(true);
+						player->SetMaxShield(player->GetShield() + 50);
+						player->SetShield(player->GetShield() + 50);
+					}
 			}
 			else if (Power_BaseHealth->GetIsHover())
 			{
+				if (player->GetQtyBaseHealth() > 0)
 				if (BaseHealth->GetReady())
 				{
 					if (player->GetHealth() < player->GetMaxHealth())
@@ -1198,14 +1236,17 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Power_Firerate->GetIsHover())
 			{
+				if (player->GetQtyFireRate() > 0)
 				Firerate->SetActive(true);
 			}
 			else if (Power_Damage->GetIsHover())
 			{
+				if (player->GetQtyDamage() > 0)
 				Damage->SetActive(true);
 			}
 			else if (Power_BackupTank->GetIsHover())
 			{
+				if (player->GetQtyTank() > 0)
 				if (Backup_Tank->GetReady())
 				{
 					Backup_Tank->SetActive(true);
@@ -1213,26 +1254,32 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Unit_Infantry->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 1;
 			}
 			else if (Unit_Tank->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 2;
 			}
 			else if (Unit_Heavy->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 3;
 			}
 			else if (Unit_Sniper->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 4;
 			}
 			else if (Unit_Mine->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 5;
 			}
 			else if (Unit_Barricade->GetIsHover())
 			{
+				soundTypes(16, false);
 				selection = 6;
 			}
 		}
@@ -1246,29 +1293,79 @@ void CPlayState::mclicklevel1(int x, int y)
 		// Bonus 1: Alpha Damage +10%
 		if (Bonus_Attack->GetIsHover())
 		{
-			Bonus_MultAttack *= 1.1f;
 			if (player->GetBonus()-10 > 0)
-			player->SetBonus(player->GetBonus()-10);
-			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+			{
+				Bonus_MultAttack *= 1.1f;
+				player->SetBonus(player->GetBonus()-10);
+			}
 		}
 
 
 		// Bonus 2: Durability +10%
 		if (Bonus_Armour->GetIsHover())
 		{
-			Bonus_MultArmour *= 0.9f; // Reduces damage inflicted onto tower by 10%.
 			if (player->GetBonus()-10 > 0)
+			{
+				Bonus_MultArmour *= 1.1f;
 				player->SetBonus(player->GetBonus()-10);
-			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+			}
 		}
 
 		// Bonus 3: Loot Drop +10%
 		if (Bonus_Dollar->GetIsHover())
 		{
-			Bonus_MultDollar *= 1.1f;
 			if (player->GetBonus()-10 > 0)
+			{
+				Bonus_MultDollar *= 1.1f;
 				player->SetBonus(player->GetBonus()-10);
-			// Start spawning the next wave (i.e. enemycounter will no longer be 0!)
+			}
+		}
+
+
+
+		if (Bonus_PShd->GetIsHover())
+		{
+			if (player->GetBonus()-5 > 0)
+			{
+				player->SetQtyShield(player->GetQtyShield()+1);
+				player->SetBonus(player->GetBonus()-5);
+			}
+		}
+
+		if (Bonus_PHealth->GetIsHover())
+		{
+			if (player->GetBonus()-4 > 0)
+			{
+				player->SetQtyBaseHealth(player->GetQtyBaseHealth()+1);
+				player->SetBonus(player->GetBonus()-4);
+			}
+		}
+
+		if (Bonus_PFirerate->GetIsHover())
+		{
+			if (player->GetBonus()-3 > 0)
+			{
+				player->SetQtyFireRate(player->GetQtyFireRate()+1);
+				player->SetBonus(player->GetBonus()-3);
+			}
+		}
+
+		if (Bonus_PDamage->GetIsHover())
+		{
+			if (player->GetBonus()-3 > 0)
+			{
+				player->SetQtyDamage(player->GetQtyDamage()+1);
+				player->SetBonus(player->GetBonus()-3);
+			}
+		}
+
+		if (Bonus_PTank->GetIsHover())
+		{
+			if (player->GetBonus()-6 > 0)
+			{
+				player->SetQtyTank(player->GetQtyTank()+1);
+				player->SetBonus(player->GetBonus()-6);
+			}
 		}
 	}
 
@@ -1454,7 +1551,7 @@ void CPlayState::Update(float dt)
 							else if (creep->GetFireCounter() <= 0)
 							{
 								creep->SetFire(true);
-								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())*Bonus_MultArmour);
+								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())/Bonus_MultArmour);
 								creep->SetFireCounter(creep->GetFireRate());
 								if (tower->GetHealth() <= 0)
 								{
@@ -2329,6 +2426,34 @@ void CPlayState::soundTypes(int type, bool death)
 	{
 		se->play2D("bin/sounds/mission_complete.mp3", false);
 	}
+	else if (type == 14)
+	{
+		se->play2D("bin/sounds/unit.mp3", false);
+	}
+	else if (type == 15)
+	{
+		se->play2D("bin/sounds/no_money.wav", false);
+	}
+	else if (type == 16)
+	{
+		se->play2D("bin/sounds/sliderMove.wav", false);
+	}
+	else if (type == 17)
+	{
+		se->play2D("bin/sounds/unit_missile.mp3", false);
+	}
+	else if (type == 18)
+	{
+		se->play2D("bin/sounds/unit_sniper.wav", false);
+	}
+	else if (type == 19)
+	{
+		se->play2D("bin/sounds/unit_barricade.wav", false);
+	}
+	else if (type == 20)
+	{
+		se->play2D("bin/sounds/placement.wav", false);
+	}
 }
 
 void CPlayState::loadlevel()
@@ -2581,6 +2706,18 @@ void CPlayState::RenderHUD()
 	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	sprintf_s(temp, "x%d", player->GetQtyShield());
+	RenderStringOnScreen(608, 666, temp);
+	sprintf_s(temp, "x%d", player->GetQtyBaseHealth());
+	RenderStringOnScreen(680, 666, temp);
+	sprintf_s(temp, "x%d", player->GetQtyFireRate());
+	RenderStringOnScreen(752, 666, temp);
+	sprintf_s(temp, "x%d", player->GetQtyDamage());
+	RenderStringOnScreen(824, 666, temp);
+	sprintf_s(temp, "x%d", player->GetQtyTank());
+	RenderStringOnScreen(896, 666, temp);
 	if (pause)
 	{
 		if (!exitmenu)
@@ -2595,6 +2732,10 @@ void CPlayState::RenderHUD()
 
 	if (winscreen == true)
 	{
+		char temp[16];
+
+		glColor3f(1.0f, 1.0f, 1.0f);
+
 		RenderWinScreen();
 
 		Shop_BG->Render();
@@ -2602,12 +2743,40 @@ void CPlayState::RenderHUD()
 		Bonus_Armour->Render();
 		Bonus_Dollar->Render();
 
-		char temp[16];
+		Bonus_PShd->Render();
+		Bonus_PHealth->Render();
+		Bonus_PFirerate->Render();
+		Bonus_PDamage->Render();
+		Bonus_PTank->Render();
 
 		glColor3f(0.0f, 0.0f, 0.0f);
 		sprintf_s(temp, "Bonus: %d", player->GetBonus());
 		RenderStringOnScreen(450, 200, temp);
 		glColor3f(1.0f, 1.0f, 1.0f);
+
+		sprintf_s(temp, "x%d", player->GetQtyShield());
+		RenderStringOnScreen(260, 440, temp);
+
+		sprintf_s(temp, "x%d", player->GetQtyBaseHealth());
+		RenderStringOnScreen(360, 440, temp);
+
+		sprintf_s(temp, "x%d", player->GetQtyFireRate());
+		RenderStringOnScreen(460, 440, temp);
+
+		sprintf_s(temp, "x%d", player->GetQtyDamage());
+		RenderStringOnScreen(560, 440, temp);
+
+		sprintf_s(temp, "x%d", player->GetQtyTank());
+		RenderStringOnScreen(660, 440, temp);
+
+		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultAttack);
+		RenderStringOnScreen(350, 265, temp);
+
+		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultArmour);
+		RenderStringOnScreen(450, 265, temp);
+
+		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultDollar);
+		RenderStringOnScreen(550, 265, temp);
 	}
 
 	else if (losescreen == true)
@@ -2692,7 +2861,6 @@ void CPlayState::RenderWinScreen()
 	WinLose_MainMenu->Render();
 	WinLose_NextLevel->Render();
 	WinLose_RestartLevel->Render();
-//	WinLose_Shop->Render();
 	WinLose_MiniGame->Render();
 
 }
@@ -2723,7 +2891,6 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
-//	WinLose_Shop->Render();
 }
 
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
