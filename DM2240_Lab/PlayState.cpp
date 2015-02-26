@@ -67,7 +67,7 @@ void CPlayState::Init(void)
 
 	se = createIrrKlangDevice();
 	playSound(a);
-
+	soundTypes(12, false);
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
 	tEnemyProgress->initEnemyCounter();
@@ -589,7 +589,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				break;
 			}
 		}
-
+		
 		//for (unsigned int i = 0; i < bulletList.size(); ++i)
 		//{
 		//	if (bulletList[i]->GetActive() && bulletList[i]->type != Bullet::GO_BOMBBULLET)
@@ -875,7 +875,6 @@ void CPlayState::MouseMove(int x, int y) {
 
 	if (winscreen == true)
 	{
-
 		//For Win Screen
 		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
@@ -2216,6 +2215,12 @@ void CPlayState::playSound(int a)
 			sound.setFileName("bin/sounds/Snake_Eater.mp3");
 			sound.playSoundThreaded();
 		}
+		else if (a == 4)
+		{
+			sound.stop();
+			sound.setFileName("bin/sounds/Victory_bgm.mp3");
+			sound.playSoundThreaded();
+		}
 	}
 }
 
@@ -2230,6 +2235,7 @@ void CPlayState::soundTypes(int type, bool death)
 {
 	if (type == 1)
 	{
+		
 		se->play2D("bin/sounds/chipDeath.mp3", false);
 		se->setSoundVolume(0.25);
 		death = false;
@@ -2309,6 +2315,15 @@ void CPlayState::soundTypes(int type, bool death)
 			death = false;
 			break;
 		}
+	}
+	else if (type == 12)
+	{
+		se->play2D("bin/sounds/mission_start.wav", false);
+		death = false;
+	}
+	else if (type == 13)
+	{
+		se->play2D("bin/sounds/mission_complete.mp3", false);
 	}
 }
 
@@ -2562,6 +2577,8 @@ void CPlayState::RenderHUD()
 	Damage->RenderDurationBar(Power_Damage->GetPosition().x, Power_Damage->GetPosition().y);
 	Backup_Tank->RenderDurationBar(Power_BackupTank->GetPosition().x, Power_BackupTank->GetPosition().y);
 
+	// All enemies defeated
+	if (enemycounter < 1)
 	if (pause)
 	{
 		if (!exitmenu)
@@ -2575,6 +2592,7 @@ void CPlayState::RenderHUD()
 	}
 
 	if (winscreen == true)
+//>>>>>>> 384bf701f56b8ab73a29280394d534f201892b85
 	{
 		RenderWinScreen();
 

@@ -11,6 +11,7 @@ CMenuState CMenuState::theMenuState;
 
 void CMenuState::Init()
 {
+	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
 	//se = createIrrKlangDevice();
@@ -27,8 +28,9 @@ void CMenuState::Init()
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
-
 	theCam = new Camera(Camera::LAND_CAM);
+	bgm.setFileName("bin/sounds/main_menu.wav");
+	bgm.playSoundThreaded();
 }
 
 void CMenuState::Cleanup()
@@ -100,6 +102,7 @@ void CMenuState::HandleEvents(CGameStateManager* theGSM)
 
 void CMenuState::Update(CGameStateManager* theGSM)
 {
+	//bgm.playSound("bin/sounds/main_menu.wav");
 	CursorOnButton(mouseInfo.lastX, mouseInfo.lastY);
 
 	if (myKeys['1'] == true)
@@ -107,6 +110,7 @@ void CMenuState::Update(CGameStateManager* theGSM)
 
 	if (myKeys[VK_ESCAPE] == true)
 		exit(0);
+
 }
 
 void CMenuState::Draw(CGameStateManager* theGSM)
@@ -118,7 +122,6 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 	glEnable(GL_DEPTH_TEST);
 
 	Update(theGSM);
-
 	theCam->SetHUD(true);
 
 	RenderMenu();
@@ -135,6 +138,7 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 	// swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
 	glutPostRedisplay();
+
 }
 
 void CMenuState::printw(float x, float y, float z, char* format, ...)
@@ -302,12 +306,16 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			mouseInfo.mLButtonUp = false;
 		else
 			mouseInfo.mLButtonUp = true;
+
 		mouseInfo.lastX = x;
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/select.wav", false);
 			if (StartButton->GetIsHover())
 			{	
+				bgm.stop();
 				CGameStateManager::getInstance()->ChangeState(CGameModeState::Instance());
 			}
 			else if (SettingsButton->GetIsHover())
@@ -350,7 +358,6 @@ void CMenuState::RenderMenu(void)
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
-
 	glPopMatrix();
 }
 
@@ -360,7 +367,56 @@ void CMenuState::CursorOnButton(int x, int y)
 	SettingsButton->SetIsHover(x, y);
 	InstructionsButton->SetIsHover(x, y);
 	CreditsButton->SetIsHover(x, y);
-	ExitButton->SetIsHover(x, y);
+	ExitButton->SetIsHover(x, y); 
+	if (StartButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (SettingsButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (InstructionsButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (CreditsButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (ExitButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			se = createIrrKlangDevice();
+			se->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else
+	{
+		isplaying = true;
+	}
 }
 
 int CMenuState::LuaInit()

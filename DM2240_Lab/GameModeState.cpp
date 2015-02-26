@@ -12,6 +12,7 @@ CGameModeState CGameModeState::modeState;
 
 void CGameModeState::Init()
 {
+	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
 	glEnable(GL_TEXTURE_2D);
@@ -23,11 +24,10 @@ void CGameModeState::Init()
 	return;*/
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
-
+	buttons = createIrrKlangDevice();
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
-
 	theCam = new Camera(Camera::LAND_CAM);
 }
 
@@ -277,6 +277,37 @@ void CGameModeState::MouseMove(int x, int y)
 	CampaignButton->SetIsHover(x, y);
 	SkirmishButton->SetIsHover(x, y);
 	BackButton->SetIsHover(x, y);
+	if (CampaignButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (SkirmishButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else if (BackButton->GetIsHover())
+	{
+		if (isplaying == true)
+		{
+			buttons = createIrrKlangDevice();
+			buttons->play2D("bin/sounds/button_hover.wav", false);
+			isplaying = false;
+		}
+	}
+	else
+	{
+		isplaying = true;
+	}
 }
 
 void CGameModeState::MouseClick(int button, int state, int x, int y)
@@ -294,8 +325,18 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 		{
 			if (CampaignButton->GetIsHover())
 			{
-				CPlayState::Instance()->SetLevel(1);
-				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+//<<<<<<< HEAD
+				se.playSound("bin/sounds/gamestart.wav");
+				if (!se.isSoundPlaying())
+				{
+					CPlayState::Instance()->SetLevel(1);
+					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+				}
+				
+//=======
+				
+				//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+//>>>>>>> 5f82f4283f50ea8d7da56c59a6c1029f37258e79
 			}
 			else if (SkirmishButton->GetIsHover())
 			{

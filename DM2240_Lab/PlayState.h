@@ -201,6 +201,7 @@ private:
 	// Sounds
 	AudioPlayer sound;
 	ISoundEngine *se;
+	ISound* object;
 	void playSound(int a);
 	void shooting(bool firing);
 
