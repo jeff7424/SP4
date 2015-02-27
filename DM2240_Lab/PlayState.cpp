@@ -515,6 +515,11 @@ void CPlayState::Update(CGameStateManager* theGSM)
 						case Tower::TOWER_CANNON:
 							soundTypes(10, false);
 							break;
+						case Tower::TOWER_MINE:
+							tower->ReturnTarget()->SetHealth(0);
+							tower->ReturnTarget()->SetActive(false);
+							tower->SetActive(false);
+							break;
 					}
 				}
 			}
@@ -1178,6 +1183,11 @@ void CPlayState::mclicklevel1(int x, int y)
 								{
 									soundTypes(20, false);
 									soundTypes(19, false);
+								}
+								else if (tower->type == Tower::TOWER_MINE)
+								{
+									soundTypes(20, false);
+									soundTypes(21, false);
 								}
 								else
 								{
@@ -2453,6 +2463,10 @@ void CPlayState::soundTypes(int type, bool death)
 	else if (type == 20)
 	{
 		se->play2D("bin/sounds/placement.wav", false);
+	}
+	else if (type == 21)
+	{
+		se->play2D("bin/sounds/unit_mine.wav", false);
 	}
 }
 

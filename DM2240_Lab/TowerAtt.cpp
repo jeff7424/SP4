@@ -350,3 +350,8 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 		}
 	}
 }
+
+Enemy* Tower::ReturnTarget()
+{
+	return Target;
+}
