@@ -11,6 +11,8 @@
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
 
+int CPlayState::progress = 1;
+
 CPlayState CPlayState::thePlayState;
 lua_State *L;
 
@@ -159,6 +161,14 @@ void CPlayState::Init(void)
 
 void CPlayState::Cleanup()
 {
+	if (theMap != NULL)
+	{
+		delete theMap;
+		theMap = NULL;
+		free(theMap);
+	} 
+
+	/*
 	if (Cam != NULL)
 	{
 		delete Cam;
@@ -397,6 +407,7 @@ void CPlayState::Cleanup()
 		spawnList.pop_back();
 		free(spawn);
 	}
+	*/
 }
 
 void CPlayState::Pause()
@@ -1367,46 +1378,94 @@ void CPlayState::mclicklevel1(int x, int y)
 				player->SetBonus(player->GetBonus()-6);
 			}
 		}
-	}
 
-	//For Win Lose Screen
-	if (WinLose_MainMenu->GetIsHover())
-	{
-		cout << " Back To Main Menu!" << endl;
-		winscreen = false;
-		losescreen = false;
-		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
-	}
 
-	if (WinLose_NextLevel->GetIsHover())
-	{
-		cout << " Loading Next Level!" << endl;
-		progress = 2;
-		winscreen = false;
-		losescreen = false;
-	}
+		//For Win Lose Screen
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			winscreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
 
-	if (WinLose_RestartLevel->GetIsHover())
-	{
-		cout << " Restart Level!" << endl;
-		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-		winscreen = false;
-		losescreen = false;
-	}
+		if (WinLose_NextLevel->GetIsHover())
+		{
+			winscreen = false;
+			cout << " Loading Next Level!" << endl;
+			spawntimer = 0.0f;
+			player->SetHealth(100);
+			player->SetGold(700);
+			clearmap();
+			progress++;
+			loadlevel();
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+		}
 
-/*	if (WinLose_Shop->GetIsHover())
-	{
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			winscreen = false;
+			cout << " Restart Level!" << endl;
+			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(700);
+			clearmap();
+			loadlevel();
+
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+		}
+
+		/*	if (WinLose_Shop->GetIsHover())
+		{
 		cout << "Initialise the Shop!" << endl;
-	} */
+		} */
 
-	if (WinLose_MiniGame->GetIsHover())
+		if (WinLose_MiniGame->GetIsHover())
+		{
+			cout << "Launching Mini Game!" << endl;
+		}
+	}
+	else if (losescreen == true)
 	{
-		cout << "Launching Mini Game!" << endl;
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			losescreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
+
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			losescreen = false;
+			cout << " Restart Level!" << endl;
+			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(700);
+			clearmap();
+			loadlevel();
+
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+
+		}
+
+		//if (WinLose_Shop->GetIsHover())
+		//{
+		//	cout << "Initialise the Shop!" << endl;
+		//}
 	}
 }
 
 void CPlayState::Update(float dt)
 {
+	//player->SetHealth(player->GetHealth() - 1);
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
@@ -2491,6 +2550,7 @@ void CPlayState::loadlevel()
 
 void CPlayState::clearmap()
 {
+	/*
 	for (std::vector <Tower*>::iterator it = towerList.begin(); it < towerList.end(); it++)
 	{
 		Tower *tower = *it;
@@ -2514,7 +2574,58 @@ void CPlayState::clearmap()
 		{
 			bullet->SetActive(false);
 		}
+	} */
+
+
+	while (bulletList.size() > 0)
+	{
+		Bullet *bullet = bulletList.back();
+		delete bullet;
+		bullet = NULL;
+		bulletList.pop_back();
+		free(bullet);
 	}
+
+	while (enemyList.size() > 0)
+	{
+		Enemy *creep = enemyList.back();
+		delete creep;
+		creep = NULL;
+		enemyList.pop_back();
+		free(creep);
+	}
+
+	while (towerList.size() > 0)
+	{
+		Tower *tower = towerList.back();
+		delete tower;
+		tower = NULL;
+		towerList.pop_back();
+		free(tower);
+	}
+
+	while (spawnList.size() > 0)
+	{
+		Spawn *spawn = spawnList.back();
+		delete spawn;
+		spawn = NULL;
+		spawnList.pop_back();
+		free(spawn);
+	}
+
+	//towerList.clear();
+	//enemyList.clear();
+	//bulletList.clear();
+	//spawnList.clear();
+
+	/*
+	if (theMap != NULL)
+	{
+		delete theMap;
+		theMap = NULL;
+		free(theMap);
+	} */
+
 }
 
 void CPlayState::RenderUpgrade(int x, int y)
