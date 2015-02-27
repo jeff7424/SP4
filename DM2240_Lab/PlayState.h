@@ -89,7 +89,7 @@ private:
 	int selection; // tower selection
 	// Inventory
 	int heroAnimationCounter; // animation counter
-	int progress; // level progress
+	static int progress; // level progress
 	int info; // mouse hover info
 	int level;
 	float spawntimer; // timer for enemy to spawn
