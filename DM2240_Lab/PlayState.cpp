@@ -25,8 +25,8 @@ int RNGesus(void)
 void CPlayState::Init(void)
 {
 	srand(time(NULL));
-	w = glutGet(GLUT_WINDOW_WIDTH);
-	h = glutGet(GLUT_WINDOW_HEIGHT);
+	w = SCREEN_WIDTH;
+	h = SCREEN_HEIGHT;
 	state = 0;
 	WX = w;
 	WY = h;
@@ -1848,6 +1848,26 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetMaxEnemyCounter(stoi(value));
 			}
+			else if (type == "powerhealth")
+			{
+				player->SetQtyBaseHealth(stoi(value));
+			}
+			else if (type == "powershield")
+			{
+				player->SetQtyShield(stoi(value));
+			}
+			else if (type == "powerfirerate")
+			{
+				player->SetQtyFireRate(stoi(value));
+			}
+			else if (type == "powerdamage")
+			{
+				player->SetQtyDamage(stoi(value));
+			}
+			else if (type == "powertank")
+			{
+				player->SetQtyTank(stoi(value));
+			}
 		}
 	}
 	inData.close();
@@ -2073,6 +2093,11 @@ void CPlayState::Save()
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
 		file << "maxenemyleft, " << tEnemyProgress->GetMaxEnemyCounter() << "\n";
+		file << "powerhealth, " << player->GetQtyBaseHealth() << "\n";
+		file << "powershield, " << player->GetQtyShield() << "\n";
+		file << "powerfirerate, " << player->GetQtyFireRate() << "\n";
+		file << "powerdamage, " << player->GetQtyDamage() << "\n";
+		file << "powertank, " << player->GetQtyTank() << "\n";
 		file.close();
 	}
 	else
@@ -2794,7 +2819,7 @@ void CPlayState::RenderPauseMenu()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glTranslatef(w / 2, h / 2, 0);
+	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
 	glBindTexture(GL_TEXTURE_2D, PauseMenu.texID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
@@ -2818,7 +2843,7 @@ void CPlayState::RenderExitMenu()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glTranslatef(w / 2, h / 2, 0);
+	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
 	glBindTexture(GL_TEXTURE_2D, ExitMenu.texID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
@@ -2893,16 +2918,19 @@ void CPlayState::RenderLoseScreen()
 	WinLose_RestartLevel->Render();
 }
 
+// to return the vector list to other classes so that they can push objects into it
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
 {
 	return bulletList;
 }
 
+// public function to initialize the level when changing to this state
 void CPlayState::SetLevel(int level)
 {
 	this->progress = level;
 }
 
+// public function to set whether to load save file
 void CPlayState::LoadFromFile(bool load)
 {
 	this->load = load;

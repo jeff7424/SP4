@@ -43,7 +43,8 @@ protected:
 	CLevelSelectState() { }
 
 private:
-
+	int w; 
+	int h;
 	Button *BackButton;
 	Button *Button_Level1;
 	Button *Button_Level2;

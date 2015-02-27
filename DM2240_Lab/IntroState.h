@@ -34,6 +34,9 @@ protected:
 private:
 	static CIntroState theIntroState;
 
+	int w;
+	int h;
+
 	float Timer;
 
 	bool myKeys[255];
