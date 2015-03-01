@@ -1200,6 +1200,11 @@ void CPlayState::mclicklevel1(int x, int y)
 									soundTypes(20, false);
 									soundTypes(21, false);
 								}
+								else if (tower->type == Tower::TOWER_CANNON)
+								{
+									soundTypes(20, false);
+									soundTypes(22, false);
+								}
 								else
 								{
 									soundTypes(20, false);
@@ -1520,7 +1525,7 @@ void CPlayState::Update(float dt)
 
 					if (creep->GetHealth() <= 0) // kill the creep
 					{
-						soundTypes(creep->type, true);
+						Deathsounds();
 						creep->SetActive(false);
 
 						switch (creep->type)
@@ -1624,8 +1629,9 @@ void CPlayState::Update(float dt)
 								creep->SetFireCounter(creep->GetFireRate());
 								if (tower->GetHealth() <= 0)
 								{
-									se->play2D("bin/sounds/towerDeath.mp3", false);
-									se->setSoundVolume(0.25);
+									Deathsounds();
+									//se->play2D("bin/sounds/towerDeath.mp3", false);
+									//se->setSoundVolume(0.25);
 									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
 									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
 									theMap->GetGrid(x, y)->SetOccupied(false);
@@ -2552,6 +2558,10 @@ void CPlayState::soundTypes(int type, bool death)
 	{
 		se->play2D("bin/sounds/unit_mine.wav", false);
 	}
+	else if (type == 22)
+	{
+		se->play2D("bin/sounds/unit_tank.mp3", false);
+	}
 }
 
 void CPlayState::loadlevel()
@@ -3059,4 +3069,21 @@ void CPlayState::SetLevel(int level)
 void CPlayState::LoadFromFile(bool load)
 {
 	this->load = load;
+}
+
+void CPlayState::Deathsounds()
+{
+	int a = RNGesus();
+	switch (a)
+	{
+	case 1:
+		se->play2D("bin/sounds/death_1.wav", false);
+		break;
+	case 2:
+		se->play2D("bin/sounds/death_2.wav", false);
+		break;
+	case 3:
+		se->play2D("bin/sounds/death_3.wav", false);
+		break;
+	}
 }
