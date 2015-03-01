@@ -45,4 +45,6 @@ public:
 
 	void Update(float dt);
 	void Render();
+	Vector3 GetTopLeft();
+	Vector3 GetBottomRight();
 };

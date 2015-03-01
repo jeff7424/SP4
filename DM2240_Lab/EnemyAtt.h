@@ -35,7 +35,8 @@ public:
 	{
 		NME_Y1 = 25,
 		NME_Y2 = 50,
-		NME_Y3 = 100
+		NME_Y3 = 100,
+		NME_Y4 = 125
 	};
 
 	ENEMY_TYPE type;

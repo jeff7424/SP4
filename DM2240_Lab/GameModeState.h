@@ -43,6 +43,8 @@ protected:
 	CGameModeState() { }
 
 private:
+	int w;
+	int h;
 	ISoundEngine* buttons;
 	AudioPlayer se;
 	Button *CampaignButton;

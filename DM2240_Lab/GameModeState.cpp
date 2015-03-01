@@ -12,6 +12,8 @@ CGameModeState CGameModeState::modeState;
 
 void CGameModeState::Init()
 {
+	w = glutGet(GLUT_WINDOW_WIDTH);
+	h = glutGet(GLUT_WINDOW_HEIGHT);
 	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
@@ -31,6 +33,7 @@ void CGameModeState::Init()
 		myKeys[i] = false;
 	}
 	theCam = new Camera(Camera::LAND_CAM);
+	buttons = createIrrKlangDevice();
 }
 
 void CGameModeState::Cleanup()
@@ -263,6 +266,9 @@ void CGameModeState::changeSize(int w, int h)
 	// Set the correct perspective.
 	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	this->w = w;
+	this->h = h;
 }
 
 void CGameModeState::inputKey(int key, int x, int y)
@@ -281,18 +287,19 @@ void CGameModeState::KeyboardUp(unsigned char key, int x, int y){
 
 void CGameModeState::MouseMove(int x, int y)
 {
-	CampaignButton->SetIsHover(x, y);
-	SkirmishButton->SetIsHover(x, y);
-	BackButton->SetIsHover(x, y);
-	NewGame->SetIsHover(x, y);
-	ContinueGame->SetIsHover(x, y);
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
+	CampaignButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	SkirmishButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	BackButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	NewGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+	ContinueGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	if (Selection)
 	{
 		if (NewGame->GetIsHover() || ContinueGame->GetIsHover())
 		{
 			if (isplaying == true)
 			{
-				buttons = createIrrKlangDevice();
 				buttons->play2D("bin/sounds/button_hover.wav", false);
 				isplaying = false;
 			}
@@ -304,29 +311,10 @@ void CGameModeState::MouseMove(int x, int y)
 	}
 	else
 	{
-		if (CampaignButton->GetIsHover())
+		if (CampaignButton->GetIsHover() || SkirmishButton->GetIsHover() || BackButton->GetIsHover())
 		{
 			if (isplaying == true)
 			{
-				buttons = createIrrKlangDevice();
-				buttons->play2D("bin/sounds/button_hover.wav", false);
-				isplaying = false;
-			}
-		}
-		else if (SkirmishButton->GetIsHover())
-		{
-			if (isplaying == true)
-			{
-				buttons = createIrrKlangDevice();
-				buttons->play2D("bin/sounds/button_hover.wav", false);
-				isplaying = false;
-			}
-		}
-		else if (BackButton->GetIsHover())
-		{
-			if (isplaying == true)
-			{
-				buttons = createIrrKlangDevice();
 				buttons->play2D("bin/sounds/button_hover.wav", false);
 				isplaying = false;
 			}

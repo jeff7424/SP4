@@ -11,6 +11,8 @@ CIntroState CIntroState::theIntroState;
 
 void CIntroState::Init()
 {
+	w = glutGet(GLUT_SCREEN_WIDTH);
+	h = glutGet(GLUT_SCREEN_HEIGHT);
 	if (!LoadTGA(&intro[0], "intro.tga"))				// Load The Font Texture
 		return; //false;			
 
@@ -65,6 +67,8 @@ void CIntroState::HandleEvents(CGameStateManager* theGSM)
 
 void CIntroState::Update(CGameStateManager* theGSM)
 {
+	w = glutGet(GLUT_SCREEN_WIDTH);
+	h = glutGet(GLUT_SCREEN_HEIGHT);
 	static int lastTime = GetTickCount();
 	int time = GetTickCount();
 	float deltaTime = (time - lastTime) / 1000.f;

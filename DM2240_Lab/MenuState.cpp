@@ -11,6 +11,8 @@ CMenuState CMenuState::theMenuState;
 
 void CMenuState::Init()
 {
+	w = glutGet(GLUT_WINDOW_WIDTH);
+	h = glutGet(GLUT_WINDOW_HEIGHT);
 	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
@@ -29,6 +31,7 @@ void CMenuState::Init()
 		myKeys[i] = false;
 	}
 	theCam = new Camera(Camera::LAND_CAM);
+	se = createIrrKlangDevice();
 	bgm.setFileName("bin/sounds/main_menu.wav");
 	bgm.playSoundThreaded();
 }
@@ -103,7 +106,6 @@ void CMenuState::HandleEvents(CGameStateManager* theGSM)
 void CMenuState::Update(CGameStateManager* theGSM)
 {
 	//bgm.playSound("bin/sounds/main_menu.wav");
-	CursorOnButton(mouseInfo.lastX, mouseInfo.lastY);
 
 	if (myKeys['1'] == true)
 		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
@@ -274,6 +276,9 @@ void CMenuState::changeSize(int w, int h)
 	// Set the correct perspective.
 	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	this->w = w;
+	this->h = h;
 }
 
 void CMenuState::inputKey(int key, int x, int y)
@@ -292,13 +297,13 @@ void CMenuState::KeyboardUp(unsigned char key, int x, int y){
 
 void CMenuState::MouseMove(int x, int y)
 {
-	mouseInfo.lastX = x;
-	mouseInfo.lastY = y;
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
+	CursorOnButton(mouseInfo.lastX, mouseInfo.lastY);
 }
 
 void CMenuState::MouseClick(int button, int state, int x, int y)
 {
-
 	switch (button) {
 
 	case GLUT_LEFT_BUTTON:
@@ -372,7 +377,6 @@ void CMenuState::CursorOnButton(int x, int y)
 	{
 		if (isplaying == true)
 		{
-			se = createIrrKlangDevice();
 			se->play2D("bin/sounds/button_hover.wav", false);
 			isplaying = false;
 		}
@@ -381,7 +385,6 @@ void CMenuState::CursorOnButton(int x, int y)
 	{
 		if (isplaying == true)
 		{
-			se = createIrrKlangDevice();
 			se->play2D("bin/sounds/button_hover.wav", false);
 			isplaying = false;
 		}
@@ -390,7 +393,6 @@ void CMenuState::CursorOnButton(int x, int y)
 	{
 		if (isplaying == true)
 		{
-			se = createIrrKlangDevice();
 			se->play2D("bin/sounds/button_hover.wav", false);
 			isplaying = false;
 		}
@@ -399,7 +401,6 @@ void CMenuState::CursorOnButton(int x, int y)
 	{
 		if (isplaying == true)
 		{
-			se = createIrrKlangDevice();
 			se->play2D("bin/sounds/button_hover.wav", false);
 			isplaying = false;
 		}
@@ -408,7 +409,6 @@ void CMenuState::CursorOnButton(int x, int y)
 	{
 		if (isplaying == true)
 		{
-			se = createIrrKlangDevice();
 			se->play2D("bin/sounds/button_hover.wav", false);
 			isplaying = false;
 		}
