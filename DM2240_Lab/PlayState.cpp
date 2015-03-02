@@ -2934,13 +2934,37 @@ void CPlayState::RenderHUD()
 		RenderStringOnScreen(660, 440, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultAttack);
-		RenderStringOnScreen(350, 265, temp);
+		RenderStringOnScreen(350, 275, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultArmour);
-		RenderStringOnScreen(450, 265, temp);
+		RenderStringOnScreen(450, 275, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultDollar);
-		RenderStringOnScreen(550, 265, temp);
+		RenderStringOnScreen(550, 275, temp);
+
+		sprintf_s(temp, "5 pts");
+		RenderStringOnScreen(250, 375, temp);
+
+		sprintf_s(temp, "4 pts");
+		RenderStringOnScreen(350, 375, temp);
+
+		sprintf_s(temp, "3 pts");
+		RenderStringOnScreen(450, 375, temp);
+
+		sprintf_s(temp, "3 pts");
+		RenderStringOnScreen(550, 375, temp);
+
+		sprintf_s(temp, "6 pts");
+		RenderStringOnScreen(645, 375, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(345, 260, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(445, 260, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(545, 260, temp);
 	}
 
 	else if (losescreen == true)
