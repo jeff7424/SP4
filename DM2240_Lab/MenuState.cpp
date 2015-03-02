@@ -5,6 +5,8 @@ using namespace std;
 #include "gamestate.h"
 #include "PlayState.h"
 #include "menustate.h"
+#include "CreditsState.h"
+#include "InstructionState.h"
 #include "GameModeState.h"
 
 CMenuState CMenuState::theMenuState;
@@ -20,10 +22,8 @@ void CMenuState::Init()
 	glEnable(GL_TEXTURE_2D);
 	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
 		return; //false;										// If Loading Failed, Return False
-	/*if (!LoadTGA(&button[0], textures[1]))
+	if (!LoadTGA(&title, textures[6]))
 		return;
-	if (!LoadTGA(&button[1], textures[2]))
-		return;*/
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
 
@@ -31,6 +31,11 @@ void CMenuState::Init()
 		myKeys[i] = false;
 	}
 	theCam = new Camera(Camera::LAND_CAM);
+
+	if (se != NULL)
+	{
+		se->drop();
+	}
 	se = createIrrKlangDevice();
 	bgm.setFileName("bin/sounds/main_menu.wav");
 	bgm.playSoundThreaded();
@@ -127,6 +132,7 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 	theCam->SetHUD(true);
 
 	RenderMenu();
+	RenderTitle();
 	StartButton->Render();
 	SettingsButton->Render();
 	InstructionsButton->Render();
@@ -279,6 +285,33 @@ void CMenuState::changeSize(int w, int h)
 
 	this->w = w;
 	this->h = h;
+
+	//float ar = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
+
+	//int viewW = w;
+	//int viewH = w / ar;
+	//if (viewH > h)
+	//{
+	//	viewH = h;
+	//	viewW = h * ar;
+	//}
+
+	//int vpX = (w - viewW) / 2;
+	//int vpY = (h - viewH) / 2;
+
+	//// Reset the coordinate system before modifying
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+
+	//// Set the viewport to be the entire window
+	//glViewport(vpX, vpY, viewW, viewH);
+
+	//// Set the correct perspective.
+	//gluPerspective(45, ar, 1, 1000);
+	//glMatrixMode(GL_MODELVIEW);
+	//
+	//this->w = w;
+	//this->h = h;
 }
 
 void CMenuState::inputKey(int key, int x, int y)
@@ -329,11 +362,11 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			}
 			else if (InstructionsButton->GetIsHover())
 			{
-
+				CGameStateManager::getInstance()->ChangeState(CInstructionState::Instance());
 			}
 			else if (CreditsButton->GetIsHover())
 			{
-
+				CGameStateManager::getInstance()->ChangeState(CCreditsState::Instance());
 			}
 			else if (ExitButton->GetIsHover())
 			{
@@ -362,6 +395,27 @@ void CMenuState::RenderMenu(void)
 	glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 672.0f);
 	glEnd();
 
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void CMenuState::RenderTitle(void)
+{
+	glPushMatrix();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBindTexture(GL_TEXTURE_2D, title.texID);
+	glTranslatef(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.3f, -0.1f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(-256.0f, -128.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(256.0f, -128.0f);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(256.0f, 128.0f);
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(-256.0f, 128.0f);
+	glEnd();
+	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
@@ -424,13 +478,14 @@ int CMenuState::LuaInit()
 	cout << "\nMENU INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[26] = {
+	const char *values[27] = {
 		"TEXTURE_MENU",
 		"TEXTURE_START",
 		"TEXTURE_SETTINGS",
 		"TEXTURE_INSTRUCTIONS",
 		"TEXTURE_CREDITS",
 		"TEXTURE_EXIT",
+		"TEXTURE_TITLE",
 		"STARTBUTTON_POS_X",
 		"STARTBUTTON_POS_Y",
 		"STARTBUTTON_SIZE_X",
@@ -466,7 +521,7 @@ int CMenuState::LuaInit()
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 6; k++)
+	for (int k = 0; k < 7; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -483,14 +538,14 @@ int CMenuState::LuaInit()
 
 	for (int j = 0; j < 20; j++)
 	{
-		lua_getglobal(L, values[j + 6]);
+		lua_getglobal(L, values[j + 7]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 6] << ": " << data[j] << endl;
+		cout << values[j + 7] << ": " << data[j] << endl;
 	}
 
 	StartButton = new Button(textures[1], data[0], data[1], data[2], data[3]);

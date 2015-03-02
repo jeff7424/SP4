@@ -30,8 +30,6 @@ void CPlayState::Init(void)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
-	WX = w;
-	WY = h;
 	selection = 1;
 	heroAnimationCounter = 0;
 	info = 0;
@@ -43,8 +41,6 @@ void CPlayState::Init(void)
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	upgrade = false;
-	level = 1;
 	winscreen = false;
 	losescreen = false;
 
@@ -71,7 +67,7 @@ void CPlayState::Init(void)
 	tEnemyProgress->SetPosX(0);
 	tEnemyProgress->SetPosY(0);
 
-	// Initialization
+	// Initialization map
 	theMap = new CMap();
 
 	backupTank = new Tank();
@@ -92,21 +88,22 @@ void CPlayState::Init(void)
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
 
-	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
 	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
 	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
 	LoadTGA(&WinScreenTexture, "bin/textures/winscreen.tga");
 	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
-	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
+	// Pause button
 	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
 
+	// Buttons for powers
 	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
 	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 680, 624, 36, 36);
 	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 752, 624, 36, 36);
 	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 824, 624, 36, 36);
 	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
 
+	// Buttons for selecting units
 	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
 	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
 	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
@@ -117,12 +114,12 @@ void CPlayState::Init(void)
 	//For Win Lose Menu
 	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
 	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
-//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
 	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
 
 	//For Mini Game
 	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
+	// Shops
 	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
@@ -161,20 +158,19 @@ void CPlayState::Init(void)
 
 void CPlayState::Cleanup()
 {
-	if (theMap != NULL)
+	/*if (theMap != NULL)
 	{
 		delete theMap;
 		theMap = NULL;
 		free(theMap);
 	} 
 
-	/*
 	if (Cam != NULL)
 	{
 		delete Cam;
 		Cam = NULL;
 		free(Cam);
-	}
+	}*/
 
 	if (player != NULL)
 	{
@@ -354,6 +350,7 @@ void CPlayState::Cleanup()
 		Bonus_Dollar = NULL;
 		free(Bonus_Dollar);
 	}
+
 	while (bulletList.size() > 0)
 	{
 		Bullet *bullet = bulletList.back();
@@ -407,7 +404,6 @@ void CPlayState::Cleanup()
 		spawnList.pop_back();
 		free(spawn);
 	}
-	*/
 }
 
 void CPlayState::Pause()
@@ -692,39 +688,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 		}
 	}
 
-	// Draw ghost cursor
-	/*if (m_ghost.GetActive())
-	{
-		DrawTower(&m_ghost);
-	}*/
-
-	// Render update cursor
-	if (upgrade == true)
-	{
-		RenderUpgrade(mouseInfo.lastX, (h - mouseInfo.lastY));
-	}
-
-	//// Pause == true render pause menu
-	//if (Menu->GetMpausemenu() == true)
-	//{
-	//	ingamemenu();
-	//}
-
-	//// Pause Menu Settings
-	//if (Menu->GetIGMsettings() == true)
-	//{
-	//	IGMSettings();
-	//}
-
-	// Track selection
-	//if (Tracklist == true)
-	//{
-	//	track();
-	//}
-
 	RenderHUD();
-
-	
 
 	Cam->SetHUD(false);
 
@@ -758,8 +722,8 @@ void CPlayState::changeSize(int w, int h) {
 
 	ratio = (float)w / h;
 
-	WX = w;
-	WY = h;
+	/*WX = w;
+	WY = h;*/
 
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -874,9 +838,6 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 void CPlayState::MouseMove(int x, int y) {
 	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
 	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
-
-	int X = (int)((float)x / WX * 10);
-	int Y = (int)((float)y / WY * 7);
 	/*int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);*/
 	//mouseInfo.mLButtonUp = !!state;
@@ -983,6 +944,9 @@ void CPlayState::MouseMove(int x, int y) {
 }
 
 void CPlayState::MouseClick(int button, int state, int x, int y) {
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
+
 	switch (button) {
 
 	case GLUT_LEFT_BUTTON:
@@ -993,8 +957,6 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 		}
 		else
 			mouseInfo.mLButtonUp = true;
-		mouseInfo.lastX = x;
-		mouseInfo.lastY = y;
 		break;
 
 	case GLUT_RIGHT_BUTTON:
@@ -1002,8 +964,6 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 			mouseInfo.mRButtonUp = false;
 		else
 			mouseInfo.mRButtonUp = true;
-		mouseInfo.lastX = x;
-		mouseInfo.lastY = y;
 		break;
 	}
 }
@@ -1218,21 +1178,15 @@ void CPlayState::mclicklevel1(int x, int y)
 								player->SetGold(player->GetGold() - tower->GetCost()); 
 								towerList.push_back(tower);
 							}
-							else if (player->GetGold() < tower->GetCost())
-							{
-								soundTypes(15, false);
-							}
 							else
 							{
+								soundTypes(15, false);
 								tower->SetActive(false);
 								delete tower;
 								tower = NULL;
 								free(tower);
 							}
 						}
-						/*delete tower;
-						tower = NULL;
-						free(tower);*/
 					}
 				}
 			}
@@ -1312,7 +1266,8 @@ void CPlayState::mclicklevel1(int x, int y)
 	}
 	
 	if (winscreen == true)
-	{ // End-of-round bonus selection menu - Allow clicks to register
+	{ 
+		// End-of-round bonus selection menu - Allow clicks to register
 
 		// Placeholder Bonuses
 
@@ -1423,7 +1378,6 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			winscreen = false;
 			cout << " Restart Level!" << endl;
-			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
 			player->SetGold(700);
@@ -1433,11 +1387,6 @@ void CPlayState::mclicklevel1(int x, int y)
 			tEnemyProgress->SetEnemyCounter(0);
 			LoadSpawn();
 		}
-
-		/*	if (WinLose_Shop->GetIsHover())
-		{
-		cout << "Initialise the Shop!" << endl;
-		} */
 
 		if (WinLose_MiniGame->GetIsHover())
 		{
@@ -1459,7 +1408,6 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			losescreen = false;
 			cout << " Restart Level!" << endl;
-			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
 			player->SetGold(700);
@@ -1470,17 +1418,12 @@ void CPlayState::mclicklevel1(int x, int y)
 			LoadSpawn();
 
 		}
-
-		//if (WinLose_Shop->GetIsHover())
-		//{
-		//	cout << "Initialise the Shop!" << endl;
-		//}
 	}
 }
 
 void CPlayState::Update(float dt)
 {
-	// player->SetHealth(player->GetHealth() - 1);
+	// Win lose conditions
 	if (tEnemyProgress->GetEnemyCounter() <= 0)
 	{
 		winscreen = true;
@@ -1533,6 +1476,7 @@ void CPlayState::Update(float dt)
 						Deathsounds();
 						creep->SetActive(false);
 
+						// Increase player's gold depending on the enemy type killed
 						switch (creep->type)
 						{
 						case Enemy::ENEMY_1:
@@ -1546,6 +1490,11 @@ void CPlayState::Update(float dt)
 						case Enemy::ENEMY_3:
 							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
 							player->SetBonus(player->GetBonus() + 1);
+							break;
+
+						case Enemy::ENEMY_4:
+							player->SetGold(player->GetGold() + (Enemy::NME_Y4)*Bonus_MultDollar);
+							player->SetBonus(player->GetBonus() + 3);
 							break;
 						}
 
@@ -1642,6 +1591,10 @@ void CPlayState::Update(float dt)
 									theMap->GetGrid(x, y)->SetOccupied(false);
 									tower->SetActive(false);
 									creep->SetFire(false);
+									delete tower;
+									towerList.erase(it);
+									tower = NULL;
+									free(tower);
 								}
 								break;
 							}
@@ -1658,34 +1611,6 @@ void CPlayState::Update(float dt)
 			break;
 		}
 	}
-}
-
-Bullet* CPlayState::FetchBullet(Tower *tower)
-{
-	Bullet* tempbullet = NULL;
-	if (tempbullet != NULL)
-	{
-		delete tempbullet;
-		tempbullet = NULL;
-		free(tempbullet);
-	}
-
-	/*for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
-	{
-		tempbullet = *it;
-		if (!tempbullet->GetActive())
-		{
-			tempbullet->SetActive(true);
-			return tempbullet;
-		}
-	}*/
-	tempbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(tower->type));
-	tempbullet->SetActive(true);
-	tempbullet->SetDamage(tower->GetDamage());
-	tempbullet->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, 0));
-	tempbullet->SetSpeed(200);
-	bulletList.push_back(tempbullet);
-	return tempbullet;
 }
 
 Enemy* CPlayState::FetchEnemy()
@@ -1991,8 +1916,8 @@ void CPlayState::Load()
 				getline(inData, value, '\n');
 				tower->SetFire(stoi(value));
 				towerList.push_back(tower);
-				int x = (int)((tower->GetPos().x * 10 / WX));
-				int y = (int)((tower->GetPos().y * 7 / WY));
+				int x = (int)((tower->GetPos().x * theNumOfTiles_Width / w));
+				int y = (int)((tower->GetPos().y * theNumOfTiles_Height / h));
 				theMap->GetGrid(x, y)->SetOccupied(true);
 
 			}
@@ -2681,46 +2606,6 @@ void CPlayState::clearmap()
 
 }
 
-void CPlayState::RenderUpgrade(int x, int y)
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
-
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Upgrade[0].texID);
-
-	glTranslatef(x, y, 0);
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-20, 20, 0);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-20, -20, 0);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(20, -20, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(20, 20, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
 void CPlayState::RenderInfo(int x, int y)
 {
 	glPushMatrix();
@@ -2774,7 +2659,7 @@ void CPlayState::RenderInfo(int x, int y)
 		RenderStringOnScreen(x + 4, y - 62, temp);
 		sprintf_s(temp, "Damage: %d", towerClone[info - 1]->GetDamage());
 		RenderStringOnScreen(x + 4, y - 44, temp);
-		sprintf_s(temp, "Firerate: %d", towerClone[info - 1]->GetFireRate());
+		sprintf_s(temp, "Firerate: %.2f", towerClone[info - 1]->GetFireRate());
 		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
 		RenderStringOnScreen(x + 4, y - 8, temp);
@@ -2809,10 +2694,12 @@ void CPlayState::RenderHUD()
 {
 	char temp[512];
 
+	// Progression bar
 	glPushMatrix();
 		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
 	glPopMatrix();
 
+	// Render buttons
 	Button_Pause->Render();
 
 	Unit_Infantry->Render();
@@ -2822,6 +2709,7 @@ void CPlayState::RenderHUD()
 	Unit_Mine->Render();
 	Unit_Barricade->Render();
 
+	// Render player stats
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
 
@@ -2837,11 +2725,6 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(10, 30, temp);
 	sprintf_s(temp, " / 100");
 	RenderStringOnScreen(170, 30, temp);
-
-	if (player->GetHealth() <= 0)
-	{
-	  
-	}
 
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);

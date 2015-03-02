@@ -56,8 +56,9 @@ private:
 	bool myKeys[255];
 	TextureImage menu[1];
 	TextureImage button[2];
+	TextureImage title;
 
-	char* textures[6];
+	char* textures[7];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
@@ -70,6 +71,7 @@ private:
 	void printw(float x, float y, float z, char* format, ...);
 
 	void RenderMenu(void);
+	void RenderTitle(void);
 
 	void CursorOnButton(int x, int y);
 
