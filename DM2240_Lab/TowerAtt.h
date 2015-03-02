@@ -55,4 +55,5 @@ public:
 	void DrawLevel();
 	void Render();
 	void GetTarget(std::vector<Enemy*>);
+	Enemy* ReturnTarget();
 };
