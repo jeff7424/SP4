@@ -207,7 +207,8 @@ private:
 	void RenderInfo(int x, int y); // Hover to tower selection icon to show info
 
 	// Menus
-	void soundTypes(int type, bool death);
+	void exitover();
+	void soundTypes(int type);
 
 	// Renderings
 	void RenderHUD();
