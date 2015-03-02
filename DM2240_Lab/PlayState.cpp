@@ -65,7 +65,7 @@ void CPlayState::Init(void)
 
 	se = createIrrKlangDevice();
 	playSound(a);
-	soundTypes(12, false);
+	soundTypes(12);
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
 	tEnemyProgress->SetPosX(0);
@@ -514,17 +514,17 @@ void CPlayState::Update(CGameStateManager* theGSM)
 					switch (tower->type)
 					{
 						case Tower::TOWER_SLOW:
-							soundTypes(6, false);
+							soundTypes(6);
 						break;
 						case Tower::TOWER_NORMAL:
-							soundTypes(7, false);
-							soundTypes(8, false);
+							soundTypes(7);
+							soundTypes(8);
 						break;
 						case Tower::TOWER_SHOCK:
-							soundTypes(9, false);
+							soundTypes(9);
 						break;
 						case Tower::TOWER_CANNON:
-							soundTypes(10, false);
+							soundTypes(10);
 							break;
 						case Tower::TOWER_MINE:
 							tower->ReturnTarget()->SetHealth(0);
@@ -550,7 +550,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
-				soundTypes(11, false);
+				soundTypes(11);
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
@@ -1182,33 +1182,33 @@ void CPlayState::mclicklevel1(int x, int y)
 							{
 								if (tower->type == Tower::TOWER_SHOCK)
 								{
-									soundTypes(20, false);
-									soundTypes(17, false);
+									soundTypes(20);
+									soundTypes(17);
 								}
 								else if (tower->type == Tower::TOWER_SLOW)
 								{
-									soundTypes(20, false);
-									soundTypes(18, false);
+									soundTypes(20);
+									soundTypes(18);
 								}
 								else if (tower->type == Tower::TOWER_BARRICADE)
 								{
-									soundTypes(20, false);
-									soundTypes(19, false);
+									soundTypes(20);
+									soundTypes(19);
 								}
 								else if (tower->type == Tower::TOWER_MINE)
 								{
-									soundTypes(20, false);
-									soundTypes(21, false);
+									soundTypes(20);
+									soundTypes(21);
 								}
 								else if (tower->type == Tower::TOWER_CANNON)
 								{
-									soundTypes(20, false);
-									soundTypes(22, false);
+									soundTypes(20);
+									soundTypes(22);
 								}
 								else
 								{
-									soundTypes(20, false);
-									soundTypes(14, false);
+									soundTypes(20);
+									soundTypes(14);
 								}
 								lane[Y] += 1;
 								tower->SetActive(true);
@@ -1220,7 +1220,7 @@ void CPlayState::mclicklevel1(int x, int y)
 							}
 							else if (player->GetGold() < tower->GetCost())
 							{
-								soundTypes(15, false);
+								soundTypes(15);
 							}
 							else
 							{
@@ -1280,32 +1280,32 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Unit_Infantry->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 1;
 			}
 			else if (Unit_Tank->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 2;
 			}
 			else if (Unit_Heavy->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 3;
 			}
 			else if (Unit_Sniper->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 4;
 			}
 			else if (Unit_Mine->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 5;
 			}
 			else if (Unit_Barricade->GetIsHover())
 			{
-				soundTypes(16, false);
+				soundTypes(16);
 				selection = 6;
 			}
 		}
@@ -2437,135 +2437,94 @@ void CPlayState::shooting(bool firing)
 	firing = false;
 }
 
-void CPlayState::soundTypes(int type, bool death)
+void CPlayState::soundTypes(int type)
 {
-	if (type == 1)
+	int random = RNGesus();
+	switch (type)
 	{
-		se->play2D("bin/sounds/chipDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 2)
-	{
+	case 1:
+		se->play2D("bin/sounds/chipDeath.mp3",false);
+		break;
+	case 2:
 		se->play2D("bin/sounds/cardDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 3)
-	{
+		break;
+	case 3:
 		se->play2D("bin/sounds/humanDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 4)
-	{
+		break;
+	case 4:
 		se->play2D("bin/sounds/xplosionSFX.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 5)
-	{
+		break;
+	case 5:
 		se->play2D("bin/sounds/laserSFX.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 6)
-	{
+		break;
+	case 6:
 		se->play2D("bin/sounds/sniper.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 7)
-	{
+		break;
+	case 7:
 		se->play2D("bin/sounds/Soldier.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 8)
-	{
+		break;
+	case 8:
 		se->play2D("bin/sounds/shells.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 9)
-	{
+		break;
+	case 9:
 		se->play2D("bin/sounds/Missile.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 10)
-	{
+		break;
+	case 10:
 		se->play2D("bin/sounds/TankFire.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 11)
-	{
-		int random = RNGesus();
+		break;
+	case 11:
+		
 		switch (random)
 		{
 		case 1:
 			se->play2D("bin/sounds/Hit_1.wav", false);
 			se->setSoundVolume(0.25);
-			death = false;
 			break;
 		case 2:
 			se->play2D("bin/sounds/Hit_2.wav", false);
 			se->setSoundVolume(0.25);
-			death = false;
 			break;
 		case 3:
 			se->play2D("bin/sounds/Hit_3.wav", false);
 			se->setSoundVolume(0.25);
-			death = false;
 			break;
 		}
-	}
-	else if (type == 12)
-	{
+		break;
+	case 12:
 		se->play2D("bin/sounds/mission_start.wav", false);
-		death = false;
-	}
-	else if (type == 13)
-	{
+		break;
+	case 13:
 		se->play2D("bin/sounds/mission_complete.mp3", false);
-	}
-	else if (type == 14)
-	{
+		break;
+	case 14:
 		se->play2D("bin/sounds/unit.mp3", false);
-	}
-	else if (type == 15)
-	{
+		break;
+	case 15:
 		se->play2D("bin/sounds/no_money.wav", false);
-	}
-	else if (type == 16)
-	{
+		break;
+	case 16:
 		se->play2D("bin/sounds/sliderMove.wav", false);
-	}
-	else if (type == 17)
-	{
+		break;
+	case 17:
 		se->play2D("bin/sounds/unit_missile.mp3", false);
-	}
-	else if (type == 18)
-	{
+		break;
+	case 18:
 		se->play2D("bin/sounds/unit_sniper.wav", false);
-	}
-	else if (type == 19)
-	{
+		break;
+	case 19:
 		se->play2D("bin/sounds/unit_barricade.wav", false);
-	}
-	else if (type == 20)
-	{
+		break;
+	case 20:
 		se->play2D("bin/sounds/placement.wav", false);
-	}
-	else if (type == 21)
-	{
+		break;
+	case 21:
 		se->play2D("bin/sounds/unit_mine.wav", false);
-	}
-	else if (type == 22)
-	{
+		break;
+	case 22:
 		se->play2D("bin/sounds/unit_tank.mp3", false);
+		break;
 	}
+//	sound.playSound();
 }
 
 void CPlayState::loadlevel()

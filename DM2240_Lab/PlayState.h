@@ -227,7 +227,7 @@ private:
 
 	// Menus
 	void exitover();
-	void soundTypes(int type, bool death);
+	void soundTypes(int type);
 
 	void RenderHUD();
 	void RenderPauseMenu();
