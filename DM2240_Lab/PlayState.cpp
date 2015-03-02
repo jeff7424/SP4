@@ -27,8 +27,8 @@ int RNGesus(void)
 void CPlayState::Init(void)
 {
 	srand(time(NULL));
-	w = SCREEN_WIDTH;
-	h = SCREEN_HEIGHT;
+	w = glutGet(GLUT_WINDOW_WIDTH);
+	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
 	WX = w;
 	WY = h;
@@ -1465,7 +1465,12 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	//player->SetHealth(player->GetHealth() - 1);
+	// player->SetHealth(player->GetHealth() - 1);
+	if (tEnemyProgress->GetEnemyCounter() <= 0)
+	{
+		winscreen = true;
+	}
+
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
@@ -2420,7 +2425,6 @@ void CPlayState::soundTypes(int type, bool death)
 {
 	if (type == 1)
 	{
-		
 		se->play2D("bin/sounds/chipDeath.mp3", false);
 		se->setSoundVolume(0.25);
 		death = false;
