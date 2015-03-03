@@ -49,16 +49,15 @@ private:
 	int h;
 	Button *StartButton;
 	Button *SettingsButton;
-	Button *InstructionsButton;
-	Button *CreditsButton;
 	Button *ExitButton;
 	ISoundEngine *se;
 	//AudioPlayer bgm;
+	bool audioplay;
 	bool isplaying;
 	bool myKeys[255];
 	TextureImage menu[1];
 	TextureImage button[2];
-
+	int data[12];
 	char* textures[4];
 
 	Camera *theCam;

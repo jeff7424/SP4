@@ -32,6 +32,15 @@ void CGameModeState::Init()
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
+	ifstream myReadFile;
+	string reading;
+	myReadFile.open("save/settings.txt");
+	if (myReadFile.is_open())
+	{
+		getline(myReadFile, reading, '\n');
+		audioplay = stoi(reading);
+	}
+	myReadFile.close();
 	theCam = new Camera(Camera::LAND_CAM);
 	buttons = createIrrKlangDevice();
 }
@@ -300,6 +309,7 @@ void CGameModeState::MouseMove(int x, int y)
 		{
 			if (isplaying == true)
 			{
+				if (audioplay == true)
 				buttons->play2D("bin/sounds/button_hover.wav", false);
 				isplaying = false;
 			}
@@ -315,6 +325,7 @@ void CGameModeState::MouseMove(int x, int y)
 		{
 			if (isplaying == true)
 			{
+				if (audioplay == true)
 				buttons->play2D("bin/sounds/button_hover.wav", false);
 				isplaying = false;
 			}
@@ -343,23 +354,31 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 			{
 				if (NewGame->GetIsHover())
 				{
-					se.playSound("bin/sounds/gamestart.wav");
-					if (!se.isSoundPlaying())
+					if (audioplay == true)
 					{
-						CPlayState::Instance()->SetLevel(1);
-						CPlayState::Instance()->LoadFromFile(false);
-						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+						se.playSound("bin/sounds/gamestart.wav");
+						if (!se.isSoundPlaying())
+						{
+							CPlayState::Instance()->SetLevel(1);
+							CPlayState::Instance()->LoadFromFile(false);
+							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+						}
 					}
+					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				}
 				else if (ContinueGame->GetIsHover())
 				{
-					se.playSound("bin/sounds/gamestart.wav");
-					if (!se.isSoundPlaying())
+					if (audioplay == true)
 					{
-						CPlayState::Instance()->SetLevel(1);
-						CPlayState::Instance()->LoadFromFile(true);
-						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+						se.playSound("bin/sounds/gamestart.wav");
+						if (!se.isSoundPlaying())
+						{
+							CPlayState::Instance()->SetLevel(1);
+							CPlayState::Instance()->LoadFromFile(true);
+							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+						}
 					}
+					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				}
 				else
 				{

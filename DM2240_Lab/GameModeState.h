@@ -55,6 +55,7 @@ private:
 	bool isplaying;
 	bool myKeys[255];
 	bool Selection;
+	bool audioplay;
 	TextureImage menu[1];
 	TextureImage button[5];
 	TextureImage PopUp;

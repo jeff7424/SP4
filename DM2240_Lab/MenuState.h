@@ -56,6 +56,7 @@ private:
 	AudioPlayer bgm;
 	bool isplaying;
 	bool myKeys[255];
+	bool audioplay;
 	TextureImage menu[1];
 	TextureImage button[2];
 	TextureImage title;

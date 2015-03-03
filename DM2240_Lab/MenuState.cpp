@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 #include "GameStateManager.h"
@@ -37,9 +38,21 @@ void CMenuState::Init()
 	{
 		se->drop();
 	}
+	ifstream myReadFile;
+	string reading;
+	myReadFile.open("save/settings.txt");
+	if (myReadFile.is_open())
+	{
+		getline(myReadFile, reading, '\n');
+		audioplay = stoi(reading);
+	}
+	myReadFile.close();
 	se = createIrrKlangDevice();
-	bgm.setFileName("bin/sounds/main_menu.wav");
-	bgm.playSoundThreaded();
+	if (audioplay == true)
+	{
+		bgm.setFileName("bin/sounds/main_menu.mp3");
+		bgm.playSoundThreaded();
+	}
 }
 
 void CMenuState::Cleanup()
@@ -350,7 +363,7 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
-			se = createIrrKlangDevice();
+			if (audioplay == true)
 			se->play2D("bin/sounds/select.wav", false);
 			if (StartButton->GetIsHover())
 			{	
@@ -429,49 +442,52 @@ void CMenuState::CursorOnButton(int x, int y)
 	InstructionsButton->SetIsHover(x, y);
 	CreditsButton->SetIsHover(x, y);
 	ExitButton->SetIsHover(x, y); 
-	if (StartButton->GetIsHover())
+	if (audioplay == true)
 	{
-		if (isplaying == true)
+		if (StartButton->GetIsHover())
 		{
-			se->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else if (SettingsButton->GetIsHover())
-	{
-		if (isplaying == true)
+		else if (SettingsButton->GetIsHover())
 		{
-			se->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else if (InstructionsButton->GetIsHover())
-	{
-		if (isplaying == true)
+		else if (InstructionsButton->GetIsHover())
 		{
-			se->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else if (CreditsButton->GetIsHover())
-	{
-		if (isplaying == true)
+		else if (CreditsButton->GetIsHover())
 		{
-			se->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else if (ExitButton->GetIsHover())
-	{
-		if (isplaying == true)
+		else if (ExitButton->GetIsHover())
 		{
-			se->play2D("bin/sounds/button_hover.wav", false);
-			isplaying = false;
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
 		}
-	}
-	else
-	{
-		isplaying = true;
+		else
+		{
+			isplaying = true;
+		}
 	}
 }
 

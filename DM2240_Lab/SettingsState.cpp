@@ -1,11 +1,20 @@
 #include "SettingsState.h"
-
+#include <fstream>
 CSettingsState CSettingsState::theSettingsState;
 
 void CSettingsState::Init()
 {
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
+	ifstream myReadFile;
+	string reading;
+	myReadFile.open("save/settings.txt");
+	if (myReadFile.is_open())
+	{
+		getline(myReadFile, reading, '\n');
+		audioplay = stoi(reading);
+	}
+	myReadFile.close();
 	isplaying = true;
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
@@ -28,9 +37,11 @@ void CSettingsState::Init()
 	//bgm.setFileName("bin/sounds/main_menu.wav");
 	//bgm.playSoundThreaded();
 }
+
 void CSettingsState::Pause()
 {
 }
+
 void CSettingsState::Cleanup()
 {
 	if (theCam != NULL)
@@ -54,6 +65,7 @@ void CSettingsState::Cleanup()
 		ExitButton = NULL;
 	}
 }
+
 void CSettingsState::Resume()
 {
 }
@@ -88,6 +100,14 @@ void CSettingsState::Draw(CGameStateManager* theGSM)
 
 	RenderMenu();
 	StartButton->Render();
+	if (audioplay != true)
+	{
+		SettingsButton->SetPosition(data[4] - data[2], 200);
+	}
+	else
+	{
+		SettingsButton->SetPosition(data[4], 200);
+	}
 	SettingsButton->Render();
 	//InstructionsButton->Render();
 	//CreditsButton->Render();
@@ -275,11 +295,25 @@ void CSettingsState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastX = x;
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
-		{
+		{	
+			if (audioplay == true)
 			se->play2D("bin/sounds/select.wav", false);
 
 			if (StartButton->GetIsHover())
 			{
+				ofstream rewrite("save/settings.txt");
+				char* buffer;
+				if (audioplay == true)
+				{
+					buffer = "0";
+				}
+				else
+				{
+					buffer = "1";
+				}
+				audioplay = atoi(buffer);
+				rewrite.write(buffer, 1);
+				rewrite.close();
 			}
 			else if (SettingsButton->GetIsHover())
 			{
@@ -320,6 +354,8 @@ void CSettingsState::CursorOnButton(int x, int y)
 	StartButton->SetIsHover(x, y);
 	SettingsButton->SetIsHover(x, y);
 	ExitButton->SetIsHover(x, y);
+	if (audioplay == true)
+	{
 		if (StartButton->GetIsHover())
 		{
 			if (isplaying == true)
@@ -348,6 +384,7 @@ void CSettingsState::CursorOnButton(int x, int y)
 		{
 			isplaying = true;
 		}
+	}
 }
 
 int CSettingsState::LuaInit()
@@ -374,7 +411,6 @@ int CSettingsState::LuaInit()
 		"EXITBUTTON_SIZE_Y",
 	};
 
-	int data[12];
 
 	for (int i = 0; i < 12; i++)
 	{

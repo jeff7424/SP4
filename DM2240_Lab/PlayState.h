@@ -96,7 +96,7 @@ private:
 	bool myKeys[255];			// Trigger for keyboard keys
 	bool winscreen;				// Trigger win screen
 	bool losescreen;			// Trigger lose screen
-
+	bool audioplay;				// Audio option that reads from text file whether to play audio or not
 	std::vector<Bullet *> bulletList;	// Vector list for bullets
 	std::vector<Enemy *> enemyList;		// Vector list for creeps
 	std::vector<Tower *> towerList;		// Vector list for unit
