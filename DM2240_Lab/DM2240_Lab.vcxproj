@@ -40,7 +40,7 @@
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)obj\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -102,6 +102,7 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="Powerup.cpp" />
+    <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TowerAtt.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Setting.h" />
     <ClInclude Include="IntroState.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="main.h" />
@@ -131,6 +133,7 @@
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="Powerup.h" />
+    <ClInclude Include="SettingsState.h" />
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="TextureImage.h" />
