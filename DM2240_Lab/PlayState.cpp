@@ -43,6 +43,7 @@ void CPlayState::Init(void)
 	soundon = true;
 	winscreen = false;
 	losescreen = false;
+	minigame = false;
 
 	for (int i = 0; i < 255; i++)
 	{
@@ -153,6 +154,8 @@ void CPlayState::Init(void)
 	PauseMenu_Exit = new Button("bin/ui/pausemenu/button_quit.tga", 480, 450, 128, 32);
 	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
 	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
+
+	theMiniGame = new CMiniGame();
 
 	// Load the attributes through text file
 	LoadAtt();
@@ -787,6 +790,19 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 	myKeys[key] = true;
 	switch (key)
 	{
+	case 'w':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y - 20, 0));
+		break;
+	case 'a':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x - 20, theMiniGame->GetPos().y, 0));
+		break;
+	case 's':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y + 20, 0));
+		break;
+	case 'd':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x + 20, theMiniGame->GetPos().y, 0));
+		break;
+
 	case '1':
 		selection = 1;
 		break;
@@ -898,6 +914,12 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			info = -3;
 		}
+	}
+
+	else if (winscreen == true && progress > 5)
+	{
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	else if (losescreen == true)
@@ -1276,7 +1298,7 @@ void CPlayState::mclicklevel1(int x, int y)
 		}
 	}
 	
-	if (winscreen == true)
+	if (winscreen == true && progress <= 5)
 	{ 
 		// End-of-round bonus selection menu - Allow clicks to register
 
@@ -1374,10 +1396,11 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (WinLose_NextLevel->GetIsHover())
 		{
 			winscreen = false;
+			minigame = false;
 			cout << " Loading Next Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(100);
-			player->SetGold(700);
+			player->SetGold(1000 + theMiniGame->GetMGGold());
 			clearmap();
 			progress++;
 			loadlevel();
@@ -1391,19 +1414,52 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(700);
+			player->SetGold(1000 + theMiniGame->GetMGGold());
 			clearmap();
 			loadlevel();
 
 			tEnemyProgress->SetEnemyCounter(0);
 			LoadSpawn();
 		}
-
-		if (WinLose_MiniGame->GetIsHover())
+		//Load Mini Game only at level 3
+		if (progress == 3)
 		{
-			cout << "Launching Mini Game!" << endl;
+			if (WinLose_MiniGame->GetIsHover())
+			{
+				minigame = true;
+				cout << "Launching Mini Game!" << endl;
+			}
 		}
 	}
+
+	else if (winscreen == true && progress > 5)
+	{
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			winscreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
+
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			winscreen = false;
+			cout << " Restart Level!" << endl;
+			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(1000 + theMiniGame->GetMGGold());
+			clearmap();
+			loadlevel();
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+
+		}
+	}
+
+
 	else if (losescreen == true)
 	{
 		if (WinLose_MainMenu->GetIsHover())
@@ -1421,7 +1477,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(700);
+			player->SetGold(1000 + theMiniGame->GetMGGold());
 			clearmap();
 			loadlevel();
 
@@ -1444,6 +1500,35 @@ void CPlayState::Update(float dt)
 	{
 		player->SetHealth(0);
 		losescreen = true;
+	}
+
+	//For Mini Game
+	if (minigame == true)
+	{
+		theMiniGame->update(dt);
+
+
+		//Check if player move out of map
+		if (theMiniGame->GetPos().x >= SCREEN_WIDTH*0.8)
+		{
+			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.8, theMiniGame->GetPos().y, 0));
+		}
+		else if (theMiniGame->GetPos().x <= SCREEN_WIDTH*0.2)
+		{
+			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.2, theMiniGame->GetPos().y, 0));
+		}
+
+
+		else if (theMiniGame->GetPos().y >= SCREEN_HEIGHT*0.9)
+		{
+			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.9, 0));
+		}
+		else if (theMiniGame->GetPos().y <= SCREEN_HEIGHT*0.1)
+		{
+			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.1, 0));
+		}
+
+
 	}
 
 	// Despawn creep if bullet collides
@@ -2830,6 +2915,34 @@ void CPlayState::RenderHUD()
 		RenderLoseScreen();
 	}
 
+	if (minigame == true)
+	{
+		theMiniGame->RenderMGBackground();
+		theMiniGame->RenderMGCharacter();
+		//theMiniGame->RenderMGBlood();
+		//theMiniGame->RenderMGGun();
+		theMiniGame->RenderBullets();
+
+		//Render the time left on minigame screen
+		sprintf_s(temp, "Time Left:    %.1f", theMiniGame->GetTimer()*0.01);
+		RenderStringOnScreen(SCREEN_WIDTH*0.42, 50, temp);
+
+
+
+		if (theMiniGame->winminigame == true)
+		{
+			theMiniGame->RenderMGWinScreen();
+			//Render Next Level Button in mini game to continue
+			WinLose_NextLevel->Render();
+		}
+		else if (theMiniGame->loseminigame == true)
+		{
+			theMiniGame->RenderMGLoseScreen();
+			//Render Next Level Button in mini game to continue
+			WinLose_NextLevel->Render();
+		}
+	}
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
@@ -2904,10 +3017,26 @@ void CPlayState::RenderWinScreen()
 
 	glDisable(GL_TEXTURE_2D);
 
-	WinLose_MainMenu->Render();
-	WinLose_NextLevel->Render();
-	WinLose_RestartLevel->Render();
-	WinLose_MiniGame->Render();
+	if (progress < 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+	}
+	else if (progress == 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+		WinLose_MiniGame->Render();
+	}
+
+	else if (progress > 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+	}
 
 }
 

@@ -32,7 +32,10 @@ extern "C" {
 #include "Map.h"					// Map class
 #include "BG.h"						// Background
 #include "Button.h"					// Buttons
+#include "MiniGame.h"
 
+#define SCREEN_WIDTH 960
+#define SCREEN_HEIGHT 672
 #define TILE_SIZE 96
 
 using namespace std;
@@ -97,6 +100,7 @@ private:
 	bool winscreen;				// Trigger win screen
 	bool losescreen;			// Trigger lose screen
 	bool audioplay;				// Audio option that reads from text file whether to play audio or not
+	bool minigame;				// Trigger Mini Game
 	std::vector<Bullet *> bulletList;	// Vector list for bullets
 	std::vector<Enemy *> enemyList;		// Vector list for creeps
 	std::vector<Tower *> towerList;		// Vector list for unit
@@ -168,6 +172,7 @@ private:
 	CEnemyProgress *tEnemyProgress;		// Enemy progression bar
 	Enemy* theEnemy;					
 	Tank* backupTank;					// Tank power up
+	CMiniGame *theMiniGame;				// Mini Game
 	// Sounds
 	AudioPlayer sound;
 	ISoundEngine *se;
