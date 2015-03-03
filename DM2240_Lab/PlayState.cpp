@@ -11,12 +11,14 @@
 #pragma comment(linker, "/subsystem:\"console\" /entry:\"mainCRTStartup\"")
 #pragma warning(disable:4996)
 
+int CPlayState::progress = 1;
+
 CPlayState CPlayState::thePlayState;
 lua_State *L;
 
 int a = 1;
 int lane[6] = {0};
-
+bool selection = false;
 int RNGesus(void)
 {
 	return rand() % 3 + 1;
@@ -28,27 +30,20 @@ void CPlayState::Init(void)
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	state = 0;
-	WX = w;
-	WY = h;
 	selection = 1;
-	enemycounter = 0;
 	heroAnimationCounter = 0;
-	//progress = 1;
 	info = 0;
 	spawntimer = 0.0f;
 	ratio = 0;
 	m_fps = 60.0f;
 	m_speed = 1.0f;
-	saveandload = false;
 	playmusic = true;
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	upgrade = false;
-	level = 1;
-	levelloaded = true;
 	winscreen = false;
 	losescreen = false;
+	minigame = false;
 
 	for (int i = 0; i < 255; i++)
 	{
@@ -64,17 +59,27 @@ void CPlayState::Init(void)
 
 	// Player init
 	player = new PlayerInfo();
-
+	ifstream myReadFile;
+	string reading;
+	myReadFile.open("save/settings.txt");
+	if (myReadFile.is_open())
+	{
+		getline(myReadFile, reading, '\n');
+		audioplay = stoi(reading);
+	}
+	myReadFile.close();
 	se = createIrrKlangDevice();
-	playSound(a);
-	soundTypes(12, false);
+	if (audioplay == true)
+	{
+		playSound(a);
+		soundTypes(12);
+	}
 	// Enemy progress init
 	tEnemyProgress = new CEnemyProgress();
-	tEnemyProgress->initEnemyCounter();
 	tEnemyProgress->SetPosX(0);
 	tEnemyProgress->SetPosY(0);
 
-	// Initialization
+	// Initialization map
 	theMap = new CMap();
 
 	backupTank = new Tank();
@@ -91,25 +96,26 @@ void CPlayState::Init(void)
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
 
-	LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
+	/*LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
-	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");
+	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");*/
 
-	LoadTGA(&Upgrade[0], "bin/textures/upgrade.tga");
 	LoadTGA(&PauseMenu, "bin/ui/pausemenu/pausemenu.tga");
 	LoadTGA(&ExitMenu, "bin/ui/pausemenu/exitmenu.tga");
 	LoadTGA(&WinScreenTexture, "bin/textures/winscreen.tga");
 	LoadTGA(&LoseScreenTexture, "bin/textures/losescreen2.tga");
-	//LoadTGA(&Heart[0], "bin/textures/heart.tga");
 
+	// Pause button
 	Button_Pause = new Button("bin/ui/hud/button_pause.tga", 896, 48, 32, 32);
 
+	// Buttons for powers
 	Power_Shield = new Button("bin/ui/hud/button_powershield.tga", 608, 624, 36, 36);
 	Power_BaseHealth = new Button("bin/ui/hud/button_powerhealth.tga", 680, 624, 36, 36);
 	Power_Firerate = new Button("bin/ui/hud/button_powerspeed.tga", 752, 624, 36, 36);
 	Power_Damage = new Button("bin/ui/hud/button_powerdmg.tga", 824, 624, 36, 36);
 	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
 
+	// Buttons for selecting units
 	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
 	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
 	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
@@ -120,12 +126,12 @@ void CPlayState::Init(void)
 	//For Win Lose Menu
 	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
 	WinLose_RestartLevel = new Button("bin/ui/hud/button_restart.tga", 832, 494, 108, 28);
-//	WinLose_Shop = new Button("bin/ui/hud/button_shop.tga", 832, 394, 108, 28);
 	WinLose_NextLevel = new Button("bin/ui/hud/button_nextlevel.tga", 832, 194, 108, 28);
 
 	//For Mini Game
 	WinLose_MiniGame = new Button("bin/ui/hud/button_minigame.tga", 832, 294, 108, 28);
 
+	// Shops
 	Bonus_Attack = new Button("bin/ui/hud/button_attackbonus.tga", 370, 300, 48, 48);
 	Bonus_Armour = new Button("bin/ui/hud/button_armourbonus.tga", 470, 300, 48, 48);
 	Bonus_Dollar = new Button("bin/ui/hud/button_dollarbonus.tga", 570, 300, 48, 48);
@@ -149,21 +155,36 @@ void CPlayState::Init(void)
 	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
 	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 
+	theMiniGame = new CMiniGame();
+
 	// Load the attributes through text file
 	LoadAtt();
-	loadlevel();
-	Load();
-	//LoadSpawn();
+	if (!load)
+	{	
+		loadlevel();
+		LoadSpawn();
+	}
+	else
+	{
+		Load();
+	}
 }
 
 void CPlayState::Cleanup()
 {
+	/*if (theMap != NULL)
+	{
+		delete theMap;
+		theMap = NULL;
+		free(theMap);
+	} 
+
 	if (Cam != NULL)
 	{
 		delete Cam;
 		Cam = NULL;
 		free(Cam);
-	}
+	}*/
 
 	if (player != NULL)
 	{
@@ -343,6 +364,7 @@ void CPlayState::Cleanup()
 		Bonus_Dollar = NULL;
 		free(Bonus_Dollar);
 	}
+
 	while (bulletList.size() > 0)
 	{
 		Bullet *bullet = bulletList.back();
@@ -502,17 +524,22 @@ void CPlayState::Update(CGameStateManager* theGSM)
 					switch (tower->type)
 					{
 						case Tower::TOWER_SLOW:
-							soundTypes(6, false);
+							soundTypes(6);
 						break;
 						case Tower::TOWER_NORMAL:
-							soundTypes(7, false);
-							soundTypes(8, false);
+							soundTypes(7);
+							soundTypes(8);
 						break;
 						case Tower::TOWER_SHOCK:
-							soundTypes(9, false);
+							soundTypes(9);
 						break;
 						case Tower::TOWER_CANNON:
-							soundTypes(10, false);
+							soundTypes(10);
+							break;
+						case Tower::TOWER_MINE:
+							tower->ReturnTarget()->SetHealth(0);
+							tower->ReturnTarget()->SetActive(false);
+							tower->SetActive(false);
 							break;
 					}
 				}
@@ -533,7 +560,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
-				soundTypes(11, false);
+				soundTypes(11);
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
@@ -542,7 +569,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 		}
 
-		theEnemy->SetMovement(enemyList, TILE_SIZE, dt, laneCheck());
+		theEnemy->Update(enemyList, towerList, dt, laneCheck());
 
 		// Handle enemies which reaches the base
 		for (std::vector<Enemy *>::iterator it = enemyList.begin(); it != enemyList.end(); ++it)
@@ -587,7 +614,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				}
 				creep->SetActive(false);
 				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-				enemycounter--;
+				player->SetHealth(player->GetHealth() - creep->GetDamage());
 				delete creep;
 				enemyList.erase(it);
 				creep = NULL;
@@ -655,13 +682,25 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 		}
 	}
 
+	int time = glutGet(GLUT_ELAPSED_TIME);
+	static int ctime = glutGet(GLUT_ELAPSED_TIME);
+		if (time - ctime > 200) // the more it is the slower it becomes
+		{
+			heroAnimationCounter--;
+			if (heroAnimationCounter == 0)
+			{
+				heroAnimationCounter = 6;
+			}
+			ctime = time;
+		}
+
 	// Render enemies
 	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 	{
 		Enemy *creep = *it2;
 		if (creep->GetActive() == true)
 		{
-			DrawEnemy(creep);
+			creep->DrawEnemy(heroAnimationCounter);
 		}
 	}
 
@@ -675,39 +714,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 		}
 	}
 
-	// Draw ghost cursor
-	/*if (m_ghost.GetActive())
-	{
-		DrawTower(&m_ghost);
-	}*/
-
-	// Render update cursor
-	if (upgrade == true)
-	{
-		RenderUpgrade(mouseInfo.lastX, (h - mouseInfo.lastY));
-	}
-
-	//// Pause == true render pause menu
-	//if (Menu->GetMpausemenu() == true)
-	//{
-	//	ingamemenu();
-	//}
-
-	//// Pause Menu Settings
-	//if (Menu->GetIGMsettings() == true)
-	//{
-	//	IGMSettings();
-	//}
-
-	// Track selection
-	//if (Tracklist == true)
-	//{
-	//	track();
-	//}
-
 	RenderHUD();
-
-	
 
 	Cam->SetHUD(false);
 
@@ -741,8 +748,8 @@ void CPlayState::changeSize(int w, int h) {
 
 	ratio = (float)w / h;
 
-	WX = w;
-	WY = h;
+	/*WX = w;
+	WY = h;*/
 
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -795,6 +802,19 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 	myKeys[key] = true;
 	switch (key)
 	{
+	case 'w':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y - 20, 0));
+		break;
+	case 'a':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x - 20, theMiniGame->GetPos().y, 0));
+		break;
+	case 's':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y + 20, 0));
+		break;
+	case 'd':
+		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x + 20, theMiniGame->GetPos().y, 0));
+		break;
+
 	case '1':
 		selection = 1;
 		break;
@@ -857,9 +877,6 @@ void CPlayState::KeyboardUp(unsigned char key, int x, int y){
 void CPlayState::MouseMove(int x, int y) {
 	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
 	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
-
-	int X = (int)((float)x / WX * 10);
-	int Y = (int)((float)y / WY * 7);
 	/*int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);*/
 	//mouseInfo.mLButtonUp = !!state;
@@ -909,6 +926,12 @@ void CPlayState::MouseMove(int x, int y) {
 		{
 			info = -3;
 		}
+	}
+
+	else if (winscreen == true && progress > 5)
+	{
+		WinLose_MainMenu->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+		WinLose_RestartLevel->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	}
 
 	else if (losescreen == true)
@@ -966,6 +989,9 @@ void CPlayState::MouseMove(int x, int y) {
 }
 
 void CPlayState::MouseClick(int button, int state, int x, int y) {
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
+
 	switch (button) {
 
 	case GLUT_LEFT_BUTTON:
@@ -976,8 +1002,6 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 		}
 		else
 			mouseInfo.mLButtonUp = true;
-		mouseInfo.lastX = x;
-		mouseInfo.lastY = y;
 		break;
 
 	case GLUT_RIGHT_BUTTON:
@@ -985,8 +1009,6 @@ void CPlayState::MouseClick(int button, int state, int x, int y) {
 			mouseInfo.mRButtonUp = false;
 		else
 			mouseInfo.mRButtonUp = true;
-		mouseInfo.lastX = x;
-		mouseInfo.lastY = y;
 		break;
 	}
 }
@@ -1163,6 +1185,36 @@ void CPlayState::mclicklevel1(int x, int y)
 								towerClone[selection - 1]->GetDamage(), towerClone[selection - 1]->GetRange(), towerClone[selection - 1]->GetHealth());
 							if (player->GetGold() >= tower->GetCost())
 							{
+								if (tower->type == Tower::TOWER_SHOCK)
+								{
+									soundTypes(20);
+									soundTypes(17);
+								}
+								else if (tower->type == Tower::TOWER_SLOW)
+								{
+									soundTypes(20);
+									soundTypes(18);
+								}
+								else if (tower->type == Tower::TOWER_BARRICADE)
+								{
+									soundTypes(20);
+									soundTypes(19);
+								}
+								else if (tower->type == Tower::TOWER_MINE)
+								{
+									soundTypes(20);
+									soundTypes(21);
+								}
+								else if (tower->type == Tower::TOWER_CANNON)
+								{
+									soundTypes(20);
+									soundTypes(22);
+								}
+								else
+								{
+									soundTypes(20);
+									soundTypes(14);
+								}
 								lane[Y] += 1;
 								tower->SetActive(true);
 								tower->SetLevel(1);
@@ -1173,15 +1225,13 @@ void CPlayState::mclicklevel1(int x, int y)
 							}
 							else
 							{
+								soundTypes(15);
 								tower->SetActive(false);
 								delete tower;
 								tower = NULL;
 								free(tower);
 							}
 						}
-						/*delete tower;
-						tower = NULL;
-						free(tower);*/
 					}
 				}
 			}
@@ -1229,33 +1279,40 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 			else if (Unit_Infantry->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 1;
 			}
 			else if (Unit_Tank->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 2;
 			}
 			else if (Unit_Heavy->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 3;
 			}
 			else if (Unit_Sniper->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 4;
 			}
 			else if (Unit_Mine->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 5;
 			}
 			else if (Unit_Barricade->GetIsHover())
 			{
+				soundTypes(16);
 				selection = 6;
 			}
 		}
 	}
 	
-	if (winscreen == true)
-	{ // End-of-round bonus selection menu - Allow clicks to register
+	if (winscreen == true && progress <= 5)
+	{ 
+		// End-of-round bonus selection menu - Allow clicks to register
 
 		// Placeholder Bonuses
 
@@ -1336,50 +1393,154 @@ void CPlayState::mclicklevel1(int x, int y)
 				player->SetBonus(player->GetBonus()-6);
 			}
 		}
+
+
+		//For Win Lose Screen
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			winscreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
+
+		if (WinLose_NextLevel->GetIsHover())
+		{
+			winscreen = false;
+			minigame = false;
+			cout << " Loading Next Level!" << endl;
+			spawntimer = 0.0f;
+			player->SetHealth(100);
+			player->SetGold(1000 + theMiniGame->GetMGGold());
+			clearmap();
+			progress++;
+			loadlevel();
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+		}
+
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			winscreen = false;
+			cout << " Restart Level!" << endl;
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(1000 + theMiniGame->GetMGGold());
+			clearmap();
+			loadlevel();
+
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+		}
+		//Load Mini Game only at level 3
+		if (progress == 3)
+		{
+			if (WinLose_MiniGame->GetIsHover())
+			{
+				minigame = true;
+				cout << "Launching Mini Game!" << endl;
+			}
+		}
 	}
 
-	//For Win Lose Screen
-	if (WinLose_MainMenu->GetIsHover())
+	else if (winscreen == true && progress > 5)
 	{
-		cout << " Back To Main Menu!" << endl;
-		winscreen = false;
-		losescreen = false;
-		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			winscreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
+
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			winscreen = false;
+			cout << " Restart Level!" << endl;
+			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(1000 + theMiniGame->GetMGGold());
+			clearmap();
+			loadlevel();
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+
+		}
 	}
 
-	if (WinLose_NextLevel->GetIsHover())
-	{
-		cout << " Loading Next Level!" << endl;
-		progress = 2;
-		winscreen = false;
-		losescreen = false;
-	}
 
-	if (WinLose_RestartLevel->GetIsHover())
+	else if (losescreen == true)
 	{
-		cout << " Restart Level!" << endl;
-		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-		winscreen = false;
-		losescreen = false;
-	}
+		if (WinLose_MainMenu->GetIsHover())
+		{
+			cout << " Back To Main Menu!" << endl;
+			losescreen = false;
+			clearmap();
+			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
+			progress = 1;
+		}
 
-/*	if (WinLose_Shop->GetIsHover())
-	{
-		cout << "Initialise the Shop!" << endl;
-	} */
+		if (WinLose_RestartLevel->GetIsHover())
+		{
+			losescreen = false;
+			cout << " Restart Level!" << endl;
+			spawntimer = 0.0f;
+			player->SetHealth(player->GetMaxHealth());
+			player->SetGold(1000 + theMiniGame->GetMGGold());
+			clearmap();
+			loadlevel();
 
-	if (WinLose_MiniGame->GetIsHover())
-	{
-		cout << "Launching Mini Game!" << endl;
+			tEnemyProgress->SetEnemyCounter(0);
+			LoadSpawn();
+
+		}
 	}
 }
 
 void CPlayState::Update(float dt)
 {
+	// Win lose conditions
+	if (tEnemyProgress->GetEnemyCounter() <= 0)
+	{
+		winscreen = true;
+	}
+
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
 		losescreen = true;
+	}
+
+	//For Mini Game
+	if (minigame == true)
+	{
+		theMiniGame->update(dt);
+
+
+		//Check if player move out of map
+		if (theMiniGame->GetPos().x >= SCREEN_WIDTH*0.8)
+		{
+			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.8, theMiniGame->GetPos().y, 0));
+		}
+		else if (theMiniGame->GetPos().x <= SCREEN_WIDTH*0.2)
+		{
+			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.2, theMiniGame->GetPos().y, 0));
+		}
+
+
+		else if (theMiniGame->GetPos().y >= SCREEN_HEIGHT*0.9)
+		{
+			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.9, 0));
+		}
+		else if (theMiniGame->GetPos().y <= SCREEN_HEIGHT*0.1)
+		{
+			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.1, 0));
+		}
+
+
 	}
 
 	// Despawn creep if bullet collides
@@ -1388,10 +1549,32 @@ void CPlayState::Update(float dt)
 		Bullet *bullet = *it3;
 		if (bullet->GetActive())
 		{
+			//Bullet - Tower
+			for (std::vector<Tower *>::iterator it2 = towerList.begin(); it2 != towerList.end(); ++it2)
+			{
+				Tower *tower = *it2;
+				if (tower->GetActive() && bullet->type == Bullet::GO_ENEMYBULLET && tower->GetPos().x - bullet->GetPos().x > bullet->GetRadius().x && abs(tower->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				{	
+					cout << bullet->GetRadius() <<endl;
+					tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
+
+					if (tower->GetHealth() <= 0) // kill the tower
+					{
+						tower->SetActive(false);
+						int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+						int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+						theMap->GetGrid(x, y)->SetOccupied(false);
+						break;
+					}
+					bullet->SetActive(false);
+				}
+			}
+
+			//Bullet - Enemy
 			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 			{
 				Enemy *creep = *it2;
-				if (creep->GetActive() && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if (creep->GetActive() && bullet->type != Bullet::GO_ENEMYBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
 				{
 					if (bullet->GetHealth() > 0)
 					{
@@ -1420,7 +1603,7 @@ void CPlayState::Update(float dt)
 
 					if (creep->GetHealth() <= 0) // kill the creep
 					{
-						soundTypes(creep->type, true);
+						//soundTypes(creep->type, true);
 						creep->SetActive(false);
 
 						switch (creep->type)
@@ -1440,7 +1623,6 @@ void CPlayState::Update(float dt)
 						}
 
 						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-						enemycounter--;
 						break;
 					}
 				}
@@ -1508,25 +1690,20 @@ void CPlayState::Update(float dt)
 				Tower *tower = *it;
 				if (tower->GetActive() == true)
 				{
-					if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
-					{
+					if(tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 						creep->SetFire(true);
-						if (creep->GetActive() == true && creep->GetFire() == true)
+
+						if (creep->state == Enemy::ENEMY_ATTACK)
 						{
-							if (creep->GetFireCounter() > 0)
+							if ((creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4))
 							{
-								creep->SetFireCounter(creep->GetFireCounter() - dt);
-								break;
-							}
-							else if (creep->GetFireCounter() <= 0)
-							{
-								creep->SetFire(true);
+								//creep->SetFire(true);
 								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())/Bonus_MultArmour);
 								creep->SetFireCounter(creep->GetFireRate());
 								if (tower->GetHealth() <= 0)
 								{
-									se->play2D("bin/sounds/towerDeath.mp3", false);
-									se->setSoundVolume(0.25);
+									//se->play2D("bin/sounds/towerDeath.mp3", false);
+									//se->setSoundVolume(0.25);
 									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
 									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
 									theMap->GetGrid(x, y)->SetOccupied(false);
@@ -1535,11 +1712,30 @@ void CPlayState::Update(float dt)
 								}
 								break;
 							}
+							else if((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_2))
+							{
+								Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_ENEMYBULLET));
+								newbullet->SetActive(true);
+								newbullet->SetDamage(creep->GetDamage());
+								newbullet->SetPos(creep->GetPos());
+								newbullet->SetVel(Vector3(-1,0,0));
+								newbullet->SetSpeed(400);
+								CPlayState::Instance()->GetBulletList().push_back(newbullet);
+								creep->SetFireCounter(creep->GetFireRate());
+								//cout << creep->GetFireCounter() << endl;
+								break;
+							}
+						}
+
+						else if(creep->state == Enemy::ENEMY_RELOADING)
+						{
+							creep->SetFireCounter(creep->GetFireCounter() - dt);
+							//cout << creep->GetFireCounter() << endl;
+							break;
 						}
 					}
 				}
 			}
-		}
 		else
 		{
 			delete creep;
@@ -1548,34 +1744,6 @@ void CPlayState::Update(float dt)
 			break;
 		}
 	}
-}
-
-Bullet* CPlayState::FetchBullet(Tower *tower)
-{
-	Bullet* tempbullet = NULL;
-	if (tempbullet != NULL)
-	{
-		delete tempbullet;
-		tempbullet = NULL;
-		free(tempbullet);
-	}
-
-	/*for (std::vector<Bullet *>::iterator it = bulletList.begin(); it != bulletList.end(); ++it)
-	{
-		tempbullet = *it;
-		if (!tempbullet->GetActive())
-		{
-			tempbullet->SetActive(true);
-			return tempbullet;
-		}
-	}*/
-	tempbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(tower->type));
-	tempbullet->SetActive(true);
-	tempbullet->SetDamage(tower->GetDamage());
-	tempbullet->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, 0));
-	tempbullet->SetSpeed(200);
-	bulletList.push_back(tempbullet);
-	return tempbullet;
 }
 
 Enemy* CPlayState::FetchEnemy()
@@ -1641,106 +1809,106 @@ Spawn* CPlayState::FetchSpawn()
 	return tempspawn;
 }
 
-void CPlayState::DrawEnemy(Enemy *creep)
-{
-	int time = glutGet(GLUT_ELAPSED_TIME);
-	static int ctime = glutGet(GLUT_ELAPSED_TIME);
-	switch (creep->type)
-	{
-	case Enemy::ENEMY_1:
-		creep->DrawHealthBar();
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, CreepTexture[0].texID);
-		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
-		if (time - ctime > 200) // the more it is the slower it becomes
-		{
-			heroAnimationCounter--;
-			if (heroAnimationCounter == 0)
-			{
-				heroAnimationCounter = 2;
-			}
-			ctime = time;
-		}
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.5 * heroAnimationCounter + 0.5, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(0.5 * heroAnimationCounter + 0.5, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.5 * heroAnimationCounter, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.5 * heroAnimationCounter, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Enemy::ENEMY_2:
-		creep->DrawHealthBar();
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, CreepTexture[1].texID);
-		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
-		if (time - ctime > 200) // the more it is the slower it becomes
-		{
-			heroAnimationCounter--;
-			if (heroAnimationCounter == 0)
-			{
-				heroAnimationCounter = 2;
-			}
-			ctime = time;
-		}
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	case Enemy::ENEMY_3:
-		creep->DrawHealthBar();
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glPushMatrix();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, CreepTexture[2].texID);
-		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
-		if (time - ctime > 200) // the more it is the slower it becomes
-		{
-			heroAnimationCounter--;
-			if (heroAnimationCounter == 0)
-			{
-				heroAnimationCounter = 6;
-			}
-
-			ctime = time;
-		}
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.16667 * heroAnimationCounter, 1);
-		glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter, 0);
-		glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0);
-		glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
-		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1);
-		glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
-		break;
-	}
-}
+//void CPlayState::DrawEnemy(Enemy *creep)
+//{
+//	int time = glutGet(GLUT_ELAPSED_TIME);
+//	static int ctime = glutGet(GLUT_ELAPSED_TIME);
+//	switch (creep->type)
+//	{
+//	case Enemy::ENEMY_1:
+//		creep->DrawHealthBar();
+//		glEnable(GL_TEXTURE_2D);
+//		glEnable(GL_BLEND);
+//		glPushMatrix();
+//		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBindTexture(GL_TEXTURE_2D, CreepTexture[0].texID);
+//		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
+//		if (time - ctime > 200) // the more it is the slower it becomes
+//		{
+//			heroAnimationCounter--;
+//			if (heroAnimationCounter == 0)
+//			{
+//				heroAnimationCounter = 2;
+//			}
+//			ctime = time;
+//		}
+//
+//		glBegin(GL_QUADS);
+//		glTexCoord2f(0.5 * heroAnimationCounter + 0.5, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glTexCoord2f(0.5 * heroAnimationCounter + 0.5, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.5 * heroAnimationCounter, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.5 * heroAnimationCounter, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glEnd();
+//		glPopMatrix();
+//		glDisable(GL_BLEND);
+//		glDisable(GL_TEXTURE_2D);
+//		break;
+//	case Enemy::ENEMY_2:
+//		creep->DrawHealthBar();
+//		glEnable(GL_TEXTURE_2D);
+//		glEnable(GL_BLEND);
+//		glPushMatrix();
+//		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBindTexture(GL_TEXTURE_2D, CreepTexture[1].texID);
+//		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
+//		if (time - ctime > 200) // the more it is the slower it becomes
+//		{
+//			heroAnimationCounter--;
+//			if (heroAnimationCounter == 0)
+//			{
+//				heroAnimationCounter = 2;
+//			}
+//			ctime = time;
+//		}
+//
+//		glBegin(GL_QUADS);
+//		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1); glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0); glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter, 0); glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter, 1); glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glEnd();
+//		glPopMatrix();
+//		glDisable(GL_BLEND);
+//		glDisable(GL_TEXTURE_2D);
+//		break;
+//	case Enemy::ENEMY_3:
+//		creep->DrawHealthBar();
+//		glEnable(GL_TEXTURE_2D);
+//		glEnable(GL_BLEND);
+//		glPushMatrix();
+//		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBindTexture(GL_TEXTURE_2D, CreepTexture[2].texID);
+//		glTranslatef(creep->GetPos().x, creep->GetPos().y, 0);
+//		if (time - ctime > 200) // the more it is the slower it becomes
+//		{
+//			heroAnimationCounter--;
+//			if (heroAnimationCounter == 0)
+//			{
+//				heroAnimationCounter = 6;
+//			}
+//
+//			ctime = time;
+//		}
+//
+//		glBegin(GL_QUADS);
+//		glTexCoord2f(0.16667 * heroAnimationCounter, 1);
+//		glVertex2f(-TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter, 0);
+//		glVertex2f(-TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0);
+//		glVertex2f(TILE_SIZE / 2, TILE_SIZE / 2);
+//		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1);
+//		glVertex2f(TILE_SIZE / 2, -TILE_SIZE / 2);
+//		glEnd();
+//		glPopMatrix();
+//		glDisable(GL_BLEND);
+//		glDisable(GL_TEXTURE_2D);
+//		break;
+//	}
+//}
 
 void CPlayState::RenderStringOnScreen(float x, float y, const char* quote)
 {
@@ -1814,6 +1982,30 @@ void CPlayState::Load()
 			{
 				tEnemyProgress->SetEnemyCounter(stoi(value));
 			}
+			else if (type == "maxenemyleft")
+			{
+				tEnemyProgress->SetMaxEnemyCounter(stoi(value));
+			}
+			else if (type == "powerhealth")
+			{
+				player->SetQtyBaseHealth(stoi(value));
+			}
+			else if (type == "powershield")
+			{
+				player->SetQtyShield(stoi(value));
+			}
+			else if (type == "powerfirerate")
+			{
+				player->SetQtyFireRate(stoi(value));
+			}
+			else if (type == "powerdamage")
+			{
+				player->SetQtyDamage(stoi(value));
+			}
+			else if (type == "powertank")
+			{
+				player->SetQtyTank(stoi(value));
+			}
 		}
 	}
 	inData.close();
@@ -1857,8 +2049,8 @@ void CPlayState::Load()
 				getline(inData, value, '\n');
 				tower->SetFire(stoi(value));
 				towerList.push_back(tower);
-				int x = (int)((tower->GetPos().x * 10 / WX));
-				int y = (int)((tower->GetPos().y * 7 / WY));
+				int x = (int)((tower->GetPos().x * theNumOfTiles_Width / w));
+				int y = (int)((tower->GetPos().y * theNumOfTiles_Height / h));
 				theMap->GetGrid(x, y)->SetOccupied(true);
 
 			}
@@ -2038,6 +2230,12 @@ void CPlayState::Save()
 		file << "time, " << spawntimer << "\n";
 		file << "progress, " << progress << "\n";
 		file << "enemyleft, " << tEnemyProgress->GetEnemyCounter() << "\n";
+		file << "maxenemyleft, " << tEnemyProgress->GetMaxEnemyCounter() << "\n";
+		file << "powerhealth, " << player->GetQtyBaseHealth() << "\n";
+		file << "powershield, " << player->GetQtyShield() << "\n";
+		file << "powerfirerate, " << player->GetQtyFireRate() << "\n";
+		file << "powerdamage, " << player->GetQtyDamage() << "\n";
+		file << "powertank, " << player->GetQtyTank() << "\n";
 		file.close();
 	}
 	else
@@ -2136,10 +2334,11 @@ void CPlayState::UpdateSpawn()
 		}
 		if (spawn->GetTime() <= spawntimer)
 		{
-			if(creep = FetchEnemy())
+			//if(creep = FetchEnemy())
 			{
+				creep = new Enemy(static_cast<Enemy::ENEMY_TYPE>(spawn->GetType()));
 				creep->SetActive(true);
-				creep->type = static_cast<Enemy::ENEMY_TYPE>(spawn->GetType());
+				//creep->type = static_cast<Enemy::ENEMY_TYPE>(spawn->GetType());
 				creep->SetAtt(enemyClone[creep->type - 1]->GetFireRate(), enemyClone[creep->type - 1]->GetDamage(),
 					enemyClone[creep->type - 1]->GetRange(), enemyClone[creep->type - 1]->GetHealth(), enemyClone[creep->type - 1]->GetSpeed());
 				creep->SetVel(Vector3(-15 * creep->GetSpeed(), 0, 0));
@@ -2202,7 +2401,7 @@ void CPlayState::LoadSpawn()
 		spawn->SetType(stoi(index));
 		spawn->SetTime(stof(time));
 		tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() + 1);
-		enemycounter++;
+		tEnemyProgress->SetMaxEnemyCounter(tEnemyProgress->GetEnemyCounter());
 		spawnList.push_back(spawn);
 	}
 	inData.close();
@@ -2260,32 +2459,35 @@ void CPlayState::LoadAtt()
 
 void CPlayState::playSound(int a)
 {
-	if (soundon == true)
+	if (audioplay == true)
 	{
-		if (a == 1)
+		if (soundon == true)
 		{
-			sound.stop();
-			sound.setFileName("bin/sounds/BGM.mp3");
-			//sound.setVolume(25);
-			sound.playSoundThreaded();
-		}
-		else if (a == 2)
-		{
-			sound.stop();
-			sound.setFileName("bin/sounds/tempBGM.mp3");
-			sound.playSoundThreaded();
-		}
-		else if (a == 3)
-		{
-			sound.stop();
-			sound.setFileName("bin/sounds/Snake_Eater.mp3");
-			sound.playSoundThreaded();
-		}
-		else if (a == 4)
-		{
-			sound.stop();
-			sound.setFileName("bin/sounds/Victory_bgm.mp3");
-			sound.playSoundThreaded();
+			if (a == 1)
+			{
+				sound.stop();
+				sound.setFileName("bin/sounds/BGM.mp3");
+				//sound.setVolume(25);
+				sound.playSoundThreaded();
+			}
+			else if (a == 2)
+			{
+				sound.stop();
+				sound.setFileName("bin/sounds/tempBGM.mp3");
+				sound.playSoundThreaded();
+			}
+			else if (a == 3)
+			{
+				sound.stop();
+				sound.setFileName("bin/sounds/Snake_Eater.mp3");
+				sound.playSoundThreaded();
+			}
+			else if (a == 4)
+			{
+				sound.stop();
+				sound.setFileName("bin/sounds/Victory_bgm.mp3");
+				sound.playSoundThreaded();
+			}
 		}
 	}
 }
@@ -2297,100 +2499,96 @@ void CPlayState::shooting(bool firing)
 	firing = false;
 }
 
-void CPlayState::soundTypes(int type, bool death)
+void CPlayState::soundTypes(int type)
 {
-	if (type == 1)
-	{
-		
-		se->play2D("bin/sounds/chipDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 2)
-	{
-		se->play2D("bin/sounds/cardDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 3)
-	{
-		se->play2D("bin/sounds/humanDeath.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 4)
-	{
-		se->play2D("bin/sounds/xplosionSFX.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 5)
-	{
-		se->play2D("bin/sounds/laserSFX.mp3", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 6)
-	{
-		se->play2D("bin/sounds/sniper.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 7)
-	{
-		se->play2D("bin/sounds/Soldier.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 8)
-	{
-		se->play2D("bin/sounds/shells.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 9)
-	{
-		se->play2D("bin/sounds/Missile.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 10)
-	{
-		se->play2D("bin/sounds/TankFire.wav", false);
-		se->setSoundVolume(0.25);
-		death = false;
-	}
-	else if (type == 11)
+	if (audioplay == true)
 	{
 		int random = RNGesus();
-		switch (random)
+		switch (type)
 		{
 		case 1:
-			se->play2D("bin/sounds/Hit_1.wav", false);
-			se->setSoundVolume(0.25);
-			death = false;
+			se->play2D("bin/sounds/chipDeath.mp3", false);
 			break;
 		case 2:
-			se->play2D("bin/sounds/Hit_2.wav", false);
-			se->setSoundVolume(0.25);
-			death = false;
+			se->play2D("bin/sounds/cardDeath.mp3", false);
 			break;
 		case 3:
-			se->play2D("bin/sounds/Hit_3.wav", false);
-			se->setSoundVolume(0.25);
-			death = false;
+			se->play2D("bin/sounds/humanDeath.mp3", false);
+			break;
+		case 4:
+			se->play2D("bin/sounds/xplosionSFX.wav", false);
+			break;
+		case 5:
+			se->play2D("bin/sounds/laserSFX.mp3", false);
+			break;
+		case 6:
+			se->play2D("bin/sounds/sniper.wav", false);
+			break;
+		case 7:
+			se->play2D("bin/sounds/Soldier.wav", false);
+			break;
+		case 8:
+			se->play2D("bin/sounds/shells.wav", false);
+			break;
+		case 9:
+			se->play2D("bin/sounds/Missile.wav", false);
+			break;
+		case 10:
+			se->play2D("bin/sounds/TankFire.wav", false);
+			break;
+		case 11:
+			switch (random)
+			{
+			case 1:
+				se->play2D("bin/sounds/Hit_1.wav", false);
+				se->setSoundVolume(0.25);
+				break;
+			case 2:
+				se->play2D("bin/sounds/Hit_2.wav", false);
+				se->setSoundVolume(0.25);
+				break;
+			case 3:
+				se->play2D("bin/sounds/Hit_3.wav", false);
+				se->setSoundVolume(0.25);
+				break;
+			}
+			break;
+		case 12:
+			se->play2D("bin/sounds/mission_start.wav", false);
+			break;
+		case 13:
+			se->play2D("bin/sounds/mission_complete.mp3", false);
+			break;
+		case 14:
+			se->play2D("bin/sounds/unit.mp3", false);
+			break;
+		case 15:
+			se->play2D("bin/sounds/no_money.wav", false);
+			break;
+		case 16:
+			se->play2D("bin/sounds/sliderMove.wav", false);
+			break;
+		case 17:
+			se->play2D("bin/sounds/unit_missile.mp3", false);
+			break;
+		case 18:
+			se->play2D("bin/sounds/unit_sniper.wav", false);
+			break;
+		case 19:
+			se->play2D("bin/sounds/unit_barricade.wav", false);
+			break;
+		case 20:
+			se->play2D("bin/sounds/placement.wav", false);
+			break;
+		case 21:
+			se->play2D("bin/sounds/unit_mine.wav", false);
+			break;
+		case 22:
+			se->play2D("bin/sounds/unit_tank.mp3", false);
 			break;
 		}
 	}
-	else if (type == 12)
-	{
-		se->play2D("bin/sounds/mission_start.wav", false);
-		death = false;
-	}
-	else if (type == 13)
-	{
-		se->play2D("bin/sounds/mission_complete.mp3", false);
-	}
+//	sound.playSound();
 }
 
 void CPlayState::loadlevel()
@@ -2428,6 +2626,7 @@ void CPlayState::loadlevel()
 
 void CPlayState::clearmap()
 {
+	/*
 	for (std::vector <Tower*>::iterator it = towerList.begin(); it < towerList.end(); it++)
 	{
 		Tower *tower = *it;
@@ -2451,47 +2650,58 @@ void CPlayState::clearmap()
 		{
 			bullet->SetActive(false);
 		}
+	} */
+
+
+	while (bulletList.size() > 0)
+	{
+		Bullet *bullet = bulletList.back();
+		delete bullet;
+		bullet = NULL;
+		bulletList.pop_back();
+		free(bullet);
 	}
-}
 
-void CPlayState::RenderUpgrade(int x, int y)
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	//int w = glutGet(GLUT_WINDOW_WIDTH);
-	//int h = glutGet(GLUT_WINDOW_HEIGHT);
-	gluOrtho2D(0.0, w, 0.0, h);
+	while (enemyList.size() > 0)
+	{
+		Enemy *creep = enemyList.back();
+		delete creep;
+		creep = NULL;
+		enemyList.pop_back();
+		free(creep);
+	}
 
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glLoadIdentity();
-	glBindTexture(GL_TEXTURE_2D, Upgrade[0].texID);
+	while (towerList.size() > 0)
+	{
+		Tower *tower = towerList.back();
+		delete tower;
+		tower = NULL;
+		towerList.pop_back();
+		free(tower);
+	}
 
-	glTranslatef(x, y, 0);
-	glBegin(GL_QUADS);
+	while (spawnList.size() > 0)
+	{
+		Spawn *spawn = spawnList.back();
+		delete spawn;
+		spawn = NULL;
+		spawnList.pop_back();
+		free(spawn);
+	}
 
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-20, 20, 0);
+	//towerList.clear();
+	//enemyList.clear();
+	//bulletList.clear();
+	//spawnList.clear();
 
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-20, -20, 0);
+	/*
+	if (theMap != NULL)
+	{
+		delete theMap;
+		theMap = NULL;
+		free(theMap);
+	} */
 
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(20, -20, 0);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(20, 20, 0);
-	glEnd();
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
 }
 
 void CPlayState::RenderInfo(int x, int y)
@@ -2547,7 +2757,7 @@ void CPlayState::RenderInfo(int x, int y)
 		RenderStringOnScreen(x + 4, y - 62, temp);
 		sprintf_s(temp, "Damage: %d", towerClone[info - 1]->GetDamage());
 		RenderStringOnScreen(x + 4, y - 44, temp);
-		sprintf_s(temp, "Firerate: %d", towerClone[info - 1]->GetFireRate());
+		sprintf_s(temp, "Firerate: %.2f", towerClone[info - 1]->GetFireRate());
 		RenderStringOnScreen(x + 4, y - 26, temp);
 		sprintf_s(temp, "Range: %d", towerClone[info - 1]->GetRange());
 		RenderStringOnScreen(x + 4, y - 8, temp);
@@ -2582,10 +2792,12 @@ void CPlayState::RenderHUD()
 {
 	char temp[512];
 
+	// Progression bar
 	glPushMatrix();
 		tEnemyProgress->DrawEnemyCounter(500, 48); // Enemy Progress Bar
 	glPopMatrix();
 
+	// Render buttons
 	Button_Pause->Render();
 
 	Unit_Infantry->Render();
@@ -2595,6 +2807,7 @@ void CPlayState::RenderHUD()
 	Unit_Mine->Render();
 	Unit_Barricade->Render();
 
+	// Render player stats
 	player->RenderHealthBar(75, 10);
 	player->RenderShield(75, 45);
 
@@ -2610,11 +2823,6 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(10, 30, temp);
 	sprintf_s(temp, " / 100");
 	RenderStringOnScreen(170, 30, temp);
-
-	if (player->GetHealth() <= 0)
-	{
-	  
-	}
 
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);
@@ -2655,7 +2863,6 @@ void CPlayState::RenderHUD()
 	RenderStringOnScreen(824, 666, temp);
 	sprintf_s(temp, "x%d", player->GetQtyTank());
 	RenderStringOnScreen(896, 666, temp);
-
 	if (pause)
 	{
 		if (!exitmenu)
@@ -2708,18 +2915,70 @@ void CPlayState::RenderHUD()
 		RenderStringOnScreen(660, 440, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultAttack);
-		RenderStringOnScreen(350, 265, temp);
+		RenderStringOnScreen(350, 275, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultArmour);
-		RenderStringOnScreen(450, 265, temp);
+		RenderStringOnScreen(450, 275, temp);
 
 		sprintf_s(temp, "%1.0f%%", 100*Bonus_MultDollar);
-		RenderStringOnScreen(550, 265, temp);
+		RenderStringOnScreen(550, 275, temp);
+
+		sprintf_s(temp, "5 pts");
+		RenderStringOnScreen(250, 375, temp);
+
+		sprintf_s(temp, "4 pts");
+		RenderStringOnScreen(350, 375, temp);
+
+		sprintf_s(temp, "3 pts");
+		RenderStringOnScreen(450, 375, temp);
+
+		sprintf_s(temp, "3 pts");
+		RenderStringOnScreen(550, 375, temp);
+
+		sprintf_s(temp, "6 pts");
+		RenderStringOnScreen(645, 375, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(345, 260, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(445, 260, temp);
+
+		sprintf_s(temp, "10 pts");
+		RenderStringOnScreen(545, 260, temp);
 	}
 
 	else if (losescreen == true)
 	{
 		RenderLoseScreen();
+	}
+
+	if (minigame == true)
+	{
+		theMiniGame->RenderMGBackground();
+		theMiniGame->RenderMGCharacter();
+		//theMiniGame->RenderMGBlood();
+		//theMiniGame->RenderMGGun();
+		theMiniGame->RenderBullets();
+
+		//Render the time left on minigame screen
+		sprintf_s(temp, "Time Left:    %.1f", theMiniGame->GetTimer()*0.01);
+		RenderStringOnScreen(SCREEN_WIDTH*0.42, 50, temp);
+
+
+
+		if (theMiniGame->winminigame == true)
+		{
+			theMiniGame->RenderMGWinScreen();
+			//Render Next Level Button in mini game to continue
+			WinLose_NextLevel->Render();
+		}
+		else if (theMiniGame->loseminigame == true)
+		{
+			theMiniGame->RenderMGLoseScreen();
+			//Render Next Level Button in mini game to continue
+			WinLose_NextLevel->Render();
+		}
 	}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -2732,7 +2991,7 @@ void CPlayState::RenderPauseMenu()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glTranslatef(w / 2, h / 2, 0);
+	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
 	glBindTexture(GL_TEXTURE_2D, PauseMenu.texID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
@@ -2756,7 +3015,7 @@ void CPlayState::RenderExitMenu()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glTranslatef(w / 2, h / 2, 0);
+	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
 	glBindTexture(GL_TEXTURE_2D, ExitMenu.texID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
@@ -2796,10 +3055,26 @@ void CPlayState::RenderWinScreen()
 
 	glDisable(GL_TEXTURE_2D);
 
-	WinLose_MainMenu->Render();
-	WinLose_NextLevel->Render();
-	WinLose_RestartLevel->Render();
-	WinLose_MiniGame->Render();
+	if (progress < 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+	}
+	else if (progress == 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+		WinLose_MiniGame->Render();
+	}
+
+	else if (progress > 3)
+	{
+		WinLose_MainMenu->Render();
+		WinLose_NextLevel->Render();
+		WinLose_RestartLevel->Render();
+	}
 
 }
 
@@ -2831,12 +3106,41 @@ void CPlayState::RenderLoseScreen()
 	WinLose_RestartLevel->Render();
 }
 
+// to return the vector list to other classes so that they can push objects into it
 std::vector<Bullet*>& CPlayState::GetBulletList(void)
 {
 	return bulletList;
 }
 
+// public function to initialize the level when changing to this state
 void CPlayState::SetLevel(int level)
 {
 	this->progress = level;
+}
+
+// public function to set whether to load save file
+void CPlayState::LoadFromFile(bool load)
+{
+	this->load = load;
+}
+
+void CPlayState::Deathsounds()
+{
+	int a = RNGesus();
+	if (audioplay == true)
+	{
+		
+		switch (a)
+		{
+		case 1:
+			se->play2D("bin/sounds/death_1.wav", false);
+			break;
+		case 2:
+			se->play2D("bin/sounds/death_2.wav", false);
+			break;
+		case 3:
+			se->play2D("bin/sounds/death_3.wav", false);
+			break;
+		}
+	}
 }

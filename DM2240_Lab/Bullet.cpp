@@ -23,9 +23,13 @@ Bullet::Bullet(BULLET_TYPE type)
 	case GO_SLOWBULLET:
 		filename = "bin/textures/Sniper_shell.tga";
 		break;
+	case GO_ENEMYBULLET:
+		filename = "bin/textures/enemy_shell.tga";
+		break;
 	}
 	LoadTGA(&texture, filename);
 	this->SetVel(Vector3(1, 0, 0));
+	this->SetScale(Vector3(24, 24, 1));
 }
 
 Bullet::~Bullet()
@@ -185,14 +189,24 @@ void Bullet::Render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, texture.texID);
 	glTranslatef(this->GetPos().x, this->GetPos().y, this->GetPos().z);
-	//glScalef(go->scale.x, go->scale.y, go->scale.z);
+	glScalef(GetScale().x, GetScale().y, GetScale().z);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(-24, -24);
-	glTexCoord2f(0, 1); glVertex2f(-24, 24);
-	glTexCoord2f(1, 1); glVertex2f(24, 24);
-	glTexCoord2f(1, 0); glVertex2f(24, -24);
+	glTexCoord2f(0, 0); glVertex2f(-1.0f, -1.0f);
+	glTexCoord2f(0, 1); glVertex2f(-1.0f, 1.0f);
+	glTexCoord2f(1, 1); glVertex2f(1.0f, 1.0f);
+	glTexCoord2f(1, 0); glVertex2f(1.0f, -1.0f);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
+}
+
+Vector3 Bullet::GetTopLeft()
+{
+	return Vector3(GetPos().x - GetScale().x, GetPos().y - GetScale().y, 0);
+}
+
+Vector3 Bullet::GetBottomRight()
+{
+	return Vector3(GetPos().x + GetScale().x, GetPos().y + GetScale().y, 0);
 }

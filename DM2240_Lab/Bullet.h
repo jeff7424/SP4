@@ -21,8 +21,7 @@ public:
 		GO_SHOCKBULLET,
 		GO_SLOWBULLET,
 		GO_BOMBBULLET,
-		GO_SNIPERBULLET,	//enemy
-		GO_CLOSEBULLET,		//enemy
+		GO_ENEMYBULLET,
 		GO_TOTAL, // must be last
 	};
 	BULLET_TYPE type;
@@ -45,4 +44,6 @@ public:
 
 	void Update(float dt);
 	void Render();
+	Vector3 GetTopLeft();
+	Vector3 GetBottomRight();
 };
