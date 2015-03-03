@@ -3,8 +3,9 @@
 #include "GameState.h"
 #include "Camera.h"
 #include "Mouse.h"
+#include "Button.h"
 
-class CIntroState : public CGameState
+class CInstructionState : public CGameState
 {
 public:
 	void Init();
@@ -24,20 +25,20 @@ public:
 	void MouseMove(int x, int y);
 	void MouseClick(int button, int state, int x, int y);
 
-	static CIntroState* Instance() {
-		return &theIntroState;
+	static CInstructionState* Instance() {
+		return &InstructionState;
 	}
 
 protected:
-	CIntroState() { }
+	CInstructionState() { }
 
 private:
-	static CIntroState theIntroState;
+	static CInstructionState InstructionState;
 
 	int w;
 	int h;
 
-	float Timer;
+	Button *Back_Button;
 
 	bool myKeys[255];
 	TextureImage intro[1];

@@ -1604,8 +1604,11 @@ void CPlayState::Update(float dt)
 					if (creep->GetHealth() <= 0) // kill the creep
 					{
 						//soundTypes(creep->type, true);
+						Deathsounds();
+
 						creep->SetActive(false);
 
+						// Increase player's gold depending on the enemy type killed
 						switch (creep->type)
 						{
 						case Enemy::ENEMY_1:
@@ -1619,6 +1622,11 @@ void CPlayState::Update(float dt)
 						case Enemy::ENEMY_3:
 							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
 							player->SetBonus(player->GetBonus() + 1);
+							break;
+
+						case Enemy::ENEMY_4:
+							player->SetGold(player->GetGold() + (Enemy::NME_Y4)*Bonus_MultDollar);
+							player->SetBonus(player->GetBonus() + 3);
 							break;
 						}
 
@@ -1702,6 +1710,9 @@ void CPlayState::Update(float dt)
 								creep->SetFireCounter(creep->GetFireRate());
 								if (tower->GetHealth() <= 0)
 								{
+
+									Deathsounds();
+
 									//se->play2D("bin/sounds/towerDeath.mp3", false);
 									//se->setSoundVolume(0.25);
 									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
@@ -1709,6 +1720,10 @@ void CPlayState::Update(float dt)
 									theMap->GetGrid(x, y)->SetOccupied(false);
 									tower->SetActive(false);
 									creep->SetFire(false);
+									delete tower;
+									towerList.erase(it);
+									tower = NULL;
+									free(tower);
 								}
 								break;
 							}

@@ -4,27 +4,33 @@ using namespace std;
 #include "GameStateManager.h"
 #include "gamestate.h"
 #include "menustate.h"
-#include "introstate.h"
-#include "playstate.h"
+#include "instructionstate.h"
 
-CIntroState CIntroState::theIntroState;
+CInstructionState CInstructionState::InstructionState;
 
-void CIntroState::Init()
+void CInstructionState::Init()
 {
-	w = glutGet(GLUT_SCREEN_WIDTH);
-	h = glutGet(GLUT_SCREEN_HEIGHT);
-	if (!LoadTGA(&intro[0], "intro.tga"))				// Load The Font Texture
+	w = glutGet(GLUT_WINDOW_WIDTH);
+	h = glutGet(GLUT_WINDOW_HEIGHT);
+	if (!LoadTGA(&intro[0], "menu.tga"))				// Load The Font Texture
 		return; //false;			
 
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
 
-	Timer = 1000.0f;
+	Back_Button = new Button("bin/ui/buttons/button_back.tga", 800, 600, 128, 32);
 }
 
-void CIntroState::Cleanup()
+void CInstructionState::Cleanup()
 {
+	if (Back_Button != NULL)
+	{
+		delete Back_Button;
+		Back_Button = NULL;
+		free(Back_Button);
+	}
+
 	if (theCam != NULL)
 	{
 		delete theCam;
@@ -33,46 +39,44 @@ void CIntroState::Cleanup()
 	}
 }
 
-void CIntroState::Pause()
+void CInstructionState::Pause()
 {
 }
 
-void CIntroState::Resume()
+void CInstructionState::Resume()
 {
 }
 
-void CIntroState::HandleEvents(CGameStateManager* theGSM)
+void CInstructionState::HandleEvents(CGameStateManager* theGSM)
 {
 	/*int m_iUserChoice = -1;
 
 	do {
-		cout << "CIntroState: Choose one <0> Go to Menu State, <1> Go to Play State : ";
-		cin >> m_iUserChoice;
-		cin.get();
+	cout << "CIntroState: Choose one <0> Go to Menu State, <1> Go to Play State : ";
+	cin >> m_iUserChoice;
+	cin.get();
 
-		switch (m_iUserChoice) {
-		case 0:
-			theGSM->ChangeState(CMenuState::Instance());
-			break;
-		case 1:
-			theGSM->ChangeState(CPlayState::Instance());
-			break;
-		default:
-			cout << "Invalid choice!\n";
-			m_iUserChoice = -1;
-			break;
-		}
+	switch (m_iUserChoice) {
+	case 0:
+	theGSM->ChangeState(CMenuState::Instance());
+	break;
+	case 1:
+	theGSM->ChangeState(CPlayState::Instance());
+	break;
+	default:
+	cout << "Invalid choice!\n";
+	m_iUserChoice = -1;
+	break;
+	}
 	} while (m_iUserChoice == -1);*/
 }
 
-void CIntroState::Update(CGameStateManager* theGSM)
+void CInstructionState::Update(CGameStateManager* theGSM)
 {
-	w = glutGet(GLUT_SCREEN_WIDTH);
-	h = glutGet(GLUT_SCREEN_HEIGHT);
+
 	static int lastTime = GetTickCount();
 	int time = GetTickCount();
 	float deltaTime = (time - lastTime) / 1000.f;
-	Timer -= deltaTime;
 
 	for (int i = 0; i < 255; i++)
 	{
@@ -80,16 +84,11 @@ void CIntroState::Update(CGameStateManager* theGSM)
 			CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 	}
 
-	if (Timer <= 0)
-	{
-		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
-	}
-
 	if (myKeys[VK_ESCAPE] == true)
 		exit(0);
 }
 
-void CIntroState::Draw(CGameStateManager* theGSM)
+void CInstructionState::Draw(CGameStateManager* theGSM)
 {
 	// Clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -103,6 +102,8 @@ void CIntroState::Draw(CGameStateManager* theGSM)
 
 	RenderIntro();
 
+	Back_Button->Render();
+
 	theCam->SetHUD(false);
 
 	// Flush off any entity which is not drawn yet, so that we maintain the frame rate.
@@ -113,7 +114,7 @@ void CIntroState::Draw(CGameStateManager* theGSM)
 	glutPostRedisplay();
 }
 
-bool CIntroState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
+bool CInstructionState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
 {
 	GLubyte		TGAheader[12] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	// Uncompressed TGA Header
 	GLubyte		TGAcompare[12];								// Used To Compare TGA Header
@@ -191,7 +192,8 @@ bool CIntroState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TG
 
 	return true;											// Texture Building Went Ok, Return True
 }
-void CIntroState::changeSize(int w, int h)
+
+void CInstructionState::changeSize(int w, int h)
 {
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
@@ -210,18 +212,33 @@ void CIntroState::changeSize(int w, int h)
 	// Set the correct perspective.
 	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	this->w = w;
+	this->h = h;
 }
-void CIntroState::inputKey(int key, int x, int y){}
-void CIntroState::KeyboardDown(unsigned char key, int x, int y){ myKeys[key] = true; }
-void CIntroState::KeyboardUp(unsigned char key, int x, int y){ myKeys[key] = false; }
-void CIntroState::MouseMove(int x, int y){}
-void CIntroState::MouseClick(int button, int state, int x, int y){
-	if (state == 0)
+
+void CInstructionState::inputKey(int key, int x, int y){}
+
+void CInstructionState::KeyboardDown(unsigned char key, int x, int y){ myKeys[key] = true; }
+
+void CInstructionState::KeyboardUp(unsigned char key, int x, int y){ myKeys[key] = false; }
+
+void CInstructionState::MouseMove(int x, int y)
+{
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
+	Back_Button->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
+}
+
+void CInstructionState::MouseClick(int button, int state, int x, int y)
+{
+	if (Back_Button->GetIsHover())
 	{
 		CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 	}
 }
-void CIntroState::RenderIntro(void)
+
+void CInstructionState::RenderIntro(void)
 {
 	glPushMatrix();
 

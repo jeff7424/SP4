@@ -3,8 +3,9 @@
 #include "GameState.h"
 #include "Camera.h"
 #include "Mouse.h"
+#include "Button.h"
 
-class CIntroState : public CGameState
+class CCreditsState : public CGameState
 {
 public:
 	void Init();
@@ -24,27 +25,29 @@ public:
 	void MouseMove(int x, int y);
 	void MouseClick(int button, int state, int x, int y);
 
-	static CIntroState* Instance() {
-		return &theIntroState;
+	static CCreditsState* Instance() {
+		return &InstructionState;
 	}
 
 protected:
-	CIntroState() { }
+	CCreditsState() { }
 
 private:
-	static CIntroState theIntroState;
+	static CCreditsState InstructionState;
 
 	int w;
 	int h;
 
-	float Timer;
+	Button *Back_Button;
 
 	bool myKeys[255];
-	TextureImage intro[1];
+	TextureImage Background;
+	TextureImage Credits;
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
 
 	bool LoadTGA(TextureImage *texture, char *filename);			// Loads A TGA File Into Memory
-	void RenderIntro(void);
+	void RenderBackground(void);
+	void RenderCredits(void);
 };

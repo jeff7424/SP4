@@ -1,0 +1,22 @@
+Literal Notepad
+
+1	Level End Check Mech
+2	Level End: Lock controls
+3	Level End: Bonus Shop Mech (Unit Upgrades)
+4		   Bonus Shop Button Sprites
+5		   Bonus Shop Frame Sprite
+6       Infliction of base damage by creeps
+7       Infliction of shield damage by creeps
+8       Fixed losescreen condition
+9       Brought to attention multishield purchase bug
+10      Added Bonus Currency
+11      Level End: Bonus Shop (One-Use Powerups)
+12
+13
+14
+15
+16
+17
+18
+19
+20

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SETTINGSSTATE_H_
+#define SETTINGSSTATE_H_
 
 extern "C" {
 #include "lua.h"
@@ -14,8 +15,9 @@ extern "C" {
 #include "Mouse.h"
 #include <string>
 #include "Button.h"
-
-class CLevelSelectState : public CGameState
+#include "Setting.h"
+#include "MenuState.h"
+class CSettingsState : public CGameState
 {
 public:
 	void Init();
@@ -35,41 +37,43 @@ public:
 	void MouseMove(int x, int y);
 	void MouseClick(int button, int state, int x, int y);
 
-	static CLevelSelectState* Instance() {
-		return &levelSelectState;
+	static CSettingsState* Instance() {
+		return &theSettingsState;
 	}
 
 protected:
-	CLevelSelectState() { }
+	CSettingsState() { }
 
 private:
-	int w; 
+	int w;
 	int h;
-	Button *BackButton;
-	Button *Button_Level1;
-	Button *Button_Level2;
-	Button *Button_Level3;
-	Button *Button_Level4;
-	Button *Button_Level5;
-	Button *Button_Level6;
-
+	Button *StartButton;
+	Button *SettingsButton;
+	Button *ExitButton;
+	ISoundEngine *se;
+	//AudioPlayer bgm;
+	bool audioplay;
+	bool isplaying;
 	bool myKeys[255];
-	TextureImage Map;
-
-	char* textures[3];
+	TextureImage menu[1];
+	TextureImage button[2];
+	int data[12];
+	char* textures[4];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;
 
 	bool LoadTGA(TextureImage *texture, char *filename);			// Loads A TGA File Into Memory
-	static CLevelSelectState levelSelectState;
+	static CSettingsState theSettingsState;
 
 	void *font_style;
 	//  Draws a string at the specified coordinates.
 	void printw(float x, float y, float z, char* format, ...);
 
 	void RenderMenu(void);
+
 	void CursorOnButton(int x, int y);
 
 	int LuaInit();
 };
+#endif

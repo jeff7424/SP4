@@ -2,7 +2,7 @@
 
 #include "PlayState.h"
 #include "Units.h"
-#include "EnemyAtt.h"
+//#include "EnemyAtt.h"
 #include "TextureImage.h"
 #include "Bullet.h"
 #include "Powerup.h"
@@ -55,4 +55,5 @@ public:
 	void DrawLevel();
 	void Render();
 	void GetTarget(std::vector<Enemy*>);
+	Enemy* ReturnTarget();
 };

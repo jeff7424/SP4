@@ -6,6 +6,7 @@ TEXTURE_SETTINGS = "bin/ui/buttons/button_settings.tga"
 TEXTURE_INSTRUCTIONS = "bin/ui/buttons/button_instructions.tga"
 TEXTURE_CREDITS = "bin/ui/buttons/button_credits.tga"
 TEXTURE_EXIT = "bin/ui/buttons/button_exit.tga"
+TEXTURE_TITLE = "title.tga"
 STARTBUTTON_POS_X = 800
 STARTBUTTON_POS_Y = 200
 STARTBUTTON_SIZE_X = 128

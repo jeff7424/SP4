@@ -1,37 +1,11 @@
-#include <iostream>
-using namespace std;
+#include "SettingsState.h"
+#include <fstream>
+CSettingsState CSettingsState::theSettingsState;
 
-#include "GameStateManager.h"
-#include "gamestate.h"
-#include "GameModeState.h"
-#include "PlayState.h"
-#include "menustate.h"
-#include "LevelSelectState.h"
-
-CGameModeState CGameModeState::modeState;
-
-void CGameModeState::Init()
+void CSettingsState::Init()
 {
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
-	isplaying = true;
-	mouseInfo.mLButtonUp = false;
-	LuaInit();
-	glEnable(GL_TEXTURE_2D);
-	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
-		return; //false;										// If Loading Failed, Return False
-	/*if (!LoadTGA(&button[0], textures[1]))
-	return;
-	if (!LoadTGA(&button[1], textures[2]))
-	return;*/
-	if (!LoadTGA(&PopUp, textures[7]))
-		return;
-
-	font_style = GLUT_BITMAP_HELVETICA_18;
-	buttons = createIrrKlangDevice();
-	for (int i = 0; i < 255; i++){
-		myKeys[i] = false;
-	}
 	ifstream myReadFile;
 	string reading;
 	myReadFile.open("save/settings.txt");
@@ -41,77 +15,79 @@ void CGameModeState::Init()
 		audioplay = stoi(reading);
 	}
 	myReadFile.close();
+	isplaying = true;
+	mouseInfo.mLButtonUp = false;
+	LuaInit();
+	//se = createIrrKlangDevice();
+	glEnable(GL_TEXTURE_2D);
+	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
+		return; //false;										// If Loading Failed, Return False
+	/*if (!LoadTGA(&button[0], textures[1]))
+	return;
+	if (!LoadTGA(&button[1], textures[2]))
+	return;*/
+
+	font_style = GLUT_BITMAP_HELVETICA_18;
+
+	for (int i = 0; i < 255; i++){
+		myKeys[i] = false;
+	}
 	theCam = new Camera(Camera::LAND_CAM);
-	buttons = createIrrKlangDevice();
+	se = createIrrKlangDevice();
+	//bgm.setFileName("bin/sounds/main_menu.wav");
+	//bgm.playSoundThreaded();
 }
 
-void CGameModeState::Cleanup()
+void CSettingsState::Pause()
+{
+}
+
+void CSettingsState::Cleanup()
 {
 	if (theCam != NULL)
 	{
 		delete theCam;
 		theCam = NULL;
 	}
-	if (CampaignButton != NULL)
+	if (StartButton != NULL)
 	{
-		delete CampaignButton;
-		CampaignButton = NULL;
+		delete StartButton;
+		StartButton = NULL;
 	}
-	if (SkirmishButton != NULL)
+	if (SettingsButton != NULL)
 	{
-		delete SkirmishButton;
-		SkirmishButton = NULL;
+		delete SettingsButton;
+		SettingsButton = NULL;
 	}
-	if (BackButton != NULL)
+	if (ExitButton != NULL)
 	{
-		delete BackButton;
-		BackButton = NULL;
+		delete ExitButton;
+		ExitButton = NULL;
 	}
 }
 
-void CGameModeState::Pause()
+void CSettingsState::Resume()
 {
 }
 
-void CGameModeState::Resume()
+void CSettingsState::HandleEvents(CGameStateManager* theGSM)
 {
+
 }
 
-void CGameModeState::HandleEvents(CGameStateManager* theGSM)
+void CSettingsState::Update(CGameStateManager* theGSM)
 {
-	/*int m_iUserChoice = -1;
+	////bgm.playSound("bin/sounds/main_menu.wav");
 
-	do {
-	cout << "CMenuState: Choose one <0> Go to Intro State, <1> Go to Play State : " ;
-	cin >> m_iUserChoice;
-	cin.get();
+	//if (myKeys['1'] == true)
+	//	CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 
-	switch (m_iUserChoice) {
-	case 0:
-	theGSM->ChangeState( CIntroState::Instance() );
-	break;
+	//if (myKeys[VK_ESCAPE] == true)
+	//	exit(0);
 
-	case 1:
-	theGSM->ChangeState( CPlayState::Instance() );
-	break;
-	default:
-	cout << "Invalid choice!\n";
-	m_iUserChoice = -1;
-	break;
-	}
-	} while (m_iUserChoice == -1);*/
 }
 
-void CGameModeState::Update(CGameStateManager* theGSM)
-{
-	if (myKeys['1'] == true)
-		CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-
-	if (myKeys[VK_ESCAPE] == true)
-		exit(0);
-}
-
-void CGameModeState::Draw(CGameStateManager* theGSM)
+void CSettingsState::Draw(CGameStateManager* theGSM)
 {
 	// Clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,18 +96,22 @@ void CGameModeState::Draw(CGameStateManager* theGSM)
 	glEnable(GL_DEPTH_TEST);
 
 	Update(theGSM);
-
 	theCam->SetHUD(true);
 
-	RenderBackground();
-	CampaignButton->Render();
-	SkirmishButton->Render();
-	BackButton->Render();
-
-	if (Selection)
+	RenderMenu();
+	StartButton->Render();
+	if (audioplay != true)
 	{
-		RenderPopUp();
+		SettingsButton->SetPosition(data[4] - data[2], 200);
 	}
+	else
+	{
+		SettingsButton->SetPosition(data[4], 200);
+	}
+	SettingsButton->Render();
+	//InstructionsButton->Render();
+	//CreditsButton->Render();
+	ExitButton->Render();
 
 	theCam->SetHUD(false);
 	// Flush off any entity which is not drawn yet, so that we maintain the frame rate.
@@ -140,9 +120,10 @@ void CGameModeState::Draw(CGameStateManager* theGSM)
 	// swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
 	glutPostRedisplay();
+
 }
 
-void CGameModeState::printw(float x, float y, float z, char* format, ...)
+void CSettingsState::printw(float x, float y, float z, char* format, ...)
 {
 	va_list args;	//  Variable argument list
 	int len;		//	String length
@@ -177,7 +158,7 @@ void CGameModeState::printw(float x, float y, float z, char* format, ...)
 	free(text);
 }
 
-bool CGameModeState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
+bool CSettingsState::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
 {
 	GLubyte		TGAheader[12] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	// Uncompressed TGA Header
 	GLubyte		TGAcompare[12];								// Used To Compare TGA Header
@@ -256,7 +237,7 @@ bool CGameModeState::LoadTGA(TextureImage *texture, char *filename)			// Loads A
 	return true;											// Texture Building Went Ok, Return True
 }
 
-void CGameModeState::changeSize(int w, int h)
+void CSettingsState::changeSize(int w, int h)
 {
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
@@ -280,64 +261,28 @@ void CGameModeState::changeSize(int w, int h)
 	this->h = h;
 }
 
-void CGameModeState::inputKey(int key, int x, int y)
+void CSettingsState::inputKey(int key, int x, int y)
 {
 }
 
-void CGameModeState::KeyboardDown(unsigned char key, int x, int y){
+void CSettingsState::KeyboardDown(unsigned char key, int x, int y){
 
 	myKeys[key] = true;
 }
 
-void CGameModeState::KeyboardUp(unsigned char key, int x, int y){
+void CSettingsState::KeyboardUp(unsigned char key, int x, int y){
 
 	myKeys[key] = false;
 }
 
-void CGameModeState::MouseMove(int x, int y)
+void CSettingsState::MouseMove(int x, int y)
 {
 	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
 	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
-	CampaignButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	SkirmishButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	BackButton->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	NewGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	ContinueGame->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-	if (Selection)
-	{
-		if (NewGame->GetIsHover() || ContinueGame->GetIsHover())
-		{
-			if (isplaying == true)
-			{
-				if (audioplay == true)
-				buttons->play2D("bin/sounds/button_hover.wav", false);
-				isplaying = false;
-			}
-		}
-		else
-		{
-			isplaying = true;
-		}
-	}
-	else
-	{
-		if (CampaignButton->GetIsHover() || SkirmishButton->GetIsHover() || BackButton->GetIsHover())
-		{
-			if (isplaying == true)
-			{
-				if (audioplay == true)
-				buttons->play2D("bin/sounds/button_hover.wav", false);
-				isplaying = false;
-			}
-		}
-		else
-		{
-			isplaying = true;
-		}
-	}
+	CursorOnButton(mouseInfo.lastX, mouseInfo.lastY);
 }
 
-void CGameModeState::MouseClick(int button, int state, int x, int y)
+void CSettingsState::MouseClick(int button, int state, int x, int y)
 {
 	switch (button) {
 
@@ -346,59 +291,37 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 			mouseInfo.mLButtonUp = false;
 		else
 			mouseInfo.mLButtonUp = true;
+
 		mouseInfo.lastX = x;
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
-		{
-			if (Selection)
+		{	
+			if (audioplay == true)
+			se->play2D("bin/sounds/select.wav", false);
+
+			if (StartButton->GetIsHover())
 			{
-				if (NewGame->GetIsHover())
+				ofstream rewrite("save/settings.txt");
+				char* buffer;
+				if (audioplay == true)
 				{
-					if (audioplay == true)
-					{
-						se.playSound("bin/sounds/gamestart.wav");
-						if (!se.isSoundPlaying())
-						{
-							CPlayState::Instance()->SetLevel(1);
-							CPlayState::Instance()->LoadFromFile(false);
-							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-						}
-					}
-					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-				}
-				else if (ContinueGame->GetIsHover())
-				{
-					if (audioplay == true)
-					{
-						se.playSound("bin/sounds/gamestart.wav");
-						if (!se.isSoundPlaying())
-						{
-							CPlayState::Instance()->SetLevel(1);
-							CPlayState::Instance()->LoadFromFile(true);
-							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
-						}
-					}
-					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					buffer = "0";
 				}
 				else
 				{
-					Selection = false;
+					buffer = "1";
 				}
+				audioplay = atoi(buffer);
+				rewrite.write(buffer, 1);
+				rewrite.close();
 			}
-			else
+			else if (SettingsButton->GetIsHover())
 			{
-				if (CampaignButton->GetIsHover())
-				{
-					Selection = true;
-				}
-				else if (SkirmishButton->GetIsHover())
-				{
-					CGameStateManager::getInstance()->ChangeState(CLevelSelectState::Instance());
-				}
-				else if (BackButton->GetIsHover())
-				{
-					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
-				}
+			}
+			
+			else if (ExitButton->GetIsHover())
+			{
+				CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 			}
 		}
 
@@ -406,7 +329,7 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 	}
 }
 
-void CGameModeState::RenderBackground(void)
+void CSettingsState::RenderMenu(void)
 {
 	glPushMatrix();
 
@@ -423,84 +346,84 @@ void CGameModeState::RenderBackground(void)
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
-
 	glPopMatrix();
 }
 
-void CGameModeState::RenderPopUp()
+void CSettingsState::CursorOnButton(int x, int y)
 {
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glTranslatef(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
-	glBindTexture(GL_TEXTURE_2D, PopUp.texID);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 1);	glVertex2f(-160, -224);
-	glTexCoord2f(1, 1);	glVertex2f(160, -224);
-	glTexCoord2f(1, 0);	glVertex2f(160, 224);
-	glTexCoord2f(0, 0);	glVertex2f(-160, 224);
-	glEnd();
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-
-	NewGame->Render();
-	ContinueGame->Render();
+	StartButton->SetIsHover(x, y);
+	SettingsButton->SetIsHover(x, y);
+	ExitButton->SetIsHover(x, y);
+	if (audioplay == true)
+	{
+		if (StartButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else if (SettingsButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else if (ExitButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+		else
+		{
+			isplaying = true;
+		}
+	}
 }
 
-int CGameModeState::LuaInit()
+int CSettingsState::LuaInit()
 {
-	cout << "\nGAMEMODE INITIALIZATION\n" << endl;
+	cout << "\nMENU INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[28] = {
-		"TEXTURE_BACKGROUND",
-		"TEXTURE_TITLE",
-		"TEXTURE_CAMPAIGN",
-		"TEXTURE_SKIRMISH",
-		"TEXTURE_BACK",
-		"TEXTURE_YES",
-		"TEXTURE_NO",
-		"TEXTURE_POPUP",
-		"CAMPAIGNBUTTON_POS_X",
-		"CAMPAIGNBUTTON_POS_Y",
-		"CAMPAIGNBUTTON_SIZE_X",
-		"CAMPAIGNBUTTON_SIZE_Y",
-		"SKIRMISHBUTTON_POS_X",
-		"SKIRMISHBUTTON_POS_Y",
-		"SKIRMISHBUTTON_SIZE_X",
-		"SKIRMISHBUTTON_SIZE_Y",
-		"BACKBUTTON_POS_X",
-		"BACKBUTTON_POS_Y",
-		"BACKBUTTON_SIZE_X",
-		"BACKBUTTON_SIZE_Y",
-		"NEWBUTTON_POS_X",
-		"NEWBUTTON_POS_Y",
-		"NEWBUTTON_SIZE_X",
-		"NEWBUTTON_SIZE_Y",
-		"CONTINUEBUTTON_POS_X",
-		"CONTINUEBUTTON_POS_Y",
-		"CONTINUEBUTTON_SIZE_X",
-		"CONTINUEBUTTON_SIZE_Y"
+	const char *values[26] = {
+		"TEXTURE_MENU",
+		"TEXTURE_START",
+		"TEXTURE_SETTINGS",
+		"TEXTURE_EXIT",
+		"STARTBUTTON_POS_X",
+		"STARTBUTTON_POS_Y",
+		"STARTBUTTON_SIZE_X",
+		"STARTBUTTON_SIZE_Y",
+		"SETTINGSBUTTON_POS_X",
+		"SETTINGSBUTTON_POS_Y",
+		"SETTINGSBUTTON_SIZE_X",
+		"SETTINGSBUTTON_SIZE_Y",
+		"EXITBUTTON_POS_X",
+		"EXITBUTTON_POS_Y",
+		"EXITBUTTON_SIZE_X",
+		"EXITBUTTON_SIZE_Y",
 	};
 
-	int data[20];
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 12; i++)
 	{
 		data[i] = 0;
 	}
 
 	luaL_openlibs(L);
-	if (luaL_loadfile(L, "gamemodestate_init.lua") || lua_pcall(L, 0, 0, 0))
+	if (luaL_loadfile(L, "Settings_init.lua") || lua_pcall(L, 0, 0, 0))
 	{
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 8; k++)
+	for (int k = 0; k < 4; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -515,23 +438,21 @@ int CGameModeState::LuaInit()
 		cout << values[k] << ": " << textures[k] << endl;
 	}
 
-	for (int j = 0; j < 20; j++)
+	for (int j = 0; j < 12; j++)
 	{
-		lua_getglobal(L, values[j + 8]);
+		lua_getglobal(L, values[j + 4]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 8] << ": " << data[j] << endl;
+		cout << values[j + 4] << ": " << data[j] << endl;
 	}
 
-	CampaignButton = new Button(textures[2], data[0], data[1], data[2], data[3]);
-	SkirmishButton = new Button(textures[3], data[4], data[5], data[6], data[7]);
-	BackButton = new Button(textures[4], data[8], data[9], data[10], data[11]);
-	NewGame = new Button(textures[5], data[12], data[13], data[14], data[15]);
-	ContinueGame = new Button(textures[6], data[16], data[17], data[18], data[19]);
+	StartButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
+	SettingsButton = new Button(textures[2], data[4], data[5], data[6], data[7]);
+	ExitButton = new Button(textures[3], data[8], data[9], data[10], data[11]);
 
 	return 0;
 }

@@ -12,6 +12,8 @@ CLevelSelectState CLevelSelectState::levelSelectState;
 
 void CLevelSelectState::Init()
 {
+	w = glutGet(GLUT_WINDOW_WIDTH);
+	h = glutGet(GLUT_WINDOW_HEIGHT);
 	mouseInfo.mLButtonUp = false;
 	LuaInit();
 
@@ -248,6 +250,9 @@ void CLevelSelectState::changeSize(int w, int h)
 	// Set the correct perspective.
 	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+	
+	this->w = w;
+	this->h = h;
 }
 
 void CLevelSelectState::inputKey(int key, int x, int y)
@@ -266,8 +271,8 @@ void CLevelSelectState::KeyboardUp(unsigned char key, int x, int y){
 
 void CLevelSelectState::MouseMove(int x, int y)
 {
-	mouseInfo.lastX = x;
-	mouseInfo.lastY = y;
+	mouseInfo.lastX = (int)((float)x / w * SCREEN_WIDTH);
+	mouseInfo.lastY = (int)((float)y / h * SCREEN_HEIGHT);
 
 	Button_Level1->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 	Button_Level2->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
@@ -298,33 +303,39 @@ void CLevelSelectState::MouseClick(int button, int state, int x, int y)
 			else if (Button_Level1->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(1);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level2->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(2);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level3->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(3);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				
 			}
 			else if (Button_Level4->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(4);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				
 			}
 			else if (Button_Level5->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(5);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 			else if (Button_Level6->GetIsHover())
 			{
 				CPlayState::Instance()->SetLevel(6);
+				CPlayState::Instance()->LoadFromFile(false);
 				CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			}
 		}
