@@ -2,7 +2,7 @@
 
 #include "PlayState.h"
 #include "Units.h"
-#include "EnemyAtt.h"
+//#include "EnemyAtt.h"
 #include "TextureImage.h"
 #include "Bullet.h"
 #include "Powerup.h"

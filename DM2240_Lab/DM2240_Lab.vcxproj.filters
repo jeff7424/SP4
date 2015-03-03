@@ -119,6 +119,11 @@
     </ClCompile>
     <ClCompile Include="SettingsState.cpp">
       <Filter>Source Files</Filter>
+    <ClCompile Include="InstructionState.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsState.cpp">
+      <Filter>GameState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,8 +214,11 @@
     <ClInclude Include="SettingsState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Setting.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="InstructionState.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsState.h">
+      <Filter>GameState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
