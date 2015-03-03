@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MENUSTATE_H_
+#define MENUSTATE_H_
+
 
 extern "C" {
 #include "lua.h"
@@ -75,3 +77,4 @@ private:
 
 	int LuaInit();
 };
+#endif

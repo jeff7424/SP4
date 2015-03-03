@@ -5,6 +5,7 @@ using namespace std;
 #include "gamestate.h"
 #include "PlayState.h"
 #include "menustate.h"
+#include "SettingsState.h"
 #include "GameModeState.h"
 
 CMenuState CMenuState::theMenuState;
@@ -325,7 +326,8 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			}
 			else if (SettingsButton->GetIsHover())
 			{
-
+				bgm.stop();
+				CGameStateManager::getInstance()->ChangeState(CSettingsState::Instance());
 			}
 			else if (InstructionsButton->GetIsHover())
 			{

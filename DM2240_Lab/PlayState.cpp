@@ -2472,8 +2472,7 @@ void CPlayState::soundTypes(int type)
 	case 10:
 		se->play2D("bin/sounds/TankFire.wav", false);
 		break;
-	case 11:
-		
+	case 11:		
 		switch (random)
 		{
 		case 1:
