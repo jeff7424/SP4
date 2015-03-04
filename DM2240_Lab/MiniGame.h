@@ -91,8 +91,6 @@ private:
 	TextureImage MGCharacterTexture;
 	TextureImage MGBackgroundTexture1;
 	TextureImage MGBackgroundTexture2;
-	TextureImage MGBloodTexture;
-	TextureImage MGGunTexture;
 	TextureImage MGWinTexture;
 	TextureImage MGLoseTexture;
 	TextureImage MGLoseTexture2;

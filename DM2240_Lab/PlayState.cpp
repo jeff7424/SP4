@@ -1414,7 +1414,6 @@ void CPlayState::mclicklevel1(int x, int y)
 			}
 		}
 
-
 		//For Win Lose Screen
 		if (WinLose_MainMenu->GetIsHover())
 		{
@@ -1442,6 +1441,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			LoadSpawn();
 		}
 
+
 		if (WinLose_RestartLevel->GetIsHover())
 		{
 			winscreen = false;
@@ -1461,6 +1461,7 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (WinLose_MiniGame->GetIsHover())
 			{
+				sound.stop();
 				CMiniGame::Instance()->SetInGame(true);
 				CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
 				cout << "Launching Mini Game!" << endl;
