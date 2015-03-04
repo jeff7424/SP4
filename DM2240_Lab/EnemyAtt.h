@@ -26,10 +26,11 @@ public:
 	enum ENEMY_TYPE
 	{
 		ENEMY_NONE,
-		ENEMY_1,	//infantry
-		ENEMY_2,	//bike	 (moevment)
-		ENEMY_3,	//sniper (ranged)
-		ENEMY_4,	//heavy  (ranged)(movement)
+		ENEMY_1,	//melee
+		ENEMY_2,	//range
+		ENEMY_3,	//melee 
+		ENEMY_4,	//ranged 
+		ENEMY_5,
 		ENEMY_TOTAL,
 	};
 
@@ -61,10 +62,13 @@ public:
 	int offsetY2; //current y tile + 1
 	int tilesTravelled, currentTile;
 	int dir;
+	int pattern;
 	bool called;
 
 	void SetAtt(float firerate, int damage, int range, int health, float speed);
 	void SetSpeed(float speed);
+
+	bool collisionBox(int bulletX, int bulletY, int bossX, int bossY);
 
 	void DrawEnemy(int heroAnimationCounter);
 	void Update (std::vector<Enemy *> eList, std::vector<Tower *> tList, float dt, int laneSwap);

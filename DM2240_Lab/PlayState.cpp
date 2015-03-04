@@ -1,5 +1,6 @@
 #include "GameState.h"
 #include "GameStateManager.h"
+#include "MiniGame.h"
 #include "PlayState.h"
 #include "MenuState.h"
 #include <mmsystem.h>
@@ -95,7 +96,12 @@ void CPlayState::Init(void)
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
-
+	LoadTGA(&Cursor[0], "bin/tower/Unit1_Soldier.tga");
+	LoadTGA(&Cursor[1], "bin/tower/Unit2_Tank.tga");
+	LoadTGA(&Cursor[2], "bin/tower/Unit3_RPG.tga");
+	LoadTGA(&Cursor[3], "bin/tower/Unit4_Sniper.tga");
+	LoadTGA(&Cursor[4], "bin/tower/Unit5_Mine.tga");
+	LoadTGA(&Cursor[5], "bin/tower/Unit6_Barricade.tga");
 	/*LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");*/
@@ -116,12 +122,12 @@ void CPlayState::Init(void)
 	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
 
 	// Buttons for selecting units
-	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
-	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
-	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
-	Unit_Sniper = new Button("bin/tower/Soldier.tga", 264, 624, 36, 36);
-	Unit_Mine = new Button("bin/tower/mine.tga", 336, 624, 36, 36);
-	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
+	Unit_Infantry = new Button("bin/ui/hud/button_unit1.tga", 48, 624, 36, 36);
+	Unit_Tank = new Button("bin/ui/hud/button_unit2.tga", 120, 624, 36, 36);
+	Unit_Heavy = new Button("bin/ui/hud/button_unit3.tga", 192, 624, 36, 36);
+	Unit_Sniper = new Button("bin/ui/hud/button_unit4.tga", 264, 624, 36, 36);
+	Unit_Mine = new Button("bin/ui/hud/button_unit5.tga", 336, 624, 36, 36);
+	Unit_Barricade = new Button("bin/ui/hud/button_unit6.tga", 408, 624, 36, 36);
 
 	//For Win Lose Menu
 	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
@@ -155,7 +161,7 @@ void CPlayState::Init(void)
 	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
 	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 
-	theMiniGame = new CMiniGame();
+	//theMiniGame = new CMiniGame();
 
 	// Load the attributes through text file
 	LoadAtt();
@@ -172,32 +178,18 @@ void CPlayState::Init(void)
 
 void CPlayState::Cleanup()
 {
-	/*if (theMap != NULL)
+	if (tEnemyProgress != NULL)
 	{
-		delete theMap;
-		theMap = NULL;
-		free(theMap);
-	} 
-
-	if (Cam != NULL)
-	{
-		delete Cam;
-		Cam = NULL;
-		free(Cam);
-	}*/
+		delete tEnemyProgress;
+		tEnemyProgress = NULL;
+		free(tEnemyProgress);
+	}
 
 	if (player != NULL)
 	{
 		delete player;
 		player = NULL;
 		free(player);
-	}
-
-	if (tEnemyProgress != NULL)
-	{
-		delete tEnemyProgress;
-		tEnemyProgress = NULL;
-		free(tEnemyProgress);
 	}
 
 	// Power ups deconstruct
@@ -684,7 +676,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 
 	int time = glutGet(GLUT_ELAPSED_TIME);
 	static int ctime = glutGet(GLUT_ELAPSED_TIME);
-		if (time - ctime > 200) // the more it is the slower it becomes
+		if (time - ctime > 100) // the more it is the slower it becomes
 		{
 			heroAnimationCounter--;
 			if (heroAnimationCounter == 0)
@@ -710,7 +702,7 @@ void CPlayState::Draw(CGameStateManager* theGSM) {
 		Bullet *bullet = *it3;
 		if (bullet->GetActive() == true)
 		{
-			bullet->Render();
+			bullet->Render(heroAnimationCounter);
 		}
 	}
 
@@ -802,7 +794,7 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 	myKeys[key] = true;
 	switch (key)
 	{
-	case 'w':
+	/*case 'w':
 		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y - 20, 0));
 		break;
 	case 'a':
@@ -813,7 +805,7 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		break;
 	case 'd':
 		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x + 20, theMiniGame->GetPos().y, 0));
-		break;
+		break;*/
 
 	case '1':
 		selection = 1;
@@ -883,6 +875,12 @@ void CPlayState::MouseMove(int x, int y) {
 
 	//moverlevel1(x, y);
 
+	
+	/*if (minigame == true)
+	{
+		theMiniGame->SetPos(Vector3(mouseInfo.lastX, mouseInfo.lastY, 0));
+	}*/
+
 	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
 	PauseMenu_Resume->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
@@ -913,7 +911,7 @@ void CPlayState::MouseMove(int x, int y) {
 		Bonus_PFirerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_PDamage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_PTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-
+		
 		if (Bonus_Attack->GetIsHover())
 		{
 			info = -1;
@@ -1412,7 +1410,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Loading Next Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(100);
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000 + CMiniGame::Instance()->GetMGGold());
+			//player->SetGold(1000);
 			clearmap();
 			progress++;
 			loadlevel();
@@ -1426,7 +1425,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			//player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 
@@ -1438,11 +1438,12 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (WinLose_MiniGame->GetIsHover())
 			{
-				minigame = true;
+				CMiniGame::Instance()->SetInGame(true);
+				CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
 				cout << "Launching Mini Game!" << endl;
 			}
 		}
-	}
+	} 
 
 	else if (winscreen == true && progress > 5)
 	{
@@ -1462,7 +1463,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 			tEnemyProgress->SetEnemyCounter(0);
@@ -1489,7 +1490,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 
@@ -1514,35 +1515,6 @@ void CPlayState::Update(float dt)
 		losescreen = true;
 	}
 
-	//For Mini Game
-	if (minigame == true)
-	{
-		theMiniGame->update(dt);
-
-
-		//Check if player move out of map
-		if (theMiniGame->GetPos().x >= SCREEN_WIDTH*0.8)
-		{
-			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.8, theMiniGame->GetPos().y, 0));
-		}
-		else if (theMiniGame->GetPos().x <= SCREEN_WIDTH*0.2)
-		{
-			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.2, theMiniGame->GetPos().y, 0));
-		}
-
-
-		else if (theMiniGame->GetPos().y >= SCREEN_HEIGHT*0.9)
-		{
-			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.9, 0));
-		}
-		else if (theMiniGame->GetPos().y <= SCREEN_HEIGHT*0.1)
-		{
-			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.1, 0));
-		}
-
-
-	}
-
 	// Despawn creep if bullet collides
 	for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
 	{
@@ -1553,20 +1525,28 @@ void CPlayState::Update(float dt)
 			for (std::vector<Tower *>::iterator it2 = towerList.begin(); it2 != towerList.end(); ++it2)
 			{
 				Tower *tower = *it2;
-				if (tower->GetActive() && bullet->type == Bullet::GO_ENEMYBULLET && tower->GetPos().x - bullet->GetPos().x > bullet->GetRadius().x && abs(tower->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if (tower->GetActive() && tower->GetPos().x - bullet->GetPos().x > bullet->GetRadius().x && abs(tower->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
 				{	
-					cout << bullet->GetRadius() <<endl;
-					tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
+					//if(bullet->type == Bullet::GO_ENEMYBULLET)
+					//{
+						tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
+						bullet->SetActive(false);
+					//}
+
+					//else if(bullet->type == Bullet::GO_TANKBULLET)
+					//{
+						tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
+						bullet->SetActive(false);
+					//}
 
 					if (tower->GetHealth() <= 0) // kill the tower
-					{
-						tower->SetActive(false);
-						int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
-						int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-						theMap->GetGrid(x, y)->SetOccupied(false);
-						break;
-					}
-					bullet->SetActive(false);
+						{
+							tower->SetActive(false);
+							int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+							int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+							theMap->GetGrid(x, y)->SetOccupied(false);
+							break;
+						}
 				}
 			}
 
@@ -1574,64 +1554,60 @@ void CPlayState::Update(float dt)
 			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 			{
 				Enemy *creep = *it2;
-				if (creep->GetActive() && bullet->type != Bullet::GO_ENEMYBULLET && creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y)
+				if(bullet->type != Bullet::GO_TANKBULLET && bullet->type != Bullet::GO_ENEMYBULLET && creep->GetActive())
 				{
-					if (bullet->GetHealth() > 0)
+					if (creep->GetPos().x - bullet->GetPos().x < bullet->GetRadius().x && abs(creep->GetPos().y - bullet->GetPos().y) < bullet->GetRadius().y 
+						|| (creep->type == Enemy::ENEMY_5 && creep->collisionBox(bullet->GetPos().x, bullet->GetPos().y, creep->GetPos().x, creep->GetPos().y)))
 					{
-						bullet->SetHealth(bullet->GetHealth() - 1);
-						bullet->SetPos(bullet->GetPos() + 20);
-					}
-					else if (bullet->GetHealth() <= 0)
-					{
-						bullet->SetActive(false);
-					}
-					if (bullet->type == Bullet::GO_SLOWBULLET)
-					{
-						creep->SetBuff(2);
-						if (creep->GetBuff() > 0)
+						if (bullet->GetHealth() > 0)
 						{
-							creep->SetVel(Vector3(-7.5f, 0, 0));
-							creep->SetBuff(creep->GetBuff() - dt);
+							bullet->SetHealth(bullet->GetHealth() - 1);
+							bullet->SetPos(bullet->GetPos() + 20);
 						}
-						else if (creep->GetBuff() <= 0)
+						else if (bullet->GetHealth() <= 0)
 						{
-							creep->SetVel(Vector3(-15, 0, 0));
+							bullet->SetActive(false);
 						}
-					}
-
-					creep->SetHealth(creep->GetHealth() - (bullet->GetDamage())*Bonus_MultAttack); // Damage the creep
-
-					if (creep->GetHealth() <= 0) // kill the creep
-					{
-						//soundTypes(creep->type, true);
-						Deathsounds();
-
-						creep->SetActive(false);
-
-						// Increase player's gold depending on the enemy type killed
-						switch (creep->type)
+						if (bullet->type == Bullet::GO_SLOWBULLET)
 						{
-						case Enemy::ENEMY_1:
-							player->SetGold(player->GetGold() + (Enemy::NME_Y1)*Bonus_MultDollar);
-							break;
-
-						case Enemy::ENEMY_2:
-							player->SetGold(player->GetGold() + (Enemy::NME_Y2)*Bonus_MultDollar);
-							break;
-
-						case Enemy::ENEMY_3:
-							player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
-							player->SetBonus(player->GetBonus() + 1);
-							break;
-
-						case Enemy::ENEMY_4:
-							player->SetGold(player->GetGold() + (Enemy::NME_Y4)*Bonus_MultDollar);
-							player->SetBonus(player->GetBonus() + 3);
-							break;
+							creep->SetBuff(2);
+							if (creep->GetBuff() > 0)
+							{
+								creep->SetVel(Vector3(-7.5f, 0, 0));
+								creep->SetBuff(creep->GetBuff() - dt);
+							}
+							else if (creep->GetBuff() <= 0)
+							{
+								creep->SetVel(Vector3(-15, 0, 0));
+							}
 						}
 
-						tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-						break;
+						creep->SetHealth(creep->GetHealth() - (bullet->GetDamage())*Bonus_MultAttack); // Damage the creep
+
+						if (creep->GetHealth() <= 0) // kill the creep
+						{
+							//soundTypes(creep->type, true);
+							creep->SetActive(false);
+
+							switch (creep->type)
+							{
+							case Enemy::ENEMY_1:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y1)*Bonus_MultDollar);
+								break;
+
+							case Enemy::ENEMY_2:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y2)*Bonus_MultDollar);
+								break;
+
+							case Enemy::ENEMY_3:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
+								player->SetBonus(player->GetBonus() + 1);
+								break;
+							}
+
+							tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+							break;
+						}
 					}
 				}
 			}
@@ -1645,47 +1621,6 @@ void CPlayState::Update(float dt)
 		}
 	}
 
-	// Spawn bomb for cannon (radius)
-	/*for (std::vector<Bullet *>::iterator it3 = bulletList.begin(); it3 != bulletList.end(); ++it3)
-	{
-		Bullet *bullet = *it3;
-		if (bullet->GetActive() && bullet->type == Bullet::GO_CANNONBULLET)
-		{
-			for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
-			{
-				Enemy *creep = *it2;
-				if (creep->GetActive())
-				{
-					Vector3 temp;
-					temp.x = creep->GetPos().x;
-					temp.y = creep->GetPos().y;
-
-					if ((temp - bullet->GetPos()).Length() < 10)
-					{
-						creep->SetHealth(creep->GetHealth() - bullet->GetDamage());
-						bullet->type = Bullet::GO_BOMBBULLET;
-						if (creep->GetHealth() <= 0)
-						{
-							creep->SetActive(false);
-							soundTypes(creep->type, true);
-							enemycounter--;
-							tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
-							player->SetGold(player->GetGold() + 50);
-							break;
-						}
-					}
-				}
-				else
-				{
-					delete creep;
-					enemyList.erase(it2);
-					creep = NULL;
-					break;
-				}
-			}
-		}
-	}*/
-
 	// Check if creep in range
 	for (std::vector<Enemy *>::iterator it2 = enemyList.begin(); it2 != enemyList.end(); ++it2)
 	{
@@ -1696,61 +1631,104 @@ void CPlayState::Update(float dt)
 			for (std::vector<Tower *>::iterator it = towerList.begin(); it != towerList.end(); ++it)
 			{
 				Tower *tower = *it;
+				Vector3 bulletPos;
+
 				if (tower->GetActive() == true)
 				{
-					if(tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+					if(creep->type == Enemy::ENEMY_5)
+					{
+						if(tower->GetPos().y <= creep->GetPos().y + TILE_SIZE && tower->GetPos().y >= creep->GetPos().y - TILE_SIZE && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 						creep->SetFire(true);
+					}
+					else
+					{
+						if(tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+						creep->SetFire(true);
+					}
 
-						if (creep->state == Enemy::ENEMY_ATTACK)
+					if (creep->state == Enemy::ENEMY_ATTACK)
+					{
+						if ((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_2))
 						{
-							if ((creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4))
+							//creep->SetFire(true);
+							tower->SetHealth(tower->GetHealth() - (creep->GetDamage())/Bonus_MultArmour);
+							creep->SetFireCounter(creep->GetFireRate());
+							if (tower->GetHealth() <= 0)
 							{
-								//creep->SetFire(true);
-								tower->SetHealth(tower->GetHealth() - (creep->GetDamage())/Bonus_MultArmour);
-								creep->SetFireCounter(creep->GetFireRate());
-								if (tower->GetHealth() <= 0)
-								{
-
-									Deathsounds();
-
-									//se->play2D("bin/sounds/towerDeath.mp3", false);
-									//se->setSoundVolume(0.25);
-									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
-									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-									theMap->GetGrid(x, y)->SetOccupied(false);
-									tower->SetActive(false);
-									creep->SetFire(false);
-									delete tower;
-									towerList.erase(it);
-									tower = NULL;
-									free(tower);
-								}
-								break;
+								//se->play2D("bin/sounds/towerDeath.mp3", false);
+								//se->setSoundVolume(0.25);
+								int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+								int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+								theMap->GetGrid(x, y)->SetOccupied(false);
+								tower->SetActive(false);
+								creep->SetFire(false);
 							}
-							else if((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_2))
-							{
-								Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_ENEMYBULLET));
-								newbullet->SetActive(true);
-								newbullet->SetDamage(creep->GetDamage());
-								newbullet->SetPos(creep->GetPos());
-								newbullet->SetVel(Vector3(-1,0,0));
-								newbullet->SetSpeed(400);
-								CPlayState::Instance()->GetBulletList().push_back(newbullet);
-								creep->SetFireCounter(creep->GetFireRate());
-								//cout << creep->GetFireCounter() << endl;
-								break;
-							}
+							break;
 						}
-
-						else if(creep->state == Enemy::ENEMY_RELOADING)
+						else if((creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4))
 						{
-							creep->SetFireCounter(creep->GetFireCounter() - dt);
+							Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_ENEMYBULLET));
+							newbullet->SetActive(true);
+							newbullet->SetDamage(creep->GetDamage());
+							newbullet->SetPos(creep->GetPos());
+							newbullet->SetVel(Vector3(-1,0,0));
+							newbullet->SetSpeed(400);
+							CPlayState::Instance()->GetBulletList().push_back(newbullet);
+							creep->SetFireCounter(creep->GetFireRate());
 							//cout << creep->GetFireCounter() << endl;
 							break;
 						}
+						else if(creep->type == Enemy::ENEMY_5)
+						{
+							cout << creep->pattern << endl;
+							if(creep->pattern == 0) // vertical 3
+							{
+								for(int i = -1; i < 2; i++)
+								{
+									bulletPos.Set(creep->GetPos().x, (creep->GetPos().y + i*TILE_SIZE), 0);
+
+									Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_TANKBULLET));
+									newbullet->SetActive(true);
+									newbullet->SetDamage(creep->GetDamage());
+									newbullet->SetPos(bulletPos);
+									newbullet->SetVel(Vector3(-1,0,0));
+									newbullet->SetSpeed(400);
+									CPlayState::Instance()->GetBulletList().push_back(newbullet);
+								}
+								creep->pattern = 1;
+							}
+							else if (creep->pattern == 1)
+							{
+								for(int i = 0; i < 3; i++)
+								{
+									bulletPos.Set((creep->GetPos().x + i*TILE_SIZE), creep->GetPos().y, 0);
+
+									Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_TANKBULLET));
+									newbullet->SetActive(true);
+									newbullet->SetDamage(creep->GetDamage());
+									newbullet->SetPos(bulletPos);
+									newbullet->SetVel(Vector3(-1,0,0));
+									newbullet->SetSpeed(400);
+									CPlayState::Instance()->GetBulletList().push_back(newbullet);
+								}
+								creep->pattern = 0;
+							}
+							creep->SetFireCounter(creep->GetFireRate());
+							break;
+						}
+						//creep->SetFireCounter(creep->GetFireRate());
+						//creep->pattern += 1;
+					}
+
+					else if(creep->state == Enemy::ENEMY_RELOADING)
+					{
+						creep->SetFireCounter(creep->GetFireCounter() - dt);
+						//cout << creep->GetFireCounter() << endl;
+						break;
 					}
 				}
 			}
+		}
 		else
 		{
 			delete creep;
@@ -2357,6 +2335,9 @@ void CPlayState::UpdateSpawn()
 				creep->SetAtt(enemyClone[creep->type - 1]->GetFireRate(), enemyClone[creep->type - 1]->GetDamage(),
 					enemyClone[creep->type - 1]->GetRange(), enemyClone[creep->type - 1]->GetHealth(), enemyClone[creep->type - 1]->GetSpeed());
 				creep->SetVel(Vector3(-15 * creep->GetSpeed(), 0, 0));
+				if(creep->type == Enemy::ENEMY_5)
+				creep->SetPos(Vector3(SCREEN_WIDTH, TILE_SIZE* 3.5, 0));
+				else
 				creep->SetPos(Vector3(SCREEN_WIDTH, ((rand() % 5 + 1) + 0.5f) * 96, 0));
 				enemyList.push_back(creep);
 			}
@@ -2743,19 +2724,19 @@ void CPlayState::RenderInfo(int x, int y)
 	{
 		if (info == 1)
 		{
-			sprintf_s(temp, "Normal Tower");
+			sprintf_s(temp, "Machine Gun");
 		}
 		else if (info == 2)
 		{
-			sprintf_s(temp, "Cannon Tower");
+			sprintf_s(temp, "Mini Tank");
 		}
 		else if (info == 3)
 		{
-			sprintf_s(temp, "Lightning Tower");
+			sprintf_s(temp, "RPG");
 		}
 		else if (info == 4)
 		{
-			sprintf_s(temp, "Slow Tower");
+			sprintf_s(temp, "Sniper");
 		}
 		else if (info == 5)
 		{
@@ -2970,31 +2951,10 @@ void CPlayState::RenderHUD()
 
 	if (minigame == true)
 	{
-		theMiniGame->RenderMGBackground();
-		theMiniGame->RenderMGCharacter();
-		//theMiniGame->RenderMGBlood();
-		//theMiniGame->RenderMGGun();
-		theMiniGame->RenderBullets();
-
-		//Render the time left on minigame screen
-		sprintf_s(temp, "Time Left:    %.1f", theMiniGame->GetTimer()*0.01);
-		RenderStringOnScreen(SCREEN_WIDTH*0.42, 50, temp);
-
-
-
-		if (theMiniGame->winminigame == true)
-		{
-			theMiniGame->RenderMGWinScreen();
-			//Render Next Level Button in mini game to continue
-			WinLose_NextLevel->Render();
-		}
-		else if (theMiniGame->loseminigame == true)
-		{
-			theMiniGame->RenderMGLoseScreen();
-			//Render Next Level Button in mini game to continue
-			WinLose_NextLevel->Render();
-		}
+		
 	}
+
+	RenderCursor();
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
@@ -3058,7 +3018,6 @@ void CPlayState::RenderWinScreen()
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	int height = 100 * 1.333 / 1.5;
 	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
 	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
@@ -3105,7 +3064,6 @@ void CPlayState::RenderLoseScreen()
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	int height = 100 * 1.333 / 1.5;
 	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
 	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
@@ -3119,6 +3077,26 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
+}
+
+void CPlayState::RenderCursor()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(mouseInfo.lastX, mouseInfo.lastY, 0);
+	glBindTexture(GL_TEXTURE_2D, Cursor[selection - 1].texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex2f(0, 48);
+	glTexCoord2f(1, 0); glVertex2f(48, 48);
+	glTexCoord2f(1, 1); glVertex2f(48, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 // to return the vector list to other classes so that they can push objects into it

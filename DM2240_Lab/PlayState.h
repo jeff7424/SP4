@@ -12,7 +12,7 @@ extern "C" {
 #include <stdio.h>
 #include <time.h>
 #include <GL/glut.h>
-#include <iostream>
+#include <iostream>5
 #include <string>
 #include "MyMath.h"					// Math library
 #include "Mouse.h"					// Mouse info
@@ -32,7 +32,7 @@ extern "C" {
 #include "Map.h"					// Map class
 #include "BG.h"						// Background
 #include "Button.h"					// Buttons
-#include "MiniGame.h"
+//#include "MiniGame.h"
 
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 672
@@ -172,7 +172,7 @@ private:
 	CEnemyProgress *tEnemyProgress;		// Enemy progression bar
 	Enemy* theEnemy;					
 	Tank* backupTank;					// Tank power up
-	CMiniGame *theMiniGame;				// Mini Game
+	//CMiniGame *theMiniGame;				// Mini Game
 	// Sounds
 	AudioPlayer sound;
 	ISoundEngine *se;
@@ -182,6 +182,7 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
+	TextureImage Cursor[6];
 	TextureImage CreepTexture[3];
 	TextureImage WinScreenTexture;
 	TextureImage LoseScreenTexture;
@@ -219,6 +220,7 @@ private:
 	void RenderHUD();
 	void RenderPauseMenu();
 	void RenderExitMenu();
+	void RenderCursor();
 
 	//For Win and Lose Screens
 	void RenderWinScreen(void);

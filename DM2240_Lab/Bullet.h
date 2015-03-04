@@ -22,12 +22,14 @@ public:
 		GO_SLOWBULLET,
 		GO_BOMBBULLET,
 		GO_ENEMYBULLET,
+		GO_TANKBULLET,
+		GO_MINIGAMEBULLET,
 		GO_TOTAL, // must be last
 	};
 	BULLET_TYPE type;
 
 	TextureImage texture;
-
+	int heroAnimationCounter;
 	Bullet(BULLET_TYPE type = GO_NORMALBULLET);
 	~Bullet();
 
@@ -43,7 +45,7 @@ public:
 	Vector3 GetRadius();
 
 	void Update(float dt);
-	void Render();
+	void Render(int heroAnimationCounter);
 	Vector3 GetTopLeft();
 	Vector3 GetBottomRight();
 };
