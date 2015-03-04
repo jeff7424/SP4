@@ -1,5 +1,7 @@
 #include "MiniGame.h"
+#include <iostream>
 
+using namespace std;
 
 int random = rand() % 3 + 1;
 

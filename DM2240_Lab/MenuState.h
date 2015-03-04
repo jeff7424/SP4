@@ -16,6 +16,7 @@ extern "C" {
 #include "Mouse.h"
 #include <string>
 #include "Button.h"
+#include "BG.h"
 
 class CMenuState : public CGameState
 {
@@ -52,11 +53,15 @@ private:
 	Button *InstructionsButton;
 	Button *CreditsButton;
 	Button *ExitButton;
+	Button *YesButton;
+	Button *NoButton;
+	BG *ExitPopUp;
 	ISoundEngine *se;
 	AudioPlayer bgm;
 	bool isplaying;
 	bool myKeys[255];
 	bool audioplay;
+	bool exitmenu;
 	TextureImage menu[1];
 	TextureImage button[2];
 	TextureImage title;

@@ -1,229 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
-    <Filter Include="GameState">
-      <UniqueIdentifier>{8efc4195-ef85-4e37-8377-ec83c583ef94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Characters">
-      <UniqueIdentifier>{22abd889-5739-41f4-a84b-15b97d5e5392}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Cursor">
-      <UniqueIdentifier>{3f4117a2-bc75-49bc-a3a2-1793bd2da118}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Audio">
-      <UniqueIdentifier>{0b82e7fa-4ac3-4f9e-b90a-11e8a8ad0b57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{efb4a12e-f03c-4d91-ad2c-1a0205224417}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Map">
-      <UniqueIdentifier>{d8c481d9-9332-455f-b97e-a23fd0c46f5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{89a4c066-26f6-4243-9654-b9968a60d35a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Powers">
-      <UniqueIdentifier>{ef9f79ab-522e-492b-aae7-d18f2ae0bfc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vector3">
-      <UniqueIdentifier>{934da9ea-6534-48ab-9845-9d82ac1315d9}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="AudioPlayer.cpp" />
+    <ClCompile Include="BG.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CreditsState.cpp" />
+    <ClCompile Include="Cursor.cpp" />
+    <ClCompile Include="EnemyAtt.cpp" />
+    <ClCompile Include="EnemyProgress.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="GameModeState.cpp" />
+    <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="InstructionState.cpp" />
+    <ClCompile Include="IntroState.cpp" />
+    <ClCompile Include="LevelSelectState.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="Powerup.cpp" />
+    <ClCompile Include="SettingsState.cpp" />
+    <ClCompile Include="Spawn.cpp" />
+    <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="TowerAtt.cpp" />
+    <ClCompile Include="Units.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="MiniGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateManager.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="IntroState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyAtt.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="Spawn.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="TowerAtt.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="Units.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Vector3</Filter>
-    </ClCompile>
-    <ClCompile Include="Cursor.cpp">
-      <Filter>Cursor</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioPlayer.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyProgress.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="GameModeState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelSelectState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="Grid.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Powerup.cpp">
-      <Filter>Powers</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank.cpp">
-      <Filter>Powers</Filter>
-    </ClCompile>
-    <ClCompile Include="BG.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsState.cpp">
-      <Filter>Source Files</Filter>
-    <ClCompile Include="InstructionState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="CreditsState.cpp">
-      <Filter>GameState</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateManager.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="IntroState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyAtt.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="Spawn.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="TowerAtt.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="Units.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Vector3</Filter>
-    </ClInclude>
-    <ClInclude Include="Cursor.h">
-      <Filter>Cursor</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioPlayer.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyProgress.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="GameModeState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelSelectState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Powerup.h">
-      <Filter>Powers</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank.h">
-      <Filter>Powers</Filter>
-    </ClInclude>
-    <ClInclude Include="BG.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InstructionState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="CreditsState.h">
-      <Filter>GameState</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClInclude Include="AudioPlayer.h" />
+    <ClInclude Include="BG.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CreditsState.h" />
+    <ClInclude Include="Cursor.h" />
+    <ClInclude Include="EnemyAtt.h" />
+    <ClInclude Include="EnemyProgress.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="GameModeState.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="InstructionState.h" />
+    <ClInclude Include="IntroState.h" />
+    <ClInclude Include="LevelSelectState.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="MenuState.h" />
+    <ClInclude Include="Mouse.h" />
+    <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="PlayState.h" />
+    <ClInclude Include="Powerup.h" />
+    <ClInclude Include="SettingsState.h" />
+    <ClInclude Include="Spawn.h" />
+    <ClInclude Include="Tank.h" />
+    <ClInclude Include="TextureImage.h" />
+    <ClInclude Include="TowerAtt.h" />
+    <ClInclude Include="Units.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="MiniGame.h" />
   </ItemGroup>
 </Project>

@@ -15,7 +15,6 @@ extern "C" {
 #include "Mouse.h"
 #include <string>
 #include "Button.h"
-#include "Setting.h"
 #include "MenuState.h"
 class CSettingsState : public CGameState
 {

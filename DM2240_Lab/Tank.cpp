@@ -13,7 +13,7 @@ Tank::Tank(State state)
 	SetPos(Vector3(-50, 336, 0));
 	Target = NULL;
 	inPosition = false;
-	LoadTGA(&body, "bin/tower/Tank.tga");
+	LoadTGA(&body, "bin/tower/Unit2_Tank.tga");
 }
 
 Tank::~Tank()
