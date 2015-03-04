@@ -537,6 +537,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 							soundTypes(10);
 							break;
 						case Tower::TOWER_MINE:
+							soundTypes(4);
 							tower->ReturnTarget()->SetHealth(0);
 							tower->ReturnTarget()->SetActive(false);
 							tower->SetActive(false);
@@ -560,7 +561,11 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
+				if (bullet->type == Bullet::GO_CANNONBULLET || Bullet::GO_SHOCKBULLET)
+					soundTypes(4);
+				else
 				soundTypes(11);
+
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
