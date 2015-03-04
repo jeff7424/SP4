@@ -372,16 +372,18 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{
-			if (audioplay == true)
-			se->play2D("bin/sounds/select.wav", false);
 			if (StartButton->GetIsHover())
 			{	
+				if (audioplay == true)
+					se->play2D("bin/sounds/select.wav", false);
 				bgm.stop();
 				CGameStateManager::getInstance()->ChangeState(CGameModeState::Instance());
 			}
 
 			else if (MiniGameButton->GetIsHover())
 			{
+				if (audioplay == true)
+					se->play2D("bin/sounds/select.wav", false);
 				bgm.stop();
 				CMiniGame::Instance()->SetInGame(false);
 				CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
@@ -389,6 +391,8 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 
 			else if (SettingsButton->GetIsHover())
 			{
+				if (audioplay == true)
+					se->play2D("bin/sounds/select.wav", false);
 				bgm.stop();
 				CGameStateManager::getInstance()->ChangeState(CSettingsState::Instance());
 			}
@@ -400,10 +404,14 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			}
 			else if (CreditsButton->GetIsHover())
 			{
+				if (audioplay == true)
+					se->play2D("bin/sounds/select.wav", false);
 				CGameStateManager::getInstance()->ChangeState(CCreditsState::Instance());
 			}
 			else if (ExitButton->GetIsHover())
 			{
+				if (audioplay == true)
+					se->play2D("bin/sounds/select.wav", false);
 				CGameStateManager::getInstance()->Cleanup();
 				exit(0);
 			}
