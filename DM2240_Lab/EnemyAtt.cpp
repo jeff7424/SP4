@@ -174,7 +174,7 @@ void Enemy::Update(std::vector<Enemy *> eList, std::vector<Tower *> tList, float
 					}
 					else
 					{	
-						if(creep->type == Enemy::ENEMY_3 && creep->type == Enemy::ENEMY_4)
+						if(creep->type == Enemy::ENEMY_3 || creep->type == Enemy::ENEMY_4)
 						creep->SetPos(Vector3(creep->GetPos().x, ((creep->offsetY2)* TILE_SIZE + (TILE_SIZE/2)), 0));	//pop to middle of tile		1.set postion values to TILE_SIZE
 						
 						creep->currentTile -= 2;

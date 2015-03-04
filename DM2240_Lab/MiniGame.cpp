@@ -1,6 +1,6 @@
 #include "MiniGame.h"
 
-
+using namespace std;
 int random = rand() % 3 + 1;
 
 CMiniGame::CMiniGame()

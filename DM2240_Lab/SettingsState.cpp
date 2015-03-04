@@ -28,7 +28,8 @@ void CSettingsState::Init()
 	return;*/
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
-
+	LoadTGA(&window, "bin/ui/buttons/audio_background.tga");
+	LoadTGA(&Title, "bin/ui/hud/title_settings.tga");
 	for (int i = 0; i < 255; i++){
 		myKeys[i] = false;
 	}
@@ -99,14 +100,15 @@ void CSettingsState::Draw(CGameStateManager* theGSM)
 	theCam->SetHUD(true);
 
 	RenderMenu();
+	DrawWindow();
 	StartButton->Render();
 	if (audioplay != true)
 	{
-		SettingsButton->SetPosition(data[4] - data[2], 200);
+		SettingsButton->SetPosition(data[4] - data[2], 400);
 	}
 	else
 	{
-		SettingsButton->SetPosition(data[4], 200);
+		SettingsButton->SetPosition(data[4], 400);
 	}
 	SettingsButton->Render();
 	//InstructionsButton->Render();
@@ -259,6 +261,46 @@ void CSettingsState::changeSize(int w, int h)
 
 	this->w = w;
 	this->h = h;
+}
+
+void CSettingsState::DrawWindow()
+{
+	glPushMatrix();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, Title.texID);
+	glTranslatef(0, 0, -0.1f);
+	glColor3f(1, 1, 1);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(200.0f, 50.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(800.0f, 50.0f);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(800.0f, 200.0f);
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(200.0f, 200.0f);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	glPushMatrix();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, window.texID);
+	glTranslatef(0, 0, -0.1f);
+	glColor3f(1, 1, 1);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(200.0f, 300.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(800.0f, 300.0f);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(800.0f, 500.0f);
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(200.0f, 500.0f);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 void CSettingsState::inputKey(int key, int x, int y)

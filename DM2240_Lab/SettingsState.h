@@ -57,6 +57,8 @@ private:
 	bool myKeys[255];
 	TextureImage menu[1];
 	TextureImage button[2];
+	TextureImage window;
+	TextureImage Title;
 	int data[12];
 	char* textures[4];
 
@@ -65,7 +67,7 @@ private:
 
 	bool LoadTGA(TextureImage *texture, char *filename);			// Loads A TGA File Into Memory
 	static CSettingsState theSettingsState;
-
+	void DrawWindow();
 	void *font_style;
 	//  Draws a string at the specified coordinates.
 	void printw(float x, float y, float z, char* format, ...);
