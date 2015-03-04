@@ -43,7 +43,7 @@ void CPlayState::Init(void)
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	winscreen = true;
+	winscreen = false;
 	losescreen = false;
 	minigame = false;
 	playvictory = false;
@@ -1430,6 +1430,7 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (WinLose_NextLevel->GetIsHover())
 		{
 			countcheck = 0;
+			sound.resume();
 			winscreen = false;
 			minigame = false;
 			se->stopAllSounds();
