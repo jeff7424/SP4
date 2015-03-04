@@ -2,7 +2,8 @@
 #include <GL\glut.h>
 
 Units::Units()
-: health(0)
+: health(0.0f)
+, maxhealth(0.0f)
 , damage(0)
 , level(1)
 , range(0)
@@ -34,9 +35,14 @@ Units::~Units()
 
 }
 
-void Units::SetHealth(int health)
+void Units::SetHealth(float health)
 {
 	this->health = health;
+}
+
+void Units::SetMaxHealth(float maxhealth)
+{
+	this->maxhealth = maxhealth;
 }
 
 void Units::SetDamage(int damage)
@@ -69,9 +75,14 @@ void Units::SetFireCounter(float firecounter)
 	this->fireCounter = firecounter;
 }
 
-int Units::GetHealth()
+float Units::GetHealth()
 {
 	return health;
+}
+
+float Units::GetMaxHealth()
+{
+	return maxhealth;
 }
 
 int Units::GetDamage()
@@ -106,16 +117,35 @@ float Units::GetFireCounter()
 
 void Units::DrawHealthBar()
 {
+	glDisable(GL_BLEND);
 	glPushMatrix();
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glTranslatef(GetPos().x - 40, GetPos().y - 40, GetPos().z);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTranslatef(GetPos().x - 48, GetPos().y - 48, 0);
+	glScalef(2, 1, 1);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0 - 1, 0 - 1);
+	glVertex2f(48 + 1, 0 - 1);
+	glVertex2f(48 + 1, 5 + 1);
+	glVertex2f(0 - 1, 5 + 1);
+	glEnd();
+	glColor3f(0.2f, 0.2f, 0.6f);
 	glBegin(GL_QUADS);
 	glVertex2f(0, 0);
+	glVertex2f(48, 0);
+	glVertex2f(48, 5);
 	glVertex2f(0, 5);
-	glVertex2f(health, 5);
-	glVertex2f(health, 0);
+	glEnd();
+	glPushMatrix();
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_QUADS);
+	glVertex2f(0, 0);
+	glVertex2f((health / maxhealth) * 48, 0);
+	glVertex2f((health / maxhealth) * 48, 5);
+	glVertex2f(0, 5);
 	glEnd();
 	glPopMatrix();
+	glPopMatrix();
+	glEnable(GL_BLEND);
 }
 
 void Units::DrawDeath()

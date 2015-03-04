@@ -29,7 +29,7 @@ void CMiniGame::Init()
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
 	MiniGameMusic = new AudioPlayer;
-	MiniGameMusic->setFileName("bin/sounds/BGM.mp3");
+	MiniGameMusic->setFileName("bin/sounds/Snake_Eater.mp3");
 	MiniGameMusic->playSoundThreaded();
 	//LoadTGA(&texture, filename);
 

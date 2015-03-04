@@ -13,7 +13,8 @@
 
 class Units : public Entity {
 private:
-	int health;
+	float health;
+	float maxhealth;
 	int damage;
 	int level;
 	int range;
@@ -25,7 +26,8 @@ public:
 	Units();
 	~Units();
 
-	void SetHealth(int health);
+	void SetHealth(float health);
+	void SetMaxHealth(float maxhealth);
 	void SetDamage(int damage);
 	void SetLevel(int level);
 	void SetRange(int range);
@@ -33,7 +35,8 @@ public:
 	void SetFireRate(float firerate);
 	void SetFireCounter(float firecounter);
 
-	int GetHealth();
+	float GetHealth();
+	float GetMaxHealth();
 	int GetDamage();
 	int GetLevel();
 	int GetRange();

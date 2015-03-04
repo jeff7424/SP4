@@ -62,15 +62,14 @@ void createWindow(int width, int height, char *name, bool fullscreen)
 {
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(width, height);
+	char text[256];
+	sprintf(text, "%dx%d:16@60", width, height);
+	glutGameModeString(text);
 	if (fullscreen)
 	{
-		char text[256];
-		sprintf(text, "%dx%d:16@60", width, height);
-		glutGameModeString(text);
 		glutEnterGameMode();
 	}
-	else
-		glutCreateWindow(name);
+	glutCreateWindow(name);
 
 	initGL();
 }
