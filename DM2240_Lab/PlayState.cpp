@@ -1248,11 +1248,16 @@ void CPlayState::mclicklevel1(int x, int y)
 				{
 					if (Shield->GetReady())
 					{
+						soundTypes(24);
 						Shield->SetActive(true);
 						player->SetMaxShield(player->GetShield() + 50);
 						player->SetShield(player->GetShield() + 50);
 						player->SetQtyShield(player->GetQtyShield() - 1);
 					}
+				}
+				else
+				{
+					soundTypes(15);
 				}
 			}
 			else if (Power_BaseHealth->GetIsHover())
@@ -1263,6 +1268,7 @@ void CPlayState::mclicklevel1(int x, int y)
 					{
 						if (player->GetHealth() < player->GetMaxHealth())
 						{
+							soundTypes(24);
 							BaseHealth->SetActive(true);
 							player->SetHealth(player->GetHealth() + 50);
 							player->SetQtyBaseHealth(player->GetQtyBaseHealth() - 1);
@@ -1271,21 +1277,35 @@ void CPlayState::mclicklevel1(int x, int y)
 						}
 					}
 				}
+				else
+				{
+					soundTypes(15);
+				}
 			}
 			else if (Power_Firerate->GetIsHover())
 			{
 				if (player->GetQtyFireRate() > 0)
 				{
+					soundTypes(24);
 					Firerate->SetActive(true);
 					player->SetQtyFireRate(player->GetQtyFireRate() - 1);
+				}
+				else
+				{
+					soundTypes(15);
 				}
 			}
 			else if (Power_Damage->GetIsHover())
 			{
 				if (player->GetQtyDamage() > 0)
 				{
+					soundTypes(24);
 					Damage->SetActive(true);
 					player->SetQtyDamage(player->GetQtyDamage() - 1);
+				}
+				else
+				{
+					soundTypes(15);
 				}
 			}
 			else if (Power_BackupTank->GetIsHover())
@@ -1294,9 +1314,14 @@ void CPlayState::mclicklevel1(int x, int y)
 				{
 					if (Backup_Tank->GetReady())
 					{
+						soundTypes(22);
 						Backup_Tank->SetActive(true);
 						player->SetQtyTank(player->GetQtyTank() - 1);
 					}
+				}
+				else
+				{
+					soundTypes(15);
 				}
 			}
 			else if (Unit_Infantry->GetIsHover())
@@ -2562,9 +2587,11 @@ void CPlayState::soundTypes(int type)
 			case 23:
 				se->play2D("bin/sounds/purchase.wav", false);
 				break;
+			case 24:
+				se->play2D("bin/sounds/power_use.wav", false);
+				break;
 			}
 		}
-//	sound.playSound();
 }
 
 void CPlayState::loadlevel()
