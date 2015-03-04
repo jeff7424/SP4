@@ -2902,8 +2902,11 @@ void CPlayState::RenderHUD()
 		if (playvictory == true)
 		{
 			sound.stop();
-			se->play2D("bin/sounds/victory_bgm.mp3");
-			se->play2D("bin/sounds/mission_complete.mp3");
+			if (audioplay == true)
+			{
+				se->play2D("bin/sounds/victory_bgm.mp3");
+				se->play2D("bin/sounds/mission_complete.mp3");
+			}
 			playvictory = false;
 		}
 		glColor3f(1.0f, 1.0f, 1.0f);
