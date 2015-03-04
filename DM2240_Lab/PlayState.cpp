@@ -859,7 +859,10 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		}
 		else
 		{
-			sound.resume();
+			if (audioplay == true)
+			{
+				sound.resume();
+			}
 			playmusic = true;
 		}
 		break;
@@ -1495,7 +1498,10 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (WinLose_NextLevel->GetIsHover())
 		{
 			countcheck = 0;
-			sound.resume();
+			if (audioplay == true)
+			{
+				sound.resume();
+			}
 			winscreen = false;
 			minigame = false;
 			se->stopAllSounds();
@@ -1627,7 +1633,7 @@ void CPlayState::Update(float dt)
 					{
 						tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
 						bullet->SetActive(false);
-						break;
+						//break;
 					}
 
 					if (tower->GetHealth() <= 0) // kill the tower
@@ -1757,9 +1763,6 @@ void CPlayState::Update(float dt)
 									theMap->GetGrid(x, y)->SetOccupied(false);
 									tower->SetActive(false);
 									creep->SetFire(false);
-									delete tower;
-									towerList.erase(it);
-									tower = NULL;
 									break;
 								}
 							}
