@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="AudioPlayer.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="BG.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Objects\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAtt.cpp">
+      <Filter>Objects\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyProgress.cpp">
+      <Filter>Objects\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModeState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="InstructionState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSelectState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniGame.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Powerup.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="TowerAtt.cpp">
+      <Filter>Objects\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>Objects\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="Units.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawn.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioPlayer.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="BG.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Objects\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAtt.h">
+      <Filter>Objects\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyProgress.h">
+      <Filter>Objects\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModeState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="InstructionState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSelectState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGame.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Powerup.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="TowerAtt.h">
+      <Filter>Objects\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Objects\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="Units.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureImage.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawn.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="States">
+      <UniqueIdentifier>{100abe5a-8142-4bf7-96ce-f7290a958ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{87beb34d-61c3-4d53-8045-e32387c1975b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Units">
+      <UniqueIdentifier>{af44f1e3-7221-4ca3-b0b8-0004960188d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Enemies">
+      <UniqueIdentifier>{3069af9a-6859-4ba3-90e4-34ca31fc43e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{b4d570e7-48b1-40f4-8918-b0bcffbf3e60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{543ea593-62e9-4de5-b0a6-9535c6a1e578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Projectiles">
+      <UniqueIdentifier>{941766e7-c91d-4c93-86f2-31c89f3ab4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{85428fb1-2c4c-4daa-a9bd-a76a88d0a504}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{cced69f9-643d-474f-b51c-3d196664ef8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{cc3b35bd-d2b6-4dae-9a7e-089b702b5a62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

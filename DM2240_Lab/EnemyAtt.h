@@ -19,8 +19,6 @@ private:
 	float speed;
 	//int heroAnimationCounter;
 
-	
-
 public:
 
 	enum ENEMY_TYPE
@@ -76,7 +74,8 @@ public:
 	void SetBuff(float buff);
 	float GetBuff();
 	bool LoadTGA(TextureImage *texture, char *filename);
-
+	Vector3 GetTopLeft();
+	Vector3 GetBottomRight();
 	float GetSpeed();
 };
 

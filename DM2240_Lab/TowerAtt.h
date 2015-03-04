@@ -52,5 +52,7 @@ public:
 	void Upgrade();
 	void Render();
 	void GetTarget(std::vector<Enemy*>);
+	Vector3 GetTopLeft();
+	Vector3 GetBottomRight();
 	Enemy* ReturnTarget();
 };

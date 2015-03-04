@@ -14,7 +14,7 @@ void CCreditsState::Init()
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 	if (!LoadTGA(&Background, "menu.tga"))				// Load The Font Texture
 		return; //false;			
-	if (!LoadTGA(&Credits, "credits.tga"))
+	if (!LoadTGA(&Credits, "bin/ui/credits/credits.tga"))
 		return;
 
 	for (int i = 0; i < 255; i++){

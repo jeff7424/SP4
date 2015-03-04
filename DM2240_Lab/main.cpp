@@ -76,6 +76,7 @@ void createWindow(int width, int height, char *name, bool fullscreen)
 
 void registerCallbacks()
 {
+	glutFullScreen();
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(update);
 	glutDisplayFunc(renderScene);

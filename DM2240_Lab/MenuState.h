@@ -50,7 +50,6 @@ private:
 	int h;
 	Button *StartButton;
 	Button *SettingsButton;
-	Button *InstructionsButton;
 	Button *CreditsButton;
 	Button *MiniGameButton;
 	Button *ExitButton;
@@ -67,7 +66,7 @@ private:
 	TextureImage button[2];
 	TextureImage title;
 
-	char* textures[8];
+	char* textures[7];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;

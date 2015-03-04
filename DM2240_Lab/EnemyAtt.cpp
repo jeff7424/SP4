@@ -385,3 +385,13 @@ bool Enemy::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File
 
 	return true;											// Texture Building Went Ok, Return True
 }
+
+Vector3 Enemy::GetTopLeft()
+{
+	return Vector3(GetPos().x - (TILE_SIZE / 2), GetPos().y - (TILE_SIZE / 2), 0);
+}
+
+Vector3 Enemy::GetBottomRight()
+{
+	return Vector3(GetPos().x + (TILE_SIZE / 2), GetPos().y + (TILE_SIZE / 2), 0);
+}

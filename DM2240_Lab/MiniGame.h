@@ -58,7 +58,7 @@ private:
 	float cooldown;
 	//Scroll Mini Game
 	float offsetY, offsetY2;
-	int timer;
+	float timer;
 	int currentscore;
 	int w, h;
 	bool winminigame;
@@ -73,8 +73,8 @@ private:
 	void spawnbullet(int x, int y);
 	void SetPos(Vector3);
 	Vector3 GetPos();
-	void SetTimer(int t);
-	int GetTimer();
+	void SetTimer(float t);
+	float GetTimer();
 	void SetCurrentScore(int cs);
 	int GetCurrentScore();
 

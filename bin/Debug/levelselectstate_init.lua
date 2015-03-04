@@ -1,6 +1,6 @@
 -- [[ LevelSelectState Init ]] --
 
-TEXTURE_MAP = "levelselect_map.tga"
+TEXTURE_MAP = "bin/ui/levelselect/levelselect_map.tga"
 TEXTURE_BACK = "bin/ui/buttons/button_back.tga"
 TEXTURE_LVL = "bin/ui/buttons/button_level.tga"
 BACKBUTTON_POS_X = 800

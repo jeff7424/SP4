@@ -502,6 +502,36 @@ void CPlayState::Update(CGameStateManager* theGSM)
 		Firerate->Update(dt);
 		Damage->Update(dt);
 
+		for (std::vector<Enemy*>::iterator itr = enemyList.begin(); itr != enemyList.end(); ++itr)
+		{
+			if ((*itr)->GetActive() == false)
+			{
+				delete *itr;
+				enemyList.erase(itr);
+				break;
+			}
+		}
+
+		for (std::vector<Bullet*>::iterator itr2 = bulletList.begin(); itr2 != bulletList.end(); ++itr2)
+		{
+			if ((*itr2)->GetActive() == false)
+			{
+				delete *itr2;
+				bulletList.erase(itr2);
+				break;
+			}
+		}
+
+		for (std::vector<Tower*>::iterator itr3 = towerList.begin(); itr3 != towerList.end(); ++itr3)
+		{
+			if ((*itr3)->GetActive() == false)
+			{
+				delete *itr3;
+				towerList.erase(itr3);
+				break;
+			}
+		}
+
 		for (unsigned int it = 0; it < enemyList.size(); ++it)
 		{
 			Enemy* enemy = enemyList[it];
@@ -512,7 +542,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 		}
 
 		// Tower update
-		for (unsigned int it = 0; it < towerList.size(); ++it)
+		for (unsigned int it = 0; it != towerList.size(); ++it)
 		{
 			Tower* tower = towerList[it];
 			if (tower->GetActive())
@@ -587,12 +617,6 @@ void CPlayState::Update(CGameStateManager* theGSM)
 					soundTypes(4);
 				else
 				soundTypes(11);
-
-				delete bullet;
-				bulletList.erase(it);
-				bullet = NULL;
-				free(bullet);
-				break;
 			}
 		}
 
@@ -642,9 +666,6 @@ void CPlayState::Update(CGameStateManager* theGSM)
 				creep->SetActive(false);
 				tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
 				player->SetHealth(player->GetHealth() - creep->GetDamage());
-				delete creep;
-				enemyList.erase(it);
-				creep = NULL;
 				break;
 			}
 		}
@@ -1272,9 +1293,6 @@ void CPlayState::mclicklevel1(int x, int y)
 							{
 								soundTypes(15);
 								tower->SetActive(false);
-								delete tower;
-								tower = NULL;
-								free(tower);
 							}
 						}
 					}
@@ -1742,13 +1760,6 @@ void CPlayState::Update(float dt)
 				}
 			}
 		}
-		else
-		{
-			delete bullet;
-			bulletList.erase(it3);
-			bullet = NULL;
-			break;
-		}
 	}
 
 	// Check if creep in range
@@ -1772,7 +1783,7 @@ void CPlayState::Update(float dt)
 					}
 					else
 					{
-						if(tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+						if (tower->GetPos().y > creep->GetTopLeft().y && tower->GetPos().y < creep->GetBottomRight().y  && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 							creep->SetFire(true);
 					}
 
@@ -1781,7 +1792,7 @@ void CPlayState::Update(float dt)
 						if ((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_3))
 						{
 							soundTypes(11);
-							if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
+							if (tower->GetPos().y > creep->GetTopLeft().y && tower->GetPos().y < creep->GetBottomRight().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 							{
 								//creep->SetFire(true);
 								tower->SetHealth(tower->GetHealth() - (creep->GetDamage()) / Bonus_MultArmour);
@@ -1864,13 +1875,6 @@ void CPlayState::Update(float dt)
 					}
 				}
 			}
-		}
-		else
-		{
-			delete creep;
-			enemyList.erase(it2);
-			creep = NULL;
-			break;
 		}
 	}
 }
@@ -2377,9 +2381,9 @@ void CPlayState::UpdateSpawn()
 				creep->SetMaxHealth(enemyClone[creep->type - 1]->GetHealth());
 				creep->SetVel(Vector3(-15 * creep->GetSpeed(), 0, 0));
 				if(creep->type == Enemy::ENEMY_5)
-				creep->SetPos(Vector3(SCREEN_WIDTH, TILE_SIZE* 3.5, 0));
+					creep->SetPos(Vector3(SCREEN_WIDTH, TILE_SIZE* 3.5f, 0));
 				else
-				creep->SetPos(Vector3(SCREEN_WIDTH, ((rand() % 5 + 1) + 0.5f) * 96, 0));
+					creep->SetPos(Vector3(SCREEN_WIDTH, ((rand() % 5 + 1) + 0.5f) * TILE_SIZE, 0));
 				enemyList.push_back(creep);
 			}
 			delete spawn;

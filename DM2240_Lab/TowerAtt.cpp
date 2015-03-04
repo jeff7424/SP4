@@ -240,20 +240,23 @@ void Tower::Respond(float dt, Powerup *firerate, Powerup *damage)
 			{
 				if (this->GetFire())
 				{
-					Bullet* bullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(type));
-					bullet->SetActive(true);
-					if (damage->GetActive())
+					if (this->type != TOWER_MINE)
 					{
-						bullet->SetDamage(this->GetDamage() * damage->GetValue());
+						Bullet* bullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(type));
+						bullet->SetActive(true);
+						if (damage->GetActive())
+						{
+							bullet->SetDamage(this->GetDamage() * damage->GetValue());
+						}
+						else
+						{
+							bullet->SetDamage(this->GetDamage());
+						}
+						bullet->SetPos(this->GetPos());
+						//bullet->SetVel(Target->GetPos() - this->GetPos());
+						bullet->SetSpeed(400);
+						CPlayState::Instance()->GetBulletList().push_back(bullet);
 					}
-					else
-					{
-						bullet->SetDamage(this->GetDamage());
-					}
-					bullet->SetPos(this->GetPos());
-					//bullet->SetVel(Target->GetPos() - this->GetPos());
-					bullet->SetSpeed(400);
-					CPlayState::Instance()->GetBulletList().push_back(bullet);
 				}
 			}
 		}
@@ -319,7 +322,7 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 			}
 			else
 			{
-				if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
+				if (EnemyList[i]->GetPos().y > this->GetTopLeft().y && EnemyList[i]->GetPos().y < this->GetBottomRight().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
 				{
 					// set target to this enemy
 					Target = EnemyList[i];
@@ -339,4 +342,14 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 Enemy* Tower::ReturnTarget()
 {
 	return Target;
+}
+
+Vector3 Tower::GetTopLeft()
+{
+	return Vector3(GetPos().x - (TILE_SIZE / 2), GetPos().y - (TILE_SIZE / 2), 0);
+}
+
+Vector3 Tower::GetBottomRight()
+{
+	return Vector3(GetPos().x + (TILE_SIZE / 2), GetPos().y + (TILE_SIZE / 2), 0);
 }

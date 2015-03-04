@@ -12,7 +12,7 @@ extern "C" {
 #include <stdio.h>
 #include <time.h>
 #include <GL/glut.h>
-#include <iostream>5
+#include <iostream>
 #include <string>
 #include "MyMath.h"					// Math library
 #include "Mouse.h"					// Mouse info

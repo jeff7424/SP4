@@ -21,8 +21,8 @@ void CMiniGame::Init()
 	srand(time(NULL));
 	offsetY = 0;
 	offsetY2 = 0 - SCREEN_HEIGHT;
-	cooldown = 0.2;
-	timer = 3000;
+	cooldown = 0.2f;
+	timer = 3000.0f;
 	mggold = 0;
 	currentscore = 0;
 	w = glutGet(GLUT_WINDOW_WIDTH);
@@ -63,8 +63,6 @@ void CMiniGame::Cleanup()
 		MGBList.pop_back();
 		free(bullet);
 	}
-
-
 }
 
 void CMiniGame::Pause()
@@ -99,7 +97,6 @@ void CMiniGame::KeyboardUp(unsigned char key, int x, int y)
 
 void CMiniGame::Update(CGameStateManager* theGSM)
 {
-	
 	static int frame = 0;
 	static int lastTime = glutGet(GLUT_ELAPSED_TIME);
 	++frame;
@@ -115,17 +112,17 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	}
 
 	//Blood Scrolling
-	offsetY += 100.0*dt;
+	offsetY += 100.0f * dt;
 	if (offsetY > SCREEN_HEIGHT)
 	{
 		offsetY = -SCREEN_HEIGHT;
 	}
 
 	//Gun scrolling
-	offsetY2 += 100.0*dt;
+	offsetY2 += 100.0f * dt;
 	if (offsetY2 > SCREEN_HEIGHT)
 	{
-		offsetY2 = 0 - SCREEN_HEIGHT;
+		offsetY2 = 0.0f - SCREEN_HEIGHT;
 	}
 
 	//Inside load mini game
@@ -142,9 +139,9 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	}
 
 	//Stop time if time reaches 0
-	if (timer <= 0)
+	if (timer <= 0.0f)
 	{
-		timer = 0;
+		timer = 0.0f;
 	}
 
 	//If player survive within time limit
@@ -160,35 +157,35 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	}
 
 
-	if (cooldown > 0.0)
+	if (cooldown > 0.0f)
 	{
 		cooldown -= dt;
 		//cout << cooldown << endl;
 	}
 
 
-	else if (cooldown <= 0.0 && loseminigame == false && winminigame == false)
+	else if (cooldown <= 0.0f && loseminigame == false && winminigame == false)
 	{
 		//Randomnise bullet spawn position
-		int x = rand() % SCREEN_WIDTH*0.6 + SCREEN_WIDTH*0.2;
+		int x = rand() % SCREEN_WIDTH*0.6f + SCREEN_WIDTH*0.2f;
 
 		spawnbullet(x, 0);
 
 		//If mini game load from inside main game
-		if (ingame && timer > 0)
+		if (ingame && timer > 0.0f)
 		{
 
 			if (timer >= 2000 && timer <= 3000)
 			{
-				cooldown = 0.3;
+				cooldown = 0.3f;
 			}
 			else if (timer >= 1200 && timer <= 2000)
 			{
-				cooldown = 0.25;
+				cooldown = 0.25f;
 			}
 			else if (timer > 0 && timer < 1200)
 			{
-				cooldown = 0.2;
+				cooldown = 0.2f;
 			}
 		}
 		//If mini game load from menu screen
@@ -196,28 +193,28 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 		{
 			if (currentscore > 0 && currentscore <= 1200)
 			{
-				cooldown = 0.4;
+				cooldown = 0.4f;
 			}
 			else if (currentscore > 1000 && currentscore <= 2500)
 			{
-				cooldown = 0.3;
+				cooldown = 0.3f;
 			}
 			else if (currentscore > 2500 && currentscore <= 7000)
 			{
-				cooldown = 0.2;
+				cooldown = 0.2f;
 			}
 			else if (currentscore > 7000 && currentscore <= 15000)
 			{
-				cooldown = 0.15;
+				cooldown = 0.15f;
 			}
 			else if (currentscore > 15000)
 			{
-				cooldown = 0.1;
+				cooldown = 0.1f;
 			}
 		}
 	}
 
-	for (int i = 0; i < MGBList.size(); ++i)
+	for (unsigned int i = 0; i < MGBList.size(); ++i)
 	{
 		Bullet *bullet = MGBList[i];
 		if (bullet->GetActive() && loseminigame == false && winminigame == false)
@@ -256,23 +253,23 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	}
 
 	//Check if player move out of map
-	if (GetPos().x >= SCREEN_WIDTH*0.8)
+	if (GetPos().x >= SCREEN_WIDTH*0.8f)
 	{
-		SetPos(Vector3(SCREEN_WIDTH*0.8, GetPos().y, 0));
+		SetPos(Vector3(SCREEN_WIDTH*0.8f, GetPos().y, 0));
 	}
-	else if (GetPos().x <= SCREEN_WIDTH*0.2)
+	else if (GetPos().x <= SCREEN_WIDTH*0.2f)
 	{
-		SetPos(Vector3(SCREEN_WIDTH*0.2, GetPos().y, 0));
+		SetPos(Vector3(SCREEN_WIDTH*0.2f, GetPos().y, 0));
 	}
 
 
-	else if (GetPos().y >= SCREEN_HEIGHT*0.9)
+	else if (GetPos().y >= SCREEN_HEIGHT*0.9f)
 	{
-		SetPos(Vector3(GetPos().x, SCREEN_HEIGHT*0.9, 0));
+		SetPos(Vector3(GetPos().x, SCREEN_HEIGHT*0.9f, 0));
 	}
-	else if (GetPos().y <= SCREEN_HEIGHT*0.1)
+	else if (GetPos().y <= SCREEN_HEIGHT*0.1f)
 	{
-		SetPos(Vector3(GetPos().x, SCREEN_HEIGHT*0.1, 0));
+		SetPos(Vector3(GetPos().x, SCREEN_HEIGHT*0.1f, 0));
 	}
 
 
@@ -307,15 +304,15 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 
 	glColor3f(1.0f, 0.0f, 0.0f);
 	sprintf_s(temp, "ENDLESS SURVIVAL!");
-	RenderStringOnScreen(SCREEN_WIDTH*0.39, SCREEN_HEIGHT*0.05, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.39f, SCREEN_HEIGHT*0.05f, temp);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	sprintf_s(temp, "Current Score");
-	RenderStringOnScreen(SCREEN_WIDTH*0.42, SCREEN_HEIGHT*0.09, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.42f, SCREEN_HEIGHT*0.09f, temp);
 
 	glColor3f(1.0f, 1.0f, 0.0f);
 	sprintf_s(temp, " %d", GetCurrentScore());
-	RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.13, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.13f, temp);
 
 	}
 	//Load from outside
@@ -324,16 +321,16 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 		char temp[100];
 		glColor3f(0.0f, 0.0f, 1.0f);
 		sprintf_s(temp, "SURVIVE FOR 30 SECONDS!");
-		RenderStringOnScreen(SCREEN_WIDTH*0.37, SCREEN_HEIGHT*0.05, temp);
+		RenderStringOnScreen(SCREEN_WIDTH*0.37f, SCREEN_HEIGHT*0.05f, temp);
 
 		glColor3f(1.0f, 1.0f, 1.0f);
-		sprintf_s(temp, "Time Left", GetTimer()*0.01);
-		RenderStringOnScreen(SCREEN_WIDTH*0.44, SCREEN_HEIGHT*0.09, temp);
+		sprintf_s(temp, "Time Left", GetTimer()*0.01f);
+		RenderStringOnScreen(SCREEN_WIDTH*0.44f, SCREEN_HEIGHT*0.09f, temp);
 
 
 		glColor3f(1.0f, 1.0f, 0.0f);
-		sprintf_s(temp,  "%.1f", GetTimer()*0.01);
-		RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.13, temp);
+		sprintf_s(temp,  "%.1f", GetTimer()*0.01f);
+		RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.13f, temp);
 
 	}
 
@@ -342,11 +339,11 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 		RenderMGLoseScreen2();
 		char temp[24];
 		sprintf_s(temp, "Final Score");
-		RenderStringOnScreen(SCREEN_WIDTH*0.44, SCREEN_HEIGHT*0.57, temp);
+		RenderStringOnScreen(SCREEN_WIDTH * 0.44f, SCREEN_HEIGHT*0.57f, temp);
 
 		glColor3f(1.0f, 1.0f, 0.0f);
 		sprintf_s(temp, " %d", GetCurrentScore());
-		RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.62, temp);
+		RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.62f, temp);
 
 
 	}
@@ -456,7 +453,10 @@ void CMiniGame::MouseClick(int button, int state, int x, int y)
 			{
 				if (ingame)
 				{
-					MiniGameMusic->stop();
+					if (audioplay)
+					{
+						MiniGameMusic->stop();
+					}
 					CPlayState::Instance()->SetLevel(4);
 					CPlayState::Instance()->LoadFromFile(false);
 					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
@@ -464,7 +464,10 @@ void CMiniGame::MouseClick(int button, int state, int x, int y)
 				}
 				else
 				{
-					MiniGameMusic->stop();
+					if (audioplay)
+					{
+						MiniGameMusic->stop();
+					}
 					CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 				}
 			}
@@ -665,7 +668,7 @@ bool CMiniGame::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA 
 
 void CMiniGame::RenderBullets(void)
 {
-	for (int i = 0; i < MGBList.size(); ++i)
+	for (unsigned int i = 0; i < MGBList.size(); ++i)
 	{
 		Bullet *bullet = MGBList[i];
 		if (bullet->GetActive())
@@ -688,8 +691,8 @@ void CMiniGame::RenderMGBackground()
 	glTranslatef(0.0f, offsetY, 0.0f);
 	glBegin(GL_QUADS);
 	//int height = 100 * 1.333 / 1.5;
-	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT*1.03);
-	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT*1.03);
+	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT*1.03f);
+	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT*1.03f);
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
 	glTexCoord2f(0, 1); glVertex2f(0, 0);
 	glEnd();
@@ -814,13 +817,13 @@ void CMiniGame::RenderMGLoseScreen2()
 }
 
 
-void CMiniGame::SetTimer(int t)
+void CMiniGame::SetTimer(float t)
 {
 	//timer = t;
 	this->timer= t;
 }
 
-int CMiniGame::GetTimer()
+float CMiniGame::GetTimer()
 {
 	return timer;
 }
