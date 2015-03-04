@@ -4,7 +4,7 @@
 #include "MenuState.h"
 #include "PlayState.h"
 #include <iostream>
-
+#include <fstream>
 using namespace std;
 
 int random = rand() % 3 + 1;
@@ -27,12 +27,22 @@ void CMiniGame::Init()
 	currentscore = 0;
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
-
-	MiniGameMusic = new AudioPlayer;
-	MiniGameMusic->setFileName("bin/sounds/minigamemusic.mp3");
-	MiniGameMusic->playSoundThreaded();
-	//LoadTGA(&texture, filename);
-
+	ifstream myReadFile;
+	string reading;
+	myReadFile.open("save/settings.txt");
+	if (myReadFile.is_open())
+	{
+		getline(myReadFile, reading, '\n');
+		audioplay = stoi(reading);
+	}
+	myReadFile.close();
+	if (audioplay == true)
+	{
+		MiniGameMusic = new AudioPlayer;
+		MiniGameMusic->setFileName("bin/sounds/minigamemusic.mp3");
+		MiniGameMusic->playSoundThreaded();
+		//LoadTGA(&texture, filename);
+	}
 	//For Mini Game
 	LoadTGA(&MGBackgroundTexture1, "bin/textures/battlefield1.tga");
 	LoadTGA(&MGBackgroundTexture2, "bin/textures/battlefield2.tga");

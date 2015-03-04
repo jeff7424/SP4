@@ -64,6 +64,7 @@ private:
 	bool winminigame;
 	bool loseminigame;
 	bool ingame;
+	bool audioplay;
 	Camera* Cam;
 	AudioPlayer* MiniGameMusic;
 	AudioPlayer bgm;

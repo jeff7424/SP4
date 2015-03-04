@@ -1495,7 +1495,7 @@ void CPlayState::mclicklevel1(int x, int y)
 		if (WinLose_NextLevel->GetIsHover())
 		{
 			countcheck = 0;
-			sound.resume();
+			playSound(a);
 			winscreen = false;
 			minigame = false;
 			se->stopAllSounds();
@@ -1677,6 +1677,7 @@ void CPlayState::Update(float dt)
 
 						if (creep->GetHealth() <= 0) // kill the creep
 						{
+							Deathsounds();
 							//soundTypes(creep->type, true);
 							creep->SetActive(false);
 
@@ -1831,7 +1832,6 @@ void CPlayState::Update(float dt)
 		}
 		else
 		{
-			Deathsounds();
 			delete creep;
 			enemyList.erase(it2);
 			creep = NULL;
