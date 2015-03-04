@@ -661,7 +661,7 @@ void CMiniGame::RenderBullets(void)
 		Bullet *bullet = MGBList[i];
 		if (bullet->GetActive())
 		{
-			bullet->Render();
+			bullet->Render(0);
 		}
 	}
 }
