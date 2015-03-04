@@ -23,6 +23,7 @@ public:
 		GO_BOMBBULLET,
 		GO_SNIPERBULLET,	//enemy
 		GO_CLOSEBULLET,		//enemy
+		GO_MINIGAMEBULLET,
 		GO_TOTAL, // must be last
 	};
 	BULLET_TYPE type;

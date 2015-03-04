@@ -32,7 +32,7 @@ extern "C" {
 #include "Map.h"					// Map class
 #include "BG.h"						// Background
 #include "Button.h"					// Buttons
-#include "MiniGame.h"
+//#include "MiniGame.h"
 
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 672
@@ -172,7 +172,7 @@ private:
 	CEnemyProgress *tEnemyProgress;		// Enemy progression bar
 	Enemy* theEnemy;					
 	Tank* backupTank;					// Tank power up
-	CMiniGame *theMiniGame;				// Mini Game
+	//CMiniGame *theMiniGame;				// Mini Game
 	// Sounds
 	AudioPlayer sound;
 	ISoundEngine *se;

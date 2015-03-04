@@ -51,6 +51,7 @@ private:
 	Button *SettingsButton;
 	Button *InstructionsButton;
 	Button *CreditsButton;
+	Button *MiniGameButton;
 	Button *ExitButton;
 	ISoundEngine *se;
 	AudioPlayer bgm;
@@ -61,7 +62,7 @@ private:
 	TextureImage button[2];
 	TextureImage title;
 
-	char* textures[7];
+	char* textures[8];
 
 	Camera *theCam;
 	theMouseInfo mouseInfo;

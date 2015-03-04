@@ -23,6 +23,9 @@ Bullet::Bullet(BULLET_TYPE type)
 	case GO_SLOWBULLET:
 		filename = "bin/textures/Sniper_shell.tga";
 		break;
+	case GO_MINIGAMEBULLET:
+		filename = "bin/textures/mgbullet.tga";
+		break;
 	}
 	LoadTGA(&texture, filename);
 	this->SetVel(Vector3(1, 0, 0));

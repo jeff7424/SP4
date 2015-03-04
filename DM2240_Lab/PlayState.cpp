@@ -1,5 +1,6 @@
 #include "GameState.h"
 #include "GameStateManager.h"
+#include "MiniGame.h"
 #include "PlayState.h"
 #include "MenuState.h"
 #include <mmsystem.h>
@@ -155,7 +156,7 @@ void CPlayState::Init(void)
 	ExitMenu_Yes = new Button("bin/ui/pausemenu/button_yes.tga", 480, 350, 128, 32);
 	ExitMenu_No = new Button("bin/ui/pausemenu/button_no.tga", 480, 450, 128, 32);
 
-	theMiniGame = new CMiniGame();
+	//theMiniGame = new CMiniGame();
 
 	// Load the attributes through text file
 	LoadAtt();
@@ -790,7 +791,7 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 	myKeys[key] = true;
 	switch (key)
 	{
-	case 'w':
+	/*case 'w':
 		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, theMiniGame->GetPos().y - 20, 0));
 		break;
 	case 'a':
@@ -801,7 +802,7 @@ void CPlayState::KeyboardDown(unsigned char key, int x, int y){
 		break;
 	case 'd':
 		theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x + 20, theMiniGame->GetPos().y, 0));
-		break;
+		break;*/
 
 	case '1':
 		selection = 1;
@@ -871,6 +872,12 @@ void CPlayState::MouseMove(int x, int y) {
 
 	//moverlevel1(x, y);
 
+	
+	/*if (minigame == true)
+	{
+		theMiniGame->SetPos(Vector3(mouseInfo.lastX, mouseInfo.lastY, 0));
+	}*/
+
 	Button_Pause->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 
 	PauseMenu_Resume->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
@@ -901,7 +908,7 @@ void CPlayState::MouseMove(int x, int y) {
 		Bonus_PFirerate->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_PDamage->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
 		Bonus_PTank->SetIsHover(mouseInfo.lastX, mouseInfo.lastY);
-
+		
 		if (Bonus_Attack->GetIsHover())
 		{
 			info = -1;
@@ -1400,7 +1407,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Loading Next Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(100);
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000 + CMiniGame::Instance()->GetMGGold());
+			//player->SetGold(1000);
 			clearmap();
 			progress++;
 			loadlevel();
@@ -1414,7 +1422,8 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			//player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 
@@ -1426,11 +1435,12 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (WinLose_MiniGame->GetIsHover())
 			{
-				minigame = true;
+				CMiniGame::Instance()->SetInGame(true);
+				CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
 				cout << "Launching Mini Game!" << endl;
 			}
 		}
-	}
+	} 
 
 	else if (winscreen == true && progress > 5)
 	{
@@ -1450,7 +1460,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			//CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 			tEnemyProgress->SetEnemyCounter(0);
@@ -1477,7 +1487,7 @@ void CPlayState::mclicklevel1(int x, int y)
 			cout << " Restart Level!" << endl;
 			spawntimer = 0.0f;
 			player->SetHealth(player->GetMaxHealth());
-			player->SetGold(1000 + theMiniGame->GetMGGold());
+			player->SetGold(1000);
 			clearmap();
 			loadlevel();
 
@@ -1490,45 +1500,17 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
+	player->SetHealth(player->GetHealth() - 1);
 	// Win lose conditions
 	if (tEnemyProgress->GetEnemyCounter() <= 0)
 	{
-		winscreen = true;
+		//winscreen = true;
 	}
 
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
-		losescreen = true;
-	}
-
-	//For Mini Game
-	if (minigame == true)
-	{
-		theMiniGame->update(dt);
-
-
-		//Check if player move out of map
-		if (theMiniGame->GetPos().x >= SCREEN_WIDTH*0.8)
-		{
-			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.8, theMiniGame->GetPos().y, 0));
-		}
-		else if (theMiniGame->GetPos().x <= SCREEN_WIDTH*0.2)
-		{
-			theMiniGame->SetPos(Vector3(SCREEN_WIDTH*0.2, theMiniGame->GetPos().y, 0));
-		}
-
-
-		else if (theMiniGame->GetPos().y >= SCREEN_HEIGHT*0.9)
-		{
-			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.9, 0));
-		}
-		else if (theMiniGame->GetPos().y <= SCREEN_HEIGHT*0.1)
-		{
-			theMiniGame->SetPos(Vector3(theMiniGame->GetPos().x, SCREEN_HEIGHT*0.1, 0));
-		}
-
-
+		winscreen = true;
 	}
 
 	// Despawn creep if bullet collides
@@ -2917,30 +2899,7 @@ void CPlayState::RenderHUD()
 
 	if (minigame == true)
 	{
-		theMiniGame->RenderMGBackground();
-		theMiniGame->RenderMGCharacter();
-		//theMiniGame->RenderMGBlood();
-		//theMiniGame->RenderMGGun();
-		theMiniGame->RenderBullets();
-
-		//Render the time left on minigame screen
-		sprintf_s(temp, "Time Left:    %.1f", theMiniGame->GetTimer()*0.01);
-		RenderStringOnScreen(SCREEN_WIDTH*0.42, 50, temp);
-
-
-
-		if (theMiniGame->winminigame == true)
-		{
-			theMiniGame->RenderMGWinScreen();
-			//Render Next Level Button in mini game to continue
-			WinLose_NextLevel->Render();
-		}
-		else if (theMiniGame->loseminigame == true)
-		{
-			theMiniGame->RenderMGLoseScreen();
-			//Render Next Level Button in mini game to continue
-			WinLose_NextLevel->Render();
-		}
+		
 	}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
