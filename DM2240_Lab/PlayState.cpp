@@ -1556,6 +1556,7 @@ void CPlayState::Update(float dt)
 					{
 						tower->SetHealth(tower->GetHealth() - bullet->GetDamage());
 						bullet->SetActive(false);
+						break;
 					}
 
 					if (tower->GetHealth() <= 0) // kill the tower
@@ -1657,34 +1658,37 @@ void CPlayState::Update(float dt)
 					if(creep->type == Enemy::ENEMY_5)
 					{
 						if(tower->GetPos().y <= creep->GetPos().y + TILE_SIZE && tower->GetPos().y >= creep->GetPos().y - TILE_SIZE && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
-						creep->SetFire(true);
+							creep->SetFire(true);
 					}
 					else
 					{
 						if(tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
-						creep->SetFire(true);
+							creep->SetFire(true);
 					}
 
 					if (creep->state == Enemy::ENEMY_ATTACK)
 					{
 						if ((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_3))
 						{
-							//creep->SetFire(true);
-							tower->SetHealth(tower->GetHealth() - (creep->GetDamage())/Bonus_MultArmour);
-							creep->SetFireCounter(creep->GetFireRate());
-							if (tower->GetHealth() <= 0)
+							if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 							{
-								//se->play2D("bin/sounds/towerDeath.mp3", false);
-								//se->setSoundVolume(0.25);
-								int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
-								int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
-								theMap->GetGrid(x, y)->SetOccupied(false);
-								tower->SetActive(false);
-								creep->SetFire(false);
-								delete tower;
-								towerList.erase(it);
-								tower = NULL;
-								break;
+								//creep->SetFire(true);
+								tower->SetHealth(tower->GetHealth() - (creep->GetDamage()) / Bonus_MultArmour);
+								creep->SetFireCounter(creep->GetFireRate());
+								if (tower->GetHealth() <= 0)
+								{
+									//se->play2D("bin/sounds/towerDeath.mp3", false);
+									//se->setSoundVolume(0.25);
+									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+									theMap->GetGrid(x, y)->SetOccupied(false);
+									tower->SetActive(false);
+									creep->SetFire(false);
+									delete tower;
+									towerList.erase(it);
+									tower = NULL;
+									break;
+								}
 							}
 						}
 						else if((creep->type == Enemy::ENEMY_2 || creep->type == Enemy::ENEMY_4))
@@ -1955,7 +1959,9 @@ void CPlayState::Load()
 				getline(inData, value, ',');
 				tower->SetPos(Vector3(tower->GetPos().x, tower->GetPos().y, stoi(value)));
 				getline(inData, value, ',');
-				tower->SetHealth(stoi(value));
+				tower->SetHealth(stof(value));
+				getline(inData, value, ',');
+				tower->SetMaxHealth(stof(value));
 				getline(inData, value, ',');
 				tower->SetFireRate(stof(value));
 				getline(inData, value, ',');
@@ -1966,7 +1972,6 @@ void CPlayState::Load()
 				int x = (int)((tower->GetPos().x * theNumOfTiles_Width / w));
 				int y = (int)((tower->GetPos().y * theNumOfTiles_Height / h));
 				theMap->GetGrid(x, y)->SetOccupied(true);
-
 			}
 			else if (type == "enemy")
 			{
@@ -1994,7 +1999,11 @@ void CPlayState::Load()
 				getline(inData, value, ',');
 				enemy->SetPos(Vector3(enemy->GetPos().x, enemy->GetPos().y, stoi(value)));
 				getline(inData, value, ',');
-				enemy->SetHealth(stoi(value));
+				enemy->SetHealth(stof(value));
+				getline(inData, value, ',');
+				enemy->SetMaxHealth(stof(value));
+				getline(inData, value, ',');
+				enemy->SetFireRate(stof(value));
 				getline(inData, value, ',');
 				enemy->SetFireCounter(stof(value));
 				getline(inData, value, '\n');
@@ -2169,7 +2178,7 @@ void CPlayState::Save()
 					file2 << "tower, " << towerList[i]->type << ", " << towerList[i]->state << ", " << towerList[i]->GetActive() << ", " << towerList[i]->GetRange() << ", " << towerList[i]->GetDamage() << ", "
 						<< towerList[i]->GetVel().x << ", " << towerList[i]->GetVel().y << ", " << towerList[i]->GetVel().z << ", "
 						<< towerList[i]->GetPos().x << ", " << towerList[i]->GetPos().y << ", " << towerList[i]->GetPos().z << ", "
-						<< towerList[i]->GetHealth() << ", " << towerList[i]->GetFireRate() << ", " << towerList[i]->GetFireCounter() << ", " << towerList[i]->GetFire() << "\n";
+						<< towerList[i]->GetHealth() << ", " << towerList[i]->GetMaxHealth() << ", " << towerList[i]->GetFireRate() << ", " << towerList[i]->GetFireCounter() << ", " << towerList[i]->GetFire() << "\n";
 				}
 			}
 		}
@@ -2182,7 +2191,7 @@ void CPlayState::Save()
 					file2 << "enemy, " << enemyList[j]->type << ", " << enemyList[j]->state << ", " << enemyList[j]->GetActive() << ", " << enemyList[j]->GetRange() << ", " << enemyList[j]->GetDamage() << ", "
 						<< enemyList[j]->GetVel().x << ", " << enemyList[j]->GetVel().y << ", " << enemyList[j]->GetVel().z << ", "
 						<< enemyList[j]->GetPos().x << ", " << enemyList[j]->GetPos().y << ", " << enemyList[j]->GetPos().z << ", "
-						<< enemyList[j]->GetHealth() << ", " << enemyList[j]->GetFireRate() << ", " << enemyList[j]->GetFireCounter() << ", " << enemyList[j]->GetFire() << "\n";
+						<< enemyList[j]->GetHealth() << ", " << enemyList[j]->GetMaxHealth() << ", " << enemyList[j]->GetFireRate() << ", " << enemyList[j]->GetFireCounter() << ", " << enemyList[j]->GetFire() << "\n";
 				}
 			}
 		}
@@ -2213,15 +2222,15 @@ void CPlayState::Save()
 		spawn = NULL;*/
 
 		// For power ups
-		file2 << "power, " << BaseHealth->type << ", " << BaseHealth->GetActive() << ", " << BaseHealth->GetReady() << ", " << BaseHealth->GetValue() << ", "
+		file2 << "power_health, " << BaseHealth->type << ", " << BaseHealth->GetActive() << ", " << BaseHealth->GetReady() << ", " << BaseHealth->GetValue() << ", "
 			<< BaseHealth->GetDuration() << "\n";
-		file2 << "power, " << Shield->type << ", " << Shield->GetActive() << ", " << Shield->GetReady() << ", " << Shield->GetValue() << ", "
+		file2 << "power_shield, " << Shield->type << ", " << Shield->GetActive() << ", " << Shield->GetReady() << ", " << Shield->GetValue() << ", "
 			<< Shield->GetDuration() << "\n";
-		file2 << "power, " << Firerate->type << ", " << Firerate->GetActive() << ", " << Firerate->GetReady() << ", " << Firerate->GetValue() << ", "
+		file2 << "power_firerate, " << Firerate->type << ", " << Firerate->GetActive() << ", " << Firerate->GetReady() << ", " << Firerate->GetValue() << ", "
 			<< Firerate->GetDuration() << "\n";
-		file2 << "power, " << Damage->type << ", " << Damage->GetActive() << ", " << Damage->GetReady() << ", " << Damage->GetValue() << ", "
+		file2 << "power_damage, " << Damage->type << ", " << Damage->GetActive() << ", " << Damage->GetReady() << ", " << Damage->GetValue() << ", "
 			<< Damage->GetDuration() << "\n";
-		file2 << "power, " << Backup_Tank->type << ", " << Backup_Tank->GetActive() << ", " << Backup_Tank->GetReady() << ", " << Backup_Tank->GetValue() << ", "
+		file2 << "power_tank, " << Backup_Tank->type << ", " << Backup_Tank->GetActive() << ", " << Backup_Tank->GetReady() << ", " << Backup_Tank->GetValue() << ", "
 			<< Backup_Tank->GetDuration() << "\n";
 
 		file2 << "tank, " << backupTank->GetActive() << ", "  << backupTank->state << ", " << backupTank->GetInPosition() << ", " 
