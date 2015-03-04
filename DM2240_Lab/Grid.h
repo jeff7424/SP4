@@ -36,7 +36,6 @@ public:
 	void SetOccupied(bool Occupied);
 	bool GetOccupied();
 	void CursorOnGrid(const int x, const int y);
-	void RenderStringOnScreen(float x, float y, const char* quote);
 	bool LoadTGA(TextureImage *texture, char *filename);
 };
 

@@ -118,7 +118,6 @@ void CGameModeState::Draw(CGameStateManager* theGSM)
 	glLoadIdentity();
 
 	glEnable(GL_DEPTH_TEST);
-
 	Update(theGSM);
 
 	theCam->SetHUD(true);
@@ -364,6 +363,7 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 						}
 					}
+					else
 					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				}
 				else if (ContinueGame->GetIsHover())
@@ -378,6 +378,7 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 							CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 						}
 					}
+					else
 					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
 				}
 				else

@@ -24,6 +24,7 @@ public:
 	AudioPlayer();
 	AudioPlayer(string soundFile); // Doesn't play sound, only initializes fileName
 	~AudioPlayer();
+	void Cleanup();
 	/* All play functions STOP execution of the program except
 	* playSoundThreaded(). Note: It isn't really multi-threaded.
 	*/

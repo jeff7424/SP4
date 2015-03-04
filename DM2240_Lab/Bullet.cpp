@@ -25,6 +25,9 @@ Bullet::Bullet(BULLET_TYPE type)
 	case GO_SLOWBULLET:
 		filename = "bin/textures/Sniper_shell.tga";
 		break;
+	case GO_MINIGAMEBULLET:
+		filename = "bin/textures/mgbullet.tga";
+		break;
 	case GO_ENEMYBULLET:
 		filename = "bin/textures/enemy_shell.tga";
 		break;

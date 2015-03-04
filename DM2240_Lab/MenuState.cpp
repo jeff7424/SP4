@@ -10,6 +10,7 @@ using namespace std;
 #include "CreditsState.h"
 #include "InstructionState.h"
 #include "GameModeState.h"
+#include "MiniGame.h"
 
 CMenuState CMenuState::theMenuState;
 
@@ -24,7 +25,7 @@ void CMenuState::Init()
 	glEnable(GL_TEXTURE_2D);
 	if (!LoadTGA(&menu[0], textures[0]))				// Load The Font Texture
 		return; //false;										// If Loading Failed, Return False
-	if (!LoadTGA(&title, textures[6]))
+	if (!LoadTGA(&title, textures[7]))
 		return;
 
 	font_style = GLUT_BITMAP_HELVETICA_18;
@@ -87,6 +88,13 @@ void CMenuState::Cleanup()
 		delete ExitButton;
 		ExitButton = NULL;
 	}
+
+	if (MiniGameButton != NULL)
+	{
+		delete MiniGameButton;
+		MiniGameButton = NULL;
+	}
+
 }
 
 void CMenuState::Pause()
@@ -148,6 +156,7 @@ void CMenuState::Draw(CGameStateManager* theGSM)
 	RenderMenu();
 	RenderTitle();
 	StartButton->Render();
+	MiniGameButton->Render();
 	SettingsButton->Render();
 	InstructionsButton->Render();
 	CreditsButton->Render();
@@ -370,6 +379,14 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 				bgm.stop();
 				CGameStateManager::getInstance()->ChangeState(CGameModeState::Instance());
 			}
+
+			else if (MiniGameButton->GetIsHover())
+			{
+				bgm.stop();
+				CMiniGame::Instance()->SetInGame(false);
+				CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
+			}
+
 			else if (SettingsButton->GetIsHover())
 			{
 				bgm.stop();
@@ -377,7 +394,9 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 			}
 			else if (InstructionsButton->GetIsHover())
 			{
-				CGameStateManager::getInstance()->ChangeState(CInstructionState::Instance());
+				//bgm.stop();
+				//CMiniGame::Instance()->SetInGame(false);
+				//CGameStateManager::getInstance()->ChangeState(CMiniGame::Instance());
 			}
 			else if (CreditsButton->GetIsHover())
 			{
@@ -388,6 +407,7 @@ void CMenuState::MouseClick(int button, int state, int x, int y)
 				CGameStateManager::getInstance()->Cleanup();
 				exit(0);
 			}
+			
 		}
 
 		break;
@@ -438,6 +458,7 @@ void CMenuState::RenderTitle(void)
 void CMenuState::CursorOnButton(int x, int y)
 {
 	StartButton->SetIsHover(x, y);
+	MiniGameButton->SetIsHover(x,y);
 	SettingsButton->SetIsHover(x, y);
 	InstructionsButton->SetIsHover(x, y);
 	CreditsButton->SetIsHover(x, y);
@@ -452,6 +473,16 @@ void CMenuState::CursorOnButton(int x, int y)
 				isplaying = false;
 			}
 		}
+
+		else if (MiniGameButton->GetIsHover())
+		{
+			if (isplaying == true)
+			{
+				se->play2D("bin/sounds/button_hover.wav", false);
+				isplaying = false;
+			}
+		}
+
 		else if (SettingsButton->GetIsHover())
 		{
 			if (isplaying == true)
@@ -496,13 +527,14 @@ int CMenuState::LuaInit()
 	cout << "\nMENU INITIALIZATION\n" << endl;
 	lua_State *L = lua_open();
 	std::string temp;
-	const char *values[27] = {
+	const char *values[32] = {
 		"TEXTURE_MENU",
 		"TEXTURE_START",
 		"TEXTURE_SETTINGS",
 		"TEXTURE_INSTRUCTIONS",
 		"TEXTURE_CREDITS",
 		"TEXTURE_EXIT",
+		"TEXTURE_MINIGAME",
 		"TEXTURE_TITLE",
 		"STARTBUTTON_POS_X",
 		"STARTBUTTON_POS_Y",
@@ -524,11 +556,15 @@ int CMenuState::LuaInit()
 		"EXITBUTTON_POS_Y",
 		"EXITBUTTON_SIZE_X",
 		"EXITBUTTON_SIZE_Y",
+		"MINIGAMEBUTTON_POS_X",
+		"MINIGAMEBUTTON_POS_Y",
+		"MINIGAMEBUTTON_SIZE_X",
+		"MINIGAMEBUTTON_SIZE_Y",
 	};
 
-	int data[20];
+	int data[24];
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 24; i++)
 	{
 		data[i] = 0;
 	}
@@ -539,7 +575,7 @@ int CMenuState::LuaInit()
 		printf("error: %s", lua_tostring(L, -1));
 	}
 
-	for (int k = 0; k < 7; k++)
+	for (int k = 0; k < 8; k++)
 	{
 		lua_getglobal(L, values[k]);
 		if (!lua_isstring(L, -1))
@@ -554,16 +590,16 @@ int CMenuState::LuaInit()
 		cout << values[k] << ": " << textures[k] << endl;
 	}
 
-	for (int j = 0; j < 20; j++)
+	for (int j = 0; j < 24; j++)
 	{
-		lua_getglobal(L, values[j + 7]);
+		lua_getglobal(L, values[j + 8]);
 		if (!lua_isnumber(L, -1))
 		{
 			printf("Should be number\n");
 			return -1;
 		}
 		data[j] = lua_tonumber(L, -1);
-		cout << values[j + 7] << ": " << data[j] << endl;
+		cout << values[j + 8] << ": " << data[j] << endl;
 	}
 
 	StartButton = new Button(textures[1], data[0], data[1], data[2], data[3]);
@@ -571,6 +607,6 @@ int CMenuState::LuaInit()
 	InstructionsButton = new Button(textures[3], data[8], data[9], data[10], data[11]);
 	CreditsButton = new Button(textures[4], data[12], data[13], data[14], data[15]);
 	ExitButton = new Button(textures[5], data[16], data[17], data[18], data[19]);
-
+	MiniGameButton = new Button(textures[6],data[20],data[21],data[22],data[23]);
 	return 0;
 }
