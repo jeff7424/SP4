@@ -7,6 +7,8 @@ Bullet::Bullet(BULLET_TYPE type)
 , radius(Vector3(50,5,0))
 , damage(0)
 {
+	heroAnimationCounter = 0;
+
 	char* filename = "";
 	switch (type)
 	{
@@ -28,6 +30,9 @@ Bullet::Bullet(BULLET_TYPE type)
 		break;
 	case GO_ENEMYBULLET:
 		filename = "bin/textures/enemy_shell.tga";
+		break;
+	case GO_TANKBULLET:
+		filename = "bin/textures/tank_bullet.tga";
 		break;
 	}
 	LoadTGA(&texture, filename);
@@ -137,6 +142,18 @@ bool Bullet::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA Fil
 
 void Bullet::Update(float dt)
 {
+	//int time = glutGet(GLUT_ELAPSED_TIME);
+	//static int ctime = glutGet(GLUT_ELAPSED_TIME);
+	//	if (time - ctime > 50) // the more it is the slower it becomes
+	//	{
+	//		heroAnimationCounter--;
+	//		if (heroAnimationCounter == 0)
+	//		{
+	//			heroAnimationCounter = 6;
+	//		}
+	//		ctime = time;
+	//	}
+
 	if (this->GetActive())
 	{
 		this->SetPos(this->GetPos() + this->GetVel().Normalized() * (this->GetSpeed() * dt));
@@ -183,7 +200,7 @@ int Bullet::GetSpeed()
 	return speed;
 }
 
-void Bullet::Render()
+void Bullet::Render(int heroAnimationCounter)
 {
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -192,13 +209,31 @@ void Bullet::Render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, texture.texID);
 	glTranslatef(this->GetPos().x, this->GetPos().y, this->GetPos().z);
-	glScalef(GetScale().x, GetScale().y, GetScale().z);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(-1.0f, -1.0f);
-	glTexCoord2f(0, 1); glVertex2f(-1.0f, 1.0f);
-	glTexCoord2f(1, 1); glVertex2f(1.0f, 1.0f);
-	glTexCoord2f(1, 0); glVertex2f(1.0f, -1.0f);
-	glEnd();
+	
+	
+	if(type == Bullet::GO_TANKBULLET)
+	{
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.16667 * heroAnimationCounter, 1);
+		glVertex2f(-96 / 3, -96 / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter, 0);
+		glVertex2f(-96 / 3, 96 / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0);
+		glVertex2f(96 / 3, 96 / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1);
+		glVertex2f(96 / 3, -96 / 3);
+		glEnd();
+	}
+	else
+	{
+		glScalef(GetScale().x, GetScale().y, GetScale().z);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex2f(-1.0f, -1.0f);
+		glTexCoord2f(0, 1); glVertex2f(-1.0f, 1.0f);
+		glTexCoord2f(1, 1); glVertex2f(1.0f, 1.0f);
+		glTexCoord2f(1, 0); glVertex2f(1.0f, -1.0f);
+		glEnd();
+	}
 	glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);

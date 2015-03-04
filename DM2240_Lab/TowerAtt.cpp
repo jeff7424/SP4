@@ -177,7 +177,7 @@ void Tower::ChangeState()
 		if (Target != NULL && Target->GetActive() && Target->GetHealth() > 0)
 		{
 			float CurrentTarget = Target->GetPos().x - this->GetPos().x;
-			if (this->GetRange() >= CurrentTarget && this->GetPos().y == Target->GetPos().y)
+			if ((this->GetRange() >= CurrentTarget && this->GetPos().y == Target->GetPos().y) || (Target->type == Enemy::ENEMY_5 && this->GetPos().y <= Target->GetPos().y + TILE_SIZE && this->GetPos().y >= Target->GetPos().y - TILE_SIZE))
 			{
 				if (this->GetFireCounter() <= 0.0f)
 				{
@@ -306,11 +306,25 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 		if (EnemyList[i]->GetActive() && EnemyList[i]->GetHealth() > 0)
 		{
 			// if enemy in range
-			if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
+			if(EnemyList[i]->type == Enemy::ENEMY_5)
 			{
-				// set target to this enemy
-				Target = EnemyList[i];
-				break;
+				if(this->GetPos().y <= EnemyList[i]->GetPos().y + TILE_SIZE && this->GetPos().y >= EnemyList[i]->GetPos().y - TILE_SIZE)
+				{
+					if(EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
+					{
+						Target = EnemyList[i];
+						//break;
+					}
+				}
+			}
+			else
+			{
+				if (this->GetPos().y == EnemyList[i]->GetPos().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
+				{
+					// set target to this enemy
+					Target = EnemyList[i];
+					break;
+				}
 			}
 		}
 		else if (!EnemyList[i]->GetActive() || EnemyList[i]->GetHealth() <= 0)

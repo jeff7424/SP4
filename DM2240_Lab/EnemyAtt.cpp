@@ -18,6 +18,7 @@ Enemy::Enemy(ENEMY_TYPE type)
 	srand (time(NULL));
 
 	//heroAnimationCounter = 0;
+	pattern = 0;
 
 	if(type == Enemy::ENEMY_1)
 	{
@@ -38,6 +39,11 @@ Enemy::Enemy(ENEMY_TYPE type)
 	{
 		LoadTGA(&CreepTexture[0], "bin/textures/enemy_4.tga");
 		LoadTGA(&CreepTexture[1], "bin/textures/enemy_4_attack.tga");
+	}
+	else if(type == Enemy::ENEMY_5)
+	{
+		LoadTGA(&CreepTexture[0], "bin/textures/tank.tga");
+		LoadTGA(&CreepTexture[1], "bin/textures/tank.tga");
 	}
 }
 
@@ -75,19 +81,35 @@ void Enemy::DrawEnemy(int heroAnimationCounter)
 
 	glTranslatef(GetPos().x, GetPos().y, 0);
 
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.16667 * heroAnimationCounter, 1);
-	glVertex2f(-TILE_SIZE / 3, -TILE_SIZE / 3);
-	glTexCoord2f(0.16667 * heroAnimationCounter, 0);
-	glVertex2f(-TILE_SIZE / 3, TILE_SIZE / 3);
-	glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0);
-	glVertex2f(TILE_SIZE / 3, TILE_SIZE / 3);
-	glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1);
-	glVertex2f(TILE_SIZE / 3, -TILE_SIZE / 3);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
+	if(type == ENEMY_5)
+	{
+		glBegin(GL_QUADS);
+		glTexCoord2f(0,1);
+		glVertex2f(0, -TILE_SIZE * 1.5);
+		glTexCoord2f(0,0);
+		glVertex2f(0, TILE_SIZE * 1.5);
+		glTexCoord2f(1,0);
+		glVertex2f(TILE_SIZE * 3.5, TILE_SIZE * 1.5);
+		glTexCoord2f(1,1);
+		glVertex2f(TILE_SIZE * 3.5, -TILE_SIZE * 1.5);
+		glEnd();
+	}
+	else
+	{
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.16667 * heroAnimationCounter, 1);
+		glVertex2f(-TILE_SIZE / 3, -TILE_SIZE / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter, 0);
+		glVertex2f(-TILE_SIZE / 3, TILE_SIZE / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 0);
+		glVertex2f(TILE_SIZE / 3, TILE_SIZE / 3);
+		glTexCoord2f(0.16667 * heroAnimationCounter + 0.16667, 1);
+		glVertex2f(TILE_SIZE / 3, -TILE_SIZE / 3);
+		glEnd();
+	}
+		glPopMatrix();
+		glDisable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
 }
 
 void Enemy::SetAtt(float firerate, int damage, int range, int health, float speed)
@@ -114,6 +136,9 @@ void Enemy::Update(std::vector<Enemy *> eList, std::vector<Tower *> tList, float
 				creep->offsetX = creep->GetPos().x;
 				creep->tilesTravelled = (creep->offsetX / TILE_SIZE);
 				creep->offsetY = (creep->GetPos().y - (TILE_SIZE/2)) / TILE_SIZE; //current y tile
+
+				if(creep->pattern > 1)
+					creep->pattern = 0;
 
 				//Enemy movement
 				if(creep->state == ENEMY_STATE::ENEMY_ADVANCE)
@@ -224,6 +249,10 @@ void Enemy::changeState(Enemy* creep, int laneswap)
 				creep->state = ENEMY_STATE::ENEMY_ADVANCE;
 			break;
 
+		case Enemy::ENEMY_5:
+			creep->state = ENEMY_STATE::ENEMY_ADVANCE;
+			break;
+
 		}
 	}
 }
@@ -246,6 +275,19 @@ float Enemy::GetBuff()
 float Enemy::GetSpeed()
 {
 	return speed;
+}
+
+bool Enemy::collisionBox(int bulletX, int bulletY, int bossX, int bossY)
+{
+	if(bulletY <= bossY + TILE_SIZE && bulletY >= bossY - TILE_SIZE)
+	{
+		if(bulletX >= bossX)
+			return true;
+		else 
+			return false;
+	}
+	else 
+		return false;
 }
 
 bool Enemy::LoadTGA(TextureImage *texture, char *filename)			// Loads A TGA File Into Memory
