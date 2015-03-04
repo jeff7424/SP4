@@ -160,7 +160,8 @@ private:
 	float Bonus_MultAttack;
 	float Bonus_MultArmour;
 	float Bonus_MultDollar;
-
+	int countcheck;
+	bool playvictory;
 	// FetchGO
 	Enemy* FetchEnemy();
 	Tower* FetchTower();
