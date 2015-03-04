@@ -1175,7 +1175,7 @@ void CPlayState::mclicklevel1(int x, int y)
 				}
 			}
 		}
-		else if (!pause)
+		else if (!pause && !winscreen && !losescreen)
 		{
 			if (theMap->GetGrid(X, Y)->CursorHit == true)
 			{
