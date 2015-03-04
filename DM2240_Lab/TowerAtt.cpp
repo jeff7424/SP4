@@ -159,16 +159,6 @@ int Tower::GetCost()
 	return cost;
 }
 
-void Tower::DrawTowerLevel()
-{
-	for (int i = 0; i <= GetLevel(); i++)
-	{
-		glPushMatrix();
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glPopMatrix();
-	}
-}
-
 void Tower::ChangeState()
 {
 	if (state == STATE_IDLE)
@@ -288,28 +278,9 @@ void Tower::Upgrade()
 	}
 }
 
-void Tower::DrawLevel()
-{
-	glPushMatrix();
-	glTranslatef(GetPos().x - 40, GetPos().y - 50, GetPos().z);
-	for (int lvl = 0; lvl < GetLevel(); lvl++)
-	{
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glTranslatef(15, 0, 0);
-		glBegin(GL_QUADS);
-		glVertex2f(0, 0);
-		glVertex2f(0, 10);
-		glVertex2f(10, 10);
-		glVertex2f(10, 0);
-		glEnd();
-	}
-	glPopMatrix();
-}
-
 void Tower::Render()
 {
 	DrawHealthBar();
-	DrawLevel();
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glPushMatrix();

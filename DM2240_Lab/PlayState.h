@@ -182,6 +182,7 @@ private:
 	//GLuint texture[24];
 	// Insert texture here																						   	
 	TextureImage BackgroundTexture[1];
+	TextureImage Cursor[6];
 	TextureImage CreepTexture[3];
 	TextureImage WinScreenTexture;
 	TextureImage LoseScreenTexture;
@@ -219,6 +220,7 @@ private:
 	void RenderHUD();
 	void RenderPauseMenu();
 	void RenderExitMenu();
+	void RenderCursor();
 
 	//For Win and Lose Screens
 	void RenderWinScreen(void);

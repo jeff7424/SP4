@@ -95,7 +95,12 @@ void CPlayState::Init(void)
 
 	glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping ( NEW )
 	LoadTGA(&BackgroundTexture[0], "bin/textures/game_background.tga");
-
+	LoadTGA(&Cursor[0], "bin/tower/Unit1_Soldier.tga");
+	LoadTGA(&Cursor[1], "bin/tower/Unit2_Tank.tga");
+	LoadTGA(&Cursor[2], "bin/tower/Unit3_RPG.tga");
+	LoadTGA(&Cursor[3], "bin/tower/Unit4_Sniper.tga");
+	LoadTGA(&Cursor[4], "bin/tower/Unit5_Mine.tga");
+	LoadTGA(&Cursor[5], "bin/tower/Unit6_Barricade.tga");
 	/*LoadTGA(&CreepTexture[0], "bin/textures/redpoker.tga");
 	LoadTGA(&CreepTexture[1], "bin/textures/redcard.tga");
 	LoadTGA(&CreepTexture[2], "bin/textures/ahlong.tga");*/
@@ -2729,19 +2734,19 @@ void CPlayState::RenderInfo(int x, int y)
 	{
 		if (info == 1)
 		{
-			sprintf_s(temp, "Normal Tower");
+			sprintf_s(temp, "Machine Gun");
 		}
 		else if (info == 2)
 		{
-			sprintf_s(temp, "Cannon Tower");
+			sprintf_s(temp, "Mini Tank");
 		}
 		else if (info == 3)
 		{
-			sprintf_s(temp, "Lightning Tower");
+			sprintf_s(temp, "RPG");
 		}
 		else if (info == 4)
 		{
-			sprintf_s(temp, "Slow Tower");
+			sprintf_s(temp, "Sniper");
 		}
 		else if (info == 5)
 		{
@@ -2982,6 +2987,8 @@ void CPlayState::RenderHUD()
 		}
 	}
 
+	RenderCursor();
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
@@ -3044,7 +3051,6 @@ void CPlayState::RenderWinScreen()
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	int height = 100 * 1.333 / 1.5;
 	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
 	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
@@ -3091,7 +3097,6 @@ void CPlayState::RenderLoseScreen()
 	glTranslatef(0, 0, 0);
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	int height = 100 * 1.333 / 1.5;
 	glTexCoord2f(0, 0); glVertex2f(0, SCREEN_HEIGHT);
 	glTexCoord2f(1, 0); glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glTexCoord2f(1, 1); glVertex2f(SCREEN_WIDTH, 0);
@@ -3105,6 +3110,26 @@ void CPlayState::RenderLoseScreen()
 
 	WinLose_MainMenu->Render();
 	WinLose_RestartLevel->Render();
+}
+
+void CPlayState::RenderCursor()
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glTranslatef(mouseInfo.lastX, mouseInfo.lastY, 0);
+	glBindTexture(GL_TEXTURE_2D, Cursor[selection - 1].texID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex2f(0, 48);
+	glTexCoord2f(1, 0); glVertex2f(48, 48);
+	glTexCoord2f(1, 1); glVertex2f(48, 0);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 // to return the vector list to other classes so that they can push objects into it

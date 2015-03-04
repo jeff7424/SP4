@@ -101,6 +101,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="MiniGame.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="Powerup.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="MiniGame.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="PlayState.h" />
