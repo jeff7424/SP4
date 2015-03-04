@@ -27,6 +27,7 @@ int RNGesus(void)
 
 void CPlayState::Init(void)
 {
+	countcheck = 0;
 	srand(time(NULL));
 	w = glutGet(GLUT_WINDOW_WIDTH);
 	h = glutGet(GLUT_WINDOW_HEIGHT);
@@ -42,10 +43,10 @@ void CPlayState::Init(void)
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	winscreen = false;
+	winscreen = true;
 	losescreen = false;
 	minigame = false;
-
+	playvictory = false;
 	for (int i = 0; i < 255; i++)
 	{
 		myKeys[i] = false;
@@ -73,6 +74,7 @@ void CPlayState::Init(void)
 	if (audioplay == true)
 	{
 		playSound(a);
+		if (winscreen != true)
 		soundTypes(12);
 	}
 	// Enemy progress init
@@ -1405,6 +1407,7 @@ void CPlayState::mclicklevel1(int x, int y)
 
 		if (WinLose_NextLevel->GetIsHover())
 		{
+			countcheck = 0;
 			winscreen = false;
 			minigame = false;
 			cout << " Loading Next Level!" << endl;
@@ -1503,17 +1506,18 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	player->SetHealth(player->GetHealth() - 1);
+	//player->SetHealth(player->GetHealth() - 1);
 	// Win lose conditions
+	//winscreen = true;
 	if (tEnemyProgress->GetEnemyCounter() <= 0)
 	{
-		//winscreen = true;
+		winscreen = true;
 	}
 
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
-		winscreen = true;
+		losescreen = true;
 	}
 
 	// Despawn creep if bullet collides
@@ -2865,8 +2869,20 @@ void CPlayState::RenderHUD()
 
 	if (winscreen == true)
 	{
-		char temp[16];
+		if (countcheck != 1)
+		{
+			playvictory = true;
+			countcheck = 1;
+		}
 
+		char temp[16];
+		if (playvictory == true)
+		{
+			sound.stop();
+			se->play2D("bin/sounds/victory_bgm.mp3");
+			se->play2D("bin/sounds/mission_complete.mp3");
+			playvictory = false;
+		}
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		RenderWinScreen();
@@ -3001,7 +3017,6 @@ void CPlayState::RenderExitMenu()
 void CPlayState::RenderWinScreen()
 {
 	glEnable(GL_TEXTURE_2D);
-
 	glPushMatrix();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
