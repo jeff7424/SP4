@@ -48,6 +48,18 @@ AudioPlayer::AudioPlayer(string soundFile)
 
 AudioPlayer::~AudioPlayer()
 {
+	if (se != NULL)
+	{
+		se->drop();
+	}
+}
+
+void AudioPlayer::Cleanup()
+{
+	if (se != NULL)
+	{
+		se->drop();
+	}
 }
 
 /***************************

@@ -116,12 +116,12 @@ void CPlayState::Init(void)
 	Power_BackupTank = new Button("bin/ui/hud/button_powertank.tga", 896, 624, 36, 36);
 
 	// Buttons for selecting units
-	Unit_Infantry = new Button("bin/tower/Heavy.tga", 48, 624, 36, 36);
-	Unit_Tank = new Button("bin/tower/tower2.tga", 120, 624, 36, 36);
-	Unit_Heavy = new Button("bin/tower/Heavy.tga", 192, 624, 36, 36);
-	Unit_Sniper = new Button("bin/tower/Soldier.tga", 264, 624, 36, 36);
-	Unit_Mine = new Button("bin/tower/mine.tga", 336, 624, 36, 36);
-	Unit_Barricade = new Button("bin/tower/barricade.tga", 408, 624, 36, 36);
+	Unit_Infantry = new Button("bin/ui/hud/button_unit1.tga", 48, 624, 36, 36);
+	Unit_Tank = new Button("bin/ui/hud/button_unit2.tga", 120, 624, 36, 36);
+	Unit_Heavy = new Button("bin/ui/hud/button_unit3.tga", 192, 624, 36, 36);
+	Unit_Sniper = new Button("bin/ui/hud/button_unit4.tga", 264, 624, 36, 36);
+	Unit_Mine = new Button("bin/ui/hud/button_unit5.tga", 336, 624, 36, 36);
+	Unit_Barricade = new Button("bin/ui/hud/button_unit6.tga", 408, 624, 36, 36);
 
 	//For Win Lose Menu
 	WinLose_MainMenu = new Button("bin/ui/hud/button_mainmenu.tga", 832, 594, 108, 28);
@@ -172,32 +172,18 @@ void CPlayState::Init(void)
 
 void CPlayState::Cleanup()
 {
-	/*if (theMap != NULL)
+	if (tEnemyProgress != NULL)
 	{
-		delete theMap;
-		theMap = NULL;
-		free(theMap);
-	} 
-
-	if (Cam != NULL)
-	{
-		delete Cam;
-		Cam = NULL;
-		free(Cam);
-	}*/
+		delete tEnemyProgress;
+		tEnemyProgress = NULL;
+		free(tEnemyProgress);
+	}
 
 	if (player != NULL)
 	{
 		delete player;
 		player = NULL;
 		free(player);
-	}
-
-	if (tEnemyProgress != NULL)
-	{
-		delete tEnemyProgress;
-		tEnemyProgress = NULL;
-		free(tEnemyProgress);
 	}
 
 	// Power ups deconstruct
