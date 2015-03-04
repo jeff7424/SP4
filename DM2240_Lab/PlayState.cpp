@@ -43,7 +43,7 @@ void CPlayState::Init(void)
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	winscreen = false;
+	winscreen = true;
 	losescreen = false;
 	minigame = false;
 	playvictory = false;
@@ -1343,8 +1343,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-10 > 0)
 			{
+				soundTypes(23);
 				Bonus_MultAttack *= 1.1f;
 				player->SetBonus(player->GetBonus()-10);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1354,8 +1359,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-10 > 0)
 			{
+				soundTypes(23);
 				Bonus_MultArmour *= 1.1f;
 				player->SetBonus(player->GetBonus()-10);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1364,8 +1374,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-10 > 0)
 			{
+				soundTypes(23);
 				Bonus_MultDollar *= 1.1f;
 				player->SetBonus(player->GetBonus()-10);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1375,8 +1390,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-5 > 0)
 			{
+				soundTypes(23);
 				player->SetQtyShield(player->GetQtyShield()+1);
 				player->SetBonus(player->GetBonus()-5);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1384,8 +1404,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-4 > 0)
 			{
+				soundTypes(23);
 				player->SetQtyBaseHealth(player->GetQtyBaseHealth()+1);
 				player->SetBonus(player->GetBonus()-4);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1393,8 +1418,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-3 > 0)
 			{
+				soundTypes(23);
 				player->SetQtyFireRate(player->GetQtyFireRate()+1);
 				player->SetBonus(player->GetBonus()-3);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1402,8 +1432,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-3 > 0)
 			{
+				soundTypes(23);
 				player->SetQtyDamage(player->GetQtyDamage()+1);
 				player->SetBonus(player->GetBonus()-3);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -1411,8 +1446,13 @@ void CPlayState::mclicklevel1(int x, int y)
 		{
 			if (player->GetBonus()-6 > 0)
 			{
+				soundTypes(23);
 				player->SetQtyTank(player->GetQtyTank()+1);
 				player->SetBonus(player->GetBonus()-6);
+			}
+			else
+			{
+				soundTypes(15);
 			}
 		}
 
@@ -2428,60 +2468,58 @@ void CPlayState::shooting(bool firing)
 
 void CPlayState::soundTypes(int type)
 {
-	if (winscreen != true)
-	{
 		if (audioplay == true)
 		{
 			int random = RNGesus();
 			switch (type)
 			{
-			case 1:
-				se->play2D("bin/sounds/chipDeath.mp3", false);
-				break;
-			case 2:
-				se->play2D("bin/sounds/cardDeath.mp3", false);
-				break;
-			case 3:
-				se->play2D("bin/sounds/humanDeath.mp3", false);
-				break;
-			case 4:
-				se->play2D("bin/sounds/xplosionSFX.wav", false);
-				break;
-			case 5:
-				se->play2D("bin/sounds/laserSFX.mp3", false);
-				break;
-			case 6:
-				se->play2D("bin/sounds/sniper.wav", false);
-				break;
-			case 7:
-				se->play2D("bin/sounds/Soldier.wav", false);
-				break;
-			case 8:
-				se->play2D("bin/sounds/shells.wav", false);
-				break;
-			case 9:
-				se->play2D("bin/sounds/Missile.wav", false);
-				break;
-			case 10:
-				se->play2D("bin/sounds/TankFire.wav", false);
-				break;
-			case 11:
-				switch (random)
-				{
 				case 1:
-					se->play2D("bin/sounds/Hit_1.wav", false);
-					se->setSoundVolume(0.25);
+					se->play2D("bin/sounds/chipDeath.mp3", false);
 					break;
 				case 2:
-					se->play2D("bin/sounds/Hit_2.wav", false);
-					se->setSoundVolume(0.25);
+					se->play2D("bin/sounds/cardDeath.mp3", false);
 					break;
 				case 3:
-					se->play2D("bin/sounds/Hit_3.wav", false);
-					se->setSoundVolume(0.25);
+					se->play2D("bin/sounds/humanDeath.mp3", false);
 					break;
-				}
-				break;
+				case 4:
+					se->play2D("bin/sounds/xplosionSFX.wav", false);
+					break;
+				case 5:
+					se->play2D("bin/sounds/laserSFX.mp3", false);
+					break;
+				case 6:
+					se->play2D("bin/sounds/sniper.wav", false);
+					break;
+				case 7:
+					se->play2D("bin/sounds/Soldier.wav", false);
+					break;
+				case 8:
+					se->play2D("bin/sounds/shells.wav", false);
+					break;
+				case 9:
+					se->play2D("bin/sounds/Missile.wav", false);
+					break;
+				case 10:
+					se->play2D("bin/sounds/TankFire.wav", false);
+					break;
+				case 11:
+					switch (random)
+					{
+					case 1:
+						se->play2D("bin/sounds/Hit_1.wav", false);
+						se->setSoundVolume(0.25);
+						break;
+					case 2:
+						se->play2D("bin/sounds/Hit_2.wav", false);
+						se->setSoundVolume(0.25);
+						break;
+					case 3:
+						se->play2D("bin/sounds/Hit_3.wav", false);
+						se->setSoundVolume(0.25);
+						break;
+					}
+					break;
 			case 12:
 				se->play2D("bin/sounds/mission_start.wav", false);
 				break;
@@ -2489,6 +2527,7 @@ void CPlayState::soundTypes(int type)
 				se->play2D("bin/sounds/mission_complete.mp3", false);
 				break;
 			case 14:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit.mp3", false);
 				break;
 			case 15:
@@ -2498,26 +2537,33 @@ void CPlayState::soundTypes(int type)
 				se->play2D("bin/sounds/sliderMove.wav", false);
 				break;
 			case 17:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit_missile.mp3", false);
 				break;
 			case 18:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit_sniper.wav", false);
 				break;
 			case 19:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit_barricade.wav", false);
 				break;
 			case 20:
 				se->play2D("bin/sounds/placement.wav", false);
 				break;
 			case 21:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit_mine.wav", false);
 				break;
 			case 22:
+				if (winscreen != true)
 				se->play2D("bin/sounds/unit_tank.mp3", false);
+				break;
+			case 23:
+				se->play2D("bin/sounds/purchase.wav", false);
 				break;
 			}
 		}
-	}
 //	sound.playSound();
 }
 
