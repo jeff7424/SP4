@@ -500,7 +500,6 @@ void CMiniGame::spawnbullet(int x, int y)
 	//Load from minigame
 	if (ingame)
 	{
-
 		if (timer >= 2000 && timer <= 3000)
 		{
 			newBullet->SetSpeed(650);

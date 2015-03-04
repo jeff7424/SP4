@@ -301,7 +301,7 @@ void Tower::Render()
 
 void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 {
-	for (int i = 0; i < EnemyList.size(); ++i)
+	for (unsigned int i = 0; i < EnemyList.size(); ++i)
 	{	
 		if (EnemyList[i]->GetActive() && EnemyList[i]->GetHealth() > 0)
 		{
