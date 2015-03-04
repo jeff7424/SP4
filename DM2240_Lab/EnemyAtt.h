@@ -1,19 +1,28 @@
-#pragma once
+#ifndef ENEMYATT_H_
+#define ENEMYATT_H_
 
+//#include "PlayState.h"
 #include "Units.h"
-#include "EnemyProgress.h"'
-#include "Map.h"
+#include "TextureImage.h"
+#include "Bullet.h"
 #include <vector>
 #include <stdlib.h>     /* srand, rand */
 #include <stdio.h>
 #include <time.h>       /* time */
 
+class Tower;
+class Units;
+
 class Enemy : public Units {
 private:
 	float buff;
 	float speed;
+	//int heroAnimationCounter;
+
+	
 
 public:
+
 	enum ENEMY_TYPE
 	{
 		ENEMY_NONE,
@@ -28,7 +37,8 @@ public:
 	{
 		ENEMY_LANE,
 		ENEMY_ADVANCE,
-		ENEMY_ATTACK
+		ENEMY_ATTACK,
+		ENEMY_RELOADING
 	};
 
 	enum ENEMY_YIELD
@@ -45,18 +55,25 @@ public:
 	Enemy(ENEMY_TYPE type = ENEMY_1);
 	~Enemy();
 
+	TextureImage CreepTexture[2];
+
 	int offsetX, offsetY; //current x tile, current y tile
 	int offsetY2; //current y tile + 1
 	int tilesTravelled, currentTile;
 	int dir;
 	bool called;
 
-	void Update(float dt);
 	void SetAtt(float firerate, int damage, int range, int health, float speed);
 	void SetSpeed(float speed);
-	void SetMovement (std::vector<Enemy *> eList, int TILE_SIZE, float dt, int laneSwap);
+
+	void DrawEnemy(int heroAnimationCounter);
+	void Update (std::vector<Enemy *> eList, std::vector<Tower *> tList, float dt, int laneSwap);
+	void changeState(Enemy* creep, int laneswap);
 	void SetBuff(float buff);
 	float GetBuff();
-	
+	bool LoadTGA(TextureImage *texture, char *filename);
+
 	float GetSpeed();
 };
+
+#endif

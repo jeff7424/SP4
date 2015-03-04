@@ -49,10 +49,7 @@ public:
 
 	int GetCost();
 
-	void DrawTowerLevel();
-
 	void Upgrade();
-	void DrawLevel();
 	void Render();
 	void GetTarget(std::vector<Enemy*>);
 	Enemy* ReturnTarget();

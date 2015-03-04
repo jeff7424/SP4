@@ -3,6 +3,9 @@
 #include "MiniGame.h"
 #include "MenuState.h"
 #include "PlayState.h"
+#include <iostream>
+
+using namespace std;
 
 int random = rand() % 3 + 1;
 

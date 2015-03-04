@@ -26,6 +26,9 @@ Bullet::Bullet(BULLET_TYPE type)
 	case GO_MINIGAMEBULLET:
 		filename = "bin/textures/mgbullet.tga";
 		break;
+	case GO_ENEMYBULLET:
+		filename = "bin/textures/enemy_shell.tga";
+		break;
 	}
 	LoadTGA(&texture, filename);
 	this->SetVel(Vector3(1, 0, 0));

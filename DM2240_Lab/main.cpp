@@ -3,7 +3,6 @@
 #include "PlayState.h"
 #include "MenuState.h"
 #include "IntroState.h"
-#include "Setting.h"
 lua_State *luaState;
 
 static int luaCreateWindow(lua_State *state);

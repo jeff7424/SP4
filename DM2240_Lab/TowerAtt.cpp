@@ -17,22 +17,22 @@ Tower::Tower(TOWER_TYPE type)
 	switch (type)
 	{
 	case TOWER_TYPE::TOWER_NORMAL:
-		filename = "bin/tower/Heavy.tga";
+		filename = "bin/tower/Unit1_Soldier.tga";
 		break;
 	case TOWER_TYPE::TOWER_CANNON:
-		filename = "bin/tower/Tank.tga";
+		filename = "bin/tower/Unit2_Tank.tga";
 		break;
 	case TOWER_TYPE::TOWER_SLOW:
-		filename = "bin/tower/Soldier.tga";
+		filename = "bin/tower/Unit4_Sniper.tga";
 		break;
 	case TOWER_TYPE::TOWER_SHOCK:
-		filename = "bin/tower/Heavy.tga";
+		filename = "bin/tower/Unit3_RPG.tga";
 		break;
 	case TOWER_TYPE::TOWER_MINE:
-		filename = "bin/tower/mine.tga";
+		filename = "bin/tower/Unit5_Mine.tga";
 		break;
 	case TOWER_TYPE::TOWER_BARRICADE:
-		filename = "bin/tower/barricade.tga";
+		filename = "bin/tower/Unit6_Barricade.tga";
 		break;
 	}
 	LoadTGA(&TowerTexture, filename);
@@ -159,16 +159,6 @@ int Tower::GetCost()
 	return cost;
 }
 
-void Tower::DrawTowerLevel()
-{
-	for (int i = 0; i <= GetLevel(); i++)
-	{
-		glPushMatrix();
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glPopMatrix();
-	}
-}
-
 void Tower::ChangeState()
 {
 	if (state == STATE_IDLE)
@@ -288,28 +278,9 @@ void Tower::Upgrade()
 	}
 }
 
-void Tower::DrawLevel()
-{
-	glPushMatrix();
-	glTranslatef(GetPos().x - 40, GetPos().y - 50, GetPos().z);
-	for (int lvl = 0; lvl < GetLevel(); lvl++)
-	{
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glTranslatef(15, 0, 0);
-		glBegin(GL_QUADS);
-		glVertex2f(0, 0);
-		glVertex2f(0, 10);
-		glVertex2f(10, 10);
-		glVertex2f(10, 0);
-		glEnd();
-	}
-	glPopMatrix();
-}
-
 void Tower::Render()
 {
 	DrawHealthBar();
-	DrawLevel();
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glPushMatrix();

@@ -24,6 +24,7 @@ public:
 		GO_SNIPERBULLET,	//enemy
 		GO_CLOSEBULLET,		//enemy
 		GO_MINIGAMEBULLET,
+		GO_ENEMYBULLET,
 		GO_TOTAL, // must be last
 	};
 	BULLET_TYPE type;

@@ -88,14 +88,6 @@ void CGrid::RenderScene(void)
 	glLineWidth(1);
 	glPopAttrib();
 	glPopMatrix();
-
-	int id = index_x * 7 + index_y;
-	char tempid[4];
-	itoa(id, tempid, 10);
-	glPushMatrix();
-	glTranslatef((float)index_x * xSize + 20, (float)index_y * ySize + 20, 0);
-	RenderStringOnScreen(index_x, index_y, tempid);
-	glPopMatrix();
 }
 
 void CGrid::SetColor()
@@ -158,17 +150,6 @@ void CGrid::CursorOnGrid(const int x, const int y)
 	else
 	{
 		CursorHit = false;
-	}
-}
-
-void CGrid::RenderStringOnScreen(float x, float y, const char* quote)
-{
-	int length = strlen(quote);
-	glRasterPos2f(x, y);
-
-	for (int i = 0; i < length; i++)
-	{
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, quote[i]);
 	}
 }
 
