@@ -537,6 +537,7 @@ void CPlayState::Update(CGameStateManager* theGSM)
 							soundTypes(10);
 							break;
 						case Tower::TOWER_MINE:
+							soundTypes(4);
 							tower->ReturnTarget()->SetHealth(0);
 							tower->ReturnTarget()->SetActive(false);
 							tower->SetHealth(0);
@@ -582,7 +583,11 @@ void CPlayState::Update(CGameStateManager* theGSM)
 			}
 			else
 			{
+				if (bullet->type == Bullet::GO_CANNONBULLET || Bullet::GO_SHOCKBULLET)
+					soundTypes(4);
+				else
 				soundTypes(11);
+
 				delete bullet;
 				bulletList.erase(it);
 				bullet = NULL;
@@ -2932,8 +2937,11 @@ void CPlayState::RenderHUD()
 		if (playvictory == true)
 		{
 			sound.stop();
-			se->play2D("bin/sounds/victory_bgm.mp3");
-			se->play2D("bin/sounds/mission_complete.mp3");
+			if (audioplay == true)
+			{
+				se->play2D("bin/sounds/victory_bgm.mp3");
+				se->play2D("bin/sounds/mission_complete.mp3");
+			}
 			playvictory = false;
 		}
 		glColor3f(1.0f, 1.0f, 1.0f);
