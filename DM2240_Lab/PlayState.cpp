@@ -539,7 +539,29 @@ void CPlayState::Update(CGameStateManager* theGSM)
 						case Tower::TOWER_MINE:
 							tower->ReturnTarget()->SetHealth(0);
 							tower->ReturnTarget()->SetActive(false);
+							tower->SetHealth(0);
 							tower->SetActive(false);
+							tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
+							Deathsounds();
+							int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
+							int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
+							theMap->GetGrid(x, y)->SetOccupied(false);
+							//soundTypes(creep->type, true);
+							switch (tower->ReturnTarget()->type)
+							{
+							case Enemy::ENEMY_1:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y1)*Bonus_MultDollar);
+								break;
+
+							case Enemy::ENEMY_2:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y2)*Bonus_MultDollar);
+								break;
+
+							case Enemy::ENEMY_3:
+								player->SetGold(player->GetGold() + (Enemy::NME_Y3)*Bonus_MultDollar);
+								player->SetBonus(player->GetBonus() + 1);
+								break;
+							}
 							break;
 					}
 				}
@@ -1154,7 +1176,15 @@ void CPlayState::mclicklevel1(int x, int y)
 				}
 				else if (PauseMenu_Restart->GetIsHover())
 				{
-
+					pause = false;
+					cout << " Restart Level!" << endl;
+					spawntimer = 0.0f;
+					player->SetHealth(player->GetMaxHealth());
+					player->SetGold(1000);
+					clearmap();
+					loadlevel();
+					tEnemyProgress->SetEnemyCounter(0);
+					LoadSpawn();
 				}
 				else if (PauseMenu_Exit->GetIsHover())
 				{
