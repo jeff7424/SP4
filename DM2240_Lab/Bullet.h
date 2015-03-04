@@ -26,7 +26,6 @@ public:
 		GO_MINIGAMEBULLET,
 		GO_ENEMYBULLET,
 		GO_TANKBULLET,
-		GO_MINIGAMEBULLET,
 		GO_TOTAL, // must be last
 	};
 	BULLET_TYPE type;

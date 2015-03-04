@@ -1504,18 +1504,18 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	player->SetHealth(player->GetHealth() - 1);
+	//player->SetHealth(player->GetHealth() - 1);
+
 	// Win lose conditions
 	if (tEnemyProgress->GetEnemyCounter() <= 0)
 	{
-		//winscreen = true;
+		winscreen = true;
 	}
 
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
 		losescreen = true;
-		winscreen = true;
 	}
 
 	// Despawn creep if bullet collides
