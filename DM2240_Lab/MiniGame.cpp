@@ -29,7 +29,7 @@ void CMiniGame::Init()
 	h = glutGet(GLUT_WINDOW_HEIGHT);
 
 	MiniGameMusic = new AudioPlayer;
-	MiniGameMusic->setFileName("bin/sounds/BGM.mp3");
+	MiniGameMusic->setFileName("bin/sounds/minigamemusic.mp3");
 	MiniGameMusic->playSoundThreaded();
 	//LoadTGA(&texture, filename);
 
@@ -86,8 +86,10 @@ void CMiniGame::KeyboardUp(unsigned char key, int x, int y)
 
 }
 
+
 void CMiniGame::Update(CGameStateManager* theGSM)
 {
+	
 	static int frame = 0;
 	static int lastTime = glutGet(GLUT_ELAPSED_TIME);
 	++frame;
@@ -103,25 +105,26 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	}
 
 	//Blood Scrolling
-	offsetY += 5.0;
+	offsetY += 100.0*dt;
 	if (offsetY > SCREEN_HEIGHT)
 	{
 		offsetY = -SCREEN_HEIGHT;
 	}
 
 	//Gun scrolling
-	offsetY2 += 5.0;
+	offsetY2 += 100.0*dt;
 	if (offsetY2 > SCREEN_HEIGHT)
 	{
 		offsetY2 = 0 - SCREEN_HEIGHT;
 	}
 
+	//Inside load mini game
 	if (!winminigame && ingame)
 	{
 		timer -= dt;
 	}
 	
-	//Outside 
+	//Outside load mini game
 	if(!ingame && winminigame == false && loseminigame == false)
 	{
 		timer -= dt;
@@ -167,11 +170,11 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 
 			if (timer >= 2000 && timer <= 3000)
 			{
-				cooldown = 0.4;
+				cooldown = 0.3;
 			}
 			else if (timer >= 1200 && timer <= 2000)
 			{
-				cooldown = 0.3;
+				cooldown = 0.25;
 			}
 			else if (timer > 0 && timer < 1200)
 			{
@@ -193,9 +196,13 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 			{
 				cooldown = 0.2;
 			}
-			else if (currentscore > 7000)
+			else if (currentscore > 7000 && currentscore <= 15000)
 			{
 				cooldown = 0.15;
+			}
+			else if (currentscore > 15000)
+			{
+				cooldown = 0.1;
 			}
 		}
 	}
@@ -282,24 +289,41 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 	RenderBullets();
 	RenderMGCharacter();
 
+	//Load from menu screen
 	if(!ingame)
 	{
 	//Render the time left on minigame screen
 	char temp[100];
 
-	sprintf_s(temp, "Current Score");
-	RenderStringOnScreen(SCREEN_WIDTH*0.42, SCREEN_HEIGHT*0.1, temp);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	sprintf_s(temp, "ENDLESS SURVIVAL!");
+	RenderStringOnScreen(SCREEN_WIDTH*0.39, SCREEN_HEIGHT*0.05, temp);
 
+	glColor3f(1.0f, 1.0f, 1.0f);
+	sprintf_s(temp, "Current Score");
+	RenderStringOnScreen(SCREEN_WIDTH*0.42, SCREEN_HEIGHT*0.09, temp);
+
+	glColor3f(1.0f, 1.0f, 0.0f);
 	sprintf_s(temp, " %d", GetCurrentScore());
-	RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.14, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.13, temp);
 
 	}
 	//Load from outside
 	else if (ingame)
 	{
-		char temp[24];
-		sprintf_s(temp, "Time Left:  %.1f", GetTimer()*0.01);
-		RenderStringOnScreen(SCREEN_WIDTH*0.42, SCREEN_HEIGHT*0.1, temp);
+		char temp[100];
+		glColor3f(0.0f, 0.0f, 1.0f);
+		sprintf_s(temp, "SURVIVE FOR 30 SECONDS!");
+		RenderStringOnScreen(SCREEN_WIDTH*0.37, SCREEN_HEIGHT*0.05, temp);
+
+		glColor3f(1.0f, 1.0f, 1.0f);
+		sprintf_s(temp, "Time Left", GetTimer()*0.01);
+		RenderStringOnScreen(SCREEN_WIDTH*0.44, SCREEN_HEIGHT*0.09, temp);
+
+
+		glColor3f(1.0f, 1.0f, 0.0f);
+		sprintf_s(temp,  "%.1f", GetTimer()*0.01);
+		RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.13, temp);
 
 	}
 
@@ -310,6 +334,7 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 		sprintf_s(temp, "Final Score");
 		RenderStringOnScreen(SCREEN_WIDTH*0.44, SCREEN_HEIGHT*0.57, temp);
 
+		glColor3f(1.0f, 1.0f, 0.0f);
 		sprintf_s(temp, " %d", GetCurrentScore());
 		RenderStringOnScreen(SCREEN_WIDTH*0.46, SCREEN_HEIGHT*0.62, temp);
 
@@ -478,11 +503,11 @@ void CMiniGame::spawnbullet(int x, int y)
 
 		if (timer >= 2000 && timer <= 3000)
 		{
-			newBullet->SetSpeed(600);
+			newBullet->SetSpeed(650);
 		}
 		else if (timer >= 500 && timer < 2000)
 		{
-			newBullet->SetSpeed(650);
+			newBullet->SetSpeed(700);
 		}
 		else if (timer >= 0 && timer < 500)
 		{
@@ -636,7 +661,7 @@ void CMiniGame::RenderBullets(void)
 		Bullet *bullet = MGBList[i];
 		if (bullet->GetActive())
 		{
-			bullet->Render();
+			bullet->Render(0);
 		}
 	}
 }
