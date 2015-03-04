@@ -43,7 +43,7 @@ void CPlayState::Init(void)
 	pause = false;
 	exitmenu = false;
 	soundon = true;
-	winscreen = true;
+	winscreen = false;
 	losescreen = false;
 	minigame = false;
 	playvictory = false;
@@ -1741,6 +1741,7 @@ void CPlayState::Update(float dt)
 					{
 						if ((creep->type == Enemy::ENEMY_1 || creep->type == Enemy::ENEMY_3))
 						{
+							soundTypes(11);
 							if (tower->GetPos().y == creep->GetPos().y && tower->GetPos().x - creep->GetPos().x > -creep->GetRange() && creep->GetPos().x > tower->GetPos().x)
 							{
 								//creep->SetFire(true);
@@ -1750,6 +1751,7 @@ void CPlayState::Update(float dt)
 								{
 									//se->play2D("bin/sounds/towerDeath.mp3", false);
 									//se->setSoundVolume(0.25);
+									Deathsounds();
 									int x = (int)((tower->GetPos().x / TILE_SIZE) - 0.5f);
 									int y = (int)((tower->GetPos().y / TILE_SIZE) - 0.5f);
 									theMap->GetGrid(x, y)->SetOccupied(false);
@@ -1764,6 +1766,7 @@ void CPlayState::Update(float dt)
 						}
 						else if((creep->type == Enemy::ENEMY_2 || creep->type == Enemy::ENEMY_4))
 						{
+							soundTypes(7);
 							Bullet* newbullet = new Bullet(static_cast<Bullet::BULLET_TYPE>(Bullet::GO_ENEMYBULLET));
 							newbullet->SetActive(true);
 							newbullet->SetDamage(creep->GetDamage());
@@ -1828,6 +1831,7 @@ void CPlayState::Update(float dt)
 		}
 		else
 		{
+			Deathsounds();
 			delete creep;
 			enemyList.erase(it2);
 			creep = NULL;
@@ -2596,7 +2600,7 @@ void CPlayState::soundTypes(int type)
 				se->play2D("bin/sounds/purchase.wav", false);
 				break;
 			case 24:
-				se->play2D("bin/sounds/power_use.wav", false);
+				se->play2D("bin/sounds/power_use.mp3", false);
 				break;
 			}
 		}
@@ -3147,8 +3151,7 @@ void CPlayState::Deathsounds()
 {
 	int a = RNGesus();
 	if (audioplay == true)
-	{
-		
+	{		
 		switch (a)
 		{
 		case 1:

@@ -338,8 +338,7 @@ void CSettingsState::MouseClick(int button, int state, int x, int y)
 		mouseInfo.lastY = y;
 		if (mouseInfo.mLButtonUp == false)
 		{	
-			if (audioplay == true)
-			se->play2D("bin/sounds/select.wav", false);
+			
 
 			if (StartButton->GetIsHover())
 			{
@@ -365,6 +364,8 @@ void CSettingsState::MouseClick(int button, int state, int x, int y)
 			{
 				CGameStateManager::getInstance()->ChangeState(CMenuState::Instance());
 			}
+			if (audioplay == true)
+			se->play2D("bin/sounds/select.wav", false);
 		}
 
 		break;
