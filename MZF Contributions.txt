@@ -11,10 +11,10 @@ Literal Notepad
 9       Brought to attention multishield purchase bug
 10      Added Bonus Currency
 11      Level End: Bonus Shop (One-Use Powerups)
-12
-13
-14
-15
+12      Convergent Evolution: Mouse Control
+13      Convergent Evolution: Projectile Rain
+14      Convergent Evolution: Timing Synchonisation (need-for-inclusion debatable)
+15      Convergent Evolution: Scrolling Background
 16
 17
 18
