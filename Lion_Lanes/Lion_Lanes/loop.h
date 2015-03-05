@@ -230,6 +230,11 @@ void logic_loop(void) // called within MyDisplay
 
 		rocks_left = 25;
 		mapinit = false;
+
+			HWND Game_Window = FindWindow(NULL, "Lion Lanes");
+			RECT Game_Window_Receive;
+			GetWindowRect(Game_Window, &Game_Window_Receive);
+			SetCursorPos(488+Game_Window_Receive.left, 367+Game_Window_Receive.top); // Values correct for Windows 8. Not my option.
 	}
 
 /*	// Spawns an ORock every 1000ms
