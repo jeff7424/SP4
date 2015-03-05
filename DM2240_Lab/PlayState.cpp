@@ -568,8 +568,11 @@ void CPlayState::Update(CGameStateManager* theGSM)
 							break;
 						case Tower::TOWER_MINE:
 							soundTypes(4);
-							tower->ReturnTarget()->SetHealth(0);
-							tower->ReturnTarget()->SetActive(false);
+							tower->ReturnTarget()->SetHealth(tower->ReturnTarget()->GetHealth() - 80);
+							if (tower->ReturnTarget()->GetHealth() <= 0)
+							{
+								tower->ReturnTarget()->SetActive(false);
+							}
 							tower->SetHealth(0);
 							tower->SetActive(false);
 							tEnemyProgress->SetEnemyCounter(tEnemyProgress->GetEnemyCounter() - 1);
@@ -1777,7 +1780,7 @@ void CPlayState::Update(float dt)
 				Tower *tower = *it;
 				Vector3 bulletPos;
 
-				if (tower->GetActive() == true)
+				if (tower->GetActive() == true && tower->type != Tower::TOWER_TYPE::TOWER_MINE)
 				{
 					if(creep->type == Enemy::ENEMY_5)
 					{

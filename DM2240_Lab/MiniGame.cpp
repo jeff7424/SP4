@@ -271,9 +271,6 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	{
 		SetPos(Vector3(GetPos().x, SCREEN_HEIGHT*0.1f, 0));
 	}
-
-
-
 }
 
 void CMiniGame::SetInGame(bool ingame)
