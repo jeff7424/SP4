@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lion_Lanes", "Lion_Lanes\Lion_Lanes.vcxproj", "{9C5DCC45-EEBC-4152-8DB1-CD117E4684EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C5DCC45-EEBC-4152-8DB1-CD117E4684EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9C5DCC45-EEBC-4152-8DB1-CD117E4684EC}.Debug|Win32.Build.0 = Debug|Win32
+		{9C5DCC45-EEBC-4152-8DB1-CD117E4684EC}.Release|Win32.ActiveCfg = Release|Win32
+		{9C5DCC45-EEBC-4152-8DB1-CD117E4684EC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

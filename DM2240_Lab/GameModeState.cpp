@@ -364,7 +364,12 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 						}
 					}
 					else
-					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					{
+						CPlayState::Instance()->SetLevel(1);
+						CPlayState::Instance()->LoadFromFile(false);
+						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					}
+					
 				}
 				else if (ContinueGame->GetIsHover())
 				{
@@ -379,7 +384,11 @@ void CGameModeState::MouseClick(int button, int state, int x, int y)
 						}
 					}
 					else
-					CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					{
+						CPlayState::Instance()->SetLevel(1);
+						CPlayState::Instance()->LoadFromFile(true);
+						CGameStateManager::getInstance()->ChangeState(CPlayState::Instance());
+					}
 				}
 				else
 				{

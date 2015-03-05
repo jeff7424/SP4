@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Objects\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ODragon.cpp">
+      <Filter>Objects\Dragon</Filter>
+    </ClCompile>
+    <ClCompile Include="OTemplate.cpp">
+      <Filter>Objects\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="loadobj.cpp">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="loadTGA.cpp">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="rendermesh.cpp">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ORock.cpp">
+      <Filter>Objects\Rock</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Logic">
+      <UniqueIdentifier>{323d7e24-d534-482d-b371-7ef97c9c3b2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Black_box">
+      <UniqueIdentifier>{35317dbe-e5a6-4c2a-b38c-039351ccd1e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Black_box\Video">
+      <UniqueIdentifier>{f451ae72-5401-430e-bd33-6504e3169a53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Black_box\Input">
+      <UniqueIdentifier>{13c2b047-a1bb-4db8-a161-8713180a0059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{a31855a0-549f-4744-b858-8f9e9a046085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Projectile">
+      <UniqueIdentifier>{bfa89827-ae53-4009-a635-b8ebbe86e61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Template">
+      <UniqueIdentifier>{276599d5-9085-4750-a4c9-ec557cd3de47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Dragon">
+      <UniqueIdentifier>{279b2834-1167-481f-9df9-2804b67f8110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Black_box\Video\3D">
+      <UniqueIdentifier>{6b710f45-6c75-49e2-83dc-a1d4d867047d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Black_box\Video\2D">
+      <UniqueIdentifier>{150deee4-7ff0-4055-9fde-74e860ff262e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Rock">
+      <UniqueIdentifier>{48895a8d-f9f2-483f-96b8-acce9968efc1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="globalvars.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="loop.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Objects\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3D.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="program_init.h">
+      <Filter>Black_box</Filter>
+    </ClInclude>
+    <ClInclude Include="prog_init_hid.h">
+      <Filter>Black_box\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="obj_inst_sys.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ODragon.h">
+      <Filter>Objects\Dragon</Filter>
+    </ClInclude>
+    <ClInclude Include="OTemplate.h">
+      <Filter>Objects\Template</Filter>
+    </ClInclude>
+    <ClInclude Include="keycodes.h">
+      <Filter>Black_box\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="light_define.h">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="loadobj.h">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="loadTGA.h">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="rendermesh.h">
+      <Filter>Black_box\Video\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="prog_init_gfx.h">
+      <Filter>Black_box\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="2dtext.h">
+      <Filter>Black_box\Video\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="ORock.h">
+      <Filter>Objects\Rock</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -51,7 +51,7 @@ void CMenuState::Init()
 	se = createIrrKlangDevice();
 	if (audioplay == true)
 	{
-		bgm.setFileName("bin/sounds/main_menu.mp3");
+		bgm.setFileName("bin/sounds/game_music.mp3");
 		bgm.playSoundThreaded();
 	}
 }

@@ -1,0 +1,1 @@
+void RenderMesh(Mesh *cur); // Forward declaration
