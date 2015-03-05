@@ -1656,7 +1656,7 @@ void CPlayState::mclicklevel1(int x, int y)
 
 void CPlayState::Update(float dt)
 {
-	//player->SetHealth(player->GetHealth() - 1);
+	player->SetHealth(player->GetHealth() - 1);
 	// Win lose conditions
 	//winscreen = true;
 	if (tEnemyProgress->GetEnemyCounter() <= 0)
@@ -1667,7 +1667,8 @@ void CPlayState::Update(float dt)
 	if (player->GetHealth() <= 0)
 	{
 		player->SetHealth(0);
-		losescreen = true;
+		//losescreen = true;
+		winscreen = true;
 	}
 
 	// Despawn creep if bullet collides
@@ -2876,10 +2877,10 @@ void CPlayState::RenderHUD()
 	sprintf_s(temp, "Shield: ");
 	RenderStringOnScreen(10, 65, temp);
 
-	sprintf_s(temp, "Health:               %d", player->GetHealth());
-	RenderStringOnScreen(10, 30, temp);
+	sprintf_s(temp, " %d", player->GetHealth());
+	RenderStringOnScreen(SCREEN_WIDTH*0.15, 30, temp);
 	sprintf_s(temp, " / 100");
-	RenderStringOnScreen(170, 30, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.17, 30, temp);
 
 	sprintf_s(temp, "Gold: %d", player->GetGold());
 	RenderStringOnScreen(10, 90, temp);

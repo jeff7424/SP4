@@ -14,7 +14,6 @@ CMiniGame CMiniGame::theMiniGame;
 void CMiniGame::Init()
 {
 	Cam = new Camera();
-	timer = 100.0f;
 	playerposition = Vector3(SCREEN_WIDTH*0.5, 400, 0);
 	winminigame = false;
 	loseminigame = false;
@@ -22,7 +21,7 @@ void CMiniGame::Init()
 	offsetY = 0;
 	offsetY2 = 0 - SCREEN_HEIGHT;
 	cooldown = 0.2f;
-	timer = 3000.0f;
+	timer = 30.0f;
 	mggold = 0;
 	currentscore = 0;
 	w = glutGet(GLUT_WINDOW_WIDTH);
@@ -60,6 +59,7 @@ void CMiniGame::Cleanup()
 		Bullet *bullet = MGBList.back();
 		delete bullet;
 		bullet = NULL;
+		timer = NULL;
 		MGBList.pop_back();
 		free(bullet);
 	}
@@ -101,7 +101,8 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	static int lastTime = glutGet(GLUT_ELAPSED_TIME);
 	++frame;
 	int time = glutGet(GLUT_ELAPSED_TIME);
-	float dt = ((time - lastTime) / 1000.f);
+	float dt = NULL;
+	dt = ((time - lastTime) / 1000.f);
 	lastTime = time;
 
 	static int lastFPSTime = glutGet(GLUT_ELAPSED_TIME);
@@ -128,14 +129,17 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 	//Inside load mini game
 	if (!winminigame && ingame)
 	{
-		timer -= dt;
+		cout << dt << endl;
+		timer -= (dt);
 	}
 	
+
 	//Outside load mini game
 	if(!ingame && winminigame == false && loseminigame == false)
 	{
 		timer -= dt;
 		currentscore++;
+		cout << timer << endl;
 	}
 
 	//Stop time if time reaches 0
@@ -156,6 +160,10 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 		mggold = 300;
 	}
 
+	if (loseminigame == true || winminigame == true )
+	{
+		dt = NULL;
+	}
 
 	if (cooldown > 0.0f)
 	{
@@ -175,15 +183,15 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 		if (ingame && timer > 0.0f)
 		{
 
-			if (timer >= 2000 && timer <= 3000)
+			if (timer >= 20.0 && timer <= 30.0)
 			{
 				cooldown = 0.3f;
 			}
-			else if (timer >= 1200 && timer <= 2000)
+			else if (timer >= 12.0 && timer <= 20.0)
 			{
 				cooldown = 0.25f;
 			}
-			else if (timer > 0 && timer < 1200)
+			else if (timer > 0 && timer < 12.0)
 			{
 				cooldown = 0.2f;
 			}
@@ -227,6 +235,7 @@ void CMiniGame::Update(CGameStateManager* theGSM)
 				//{
 
 					//cout << "DIE PLAYER DIEEEE!" << endl;
+				timer = 0.0f;
 					bullet->SetActive(false);
 					loseminigame = true;
 				//}
@@ -304,15 +313,15 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 
 	glColor3f(1.0f, 0.0f, 0.0f);
 	sprintf_s(temp, "ENDLESS SURVIVAL!");
-	RenderStringOnScreen(SCREEN_WIDTH*0.39f, SCREEN_HEIGHT*0.05f, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.05f, temp);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	sprintf_s(temp, "Current Score");
-	RenderStringOnScreen(SCREEN_WIDTH*0.42f, SCREEN_HEIGHT*0.09f, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.48f, SCREEN_HEIGHT*0.09f, temp);
 
 	glColor3f(1.0f, 1.0f, 0.0f);
 	sprintf_s(temp, " %d", GetCurrentScore());
-	RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.13f, temp);
+	RenderStringOnScreen(SCREEN_WIDTH*0.5f, SCREEN_HEIGHT*0.13f, temp);
 
 	}
 	//Load from outside
@@ -321,16 +330,16 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 		char temp[100];
 		glColor3f(0.0f, 0.0f, 1.0f);
 		sprintf_s(temp, "SURVIVE FOR 30 SECONDS!");
-		RenderStringOnScreen(SCREEN_WIDTH*0.37f, SCREEN_HEIGHT*0.05f, temp);
+		RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.05f, temp);
 
 		glColor3f(1.0f, 1.0f, 1.0f);
-		sprintf_s(temp, "Time Left", GetTimer()*0.01f);
-		RenderStringOnScreen(SCREEN_WIDTH*0.44f, SCREEN_HEIGHT*0.09f, temp);
+		sprintf_s(temp, "Time Left");
+		RenderStringOnScreen(SCREEN_WIDTH*0.48f, SCREEN_HEIGHT*0.09f, temp);
 
 
 		glColor3f(1.0f, 1.0f, 0.0f);
-		sprintf_s(temp,  "%.1f", GetTimer()*0.01f);
-		RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.13f, temp);
+		sprintf_s(temp,  "%.1f", GetTimer());
+		RenderStringOnScreen(SCREEN_WIDTH*0.5f, SCREEN_HEIGHT*0.13f, temp);
 
 	}
 
@@ -339,11 +348,11 @@ void CMiniGame::Draw(CGameStateManager* theGSM)
 		RenderMGLoseScreen2();
 		char temp[24];
 		sprintf_s(temp, "Final Score");
-		RenderStringOnScreen(SCREEN_WIDTH * 0.44f, SCREEN_HEIGHT*0.57f, temp);
+		RenderStringOnScreen(SCREEN_WIDTH * 0.48f, SCREEN_HEIGHT*0.57f, temp);
 
 		glColor3f(1.0f, 1.0f, 0.0f);
 		sprintf_s(temp, " %d", GetCurrentScore());
-		RenderStringOnScreen(SCREEN_WIDTH*0.46f, SCREEN_HEIGHT*0.62f, temp);
+		RenderStringOnScreen(SCREEN_WIDTH*0.495f, SCREEN_HEIGHT*0.62f, temp);
 
 
 	}
