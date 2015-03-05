@@ -829,6 +829,9 @@ void CPlayState::changeSize(int w, int h) {
 	//// Set the correct perspective.
 	//gluPerspective(45, ar, 1, 1000);
 	//glMatrixMode(GL_MODELVIEW);
+
+	//this->w = viewW / ar;
+	//this->h = viewH;
 }
 
 void CPlayState::inputKey(int key, int x, int y) {
@@ -2381,9 +2384,9 @@ void CPlayState::UpdateSpawn()
 				creep->SetMaxHealth(enemyClone[creep->type - 1]->GetHealth());
 				creep->SetVel(Vector3(-15 * creep->GetSpeed(), 0, 0));
 				if(creep->type == Enemy::ENEMY_5)
-					creep->SetPos(Vector3(SCREEN_WIDTH, TILE_SIZE* 3.5f, 0));
+					creep->SetPos(Vector3(SCREEN_WIDTH, (int)(TILE_SIZE* 3.5f), 0));
 				else
-					creep->SetPos(Vector3(SCREEN_WIDTH, ((rand() % 5 + 1) + 0.5f) * TILE_SIZE, 0));
+					creep->SetPos(Vector3(SCREEN_WIDTH, (int)(((rand() % 5 + 1) + 0.5f) * TILE_SIZE), 0));
 				enemyList.push_back(creep);
 			}
 			delete spawn;

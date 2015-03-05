@@ -322,7 +322,7 @@ void Tower::GetTarget(std::vector<Enemy*> EnemyList)
 			}
 			else
 			{
-				if (EnemyList[i]->GetPos().y > this->GetTopLeft().y && EnemyList[i]->GetPos().y < this->GetBottomRight().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
+				if (EnemyList[i]->GetPos().y >= this->GetTopLeft().y && EnemyList[i]->GetPos().y <= this->GetBottomRight().y && EnemyList[i]->GetPos().x - this->GetPos().x < this->GetRange() && EnemyList[i]->GetPos().x > this->GetPos().x)
 				{
 					// set target to this enemy
 					Target = EnemyList[i];
